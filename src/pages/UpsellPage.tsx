@@ -131,37 +131,31 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const handleAccept = () => {
     const url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
     
-    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
     if (url.includes('cartpanda.com')) {
-      if (window.utmify && typeof window.utmify === 'function') {
-        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-        console.log('🎯 InitiateCheckout disparado para upsell accept:', variant);
-      }
+      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+      console.log('🎯 InitiateCheckout disparado para upsell accept:', variant);
     }
     
     trackOfferClick(`upsell-${variant}-accept`);
     
-    // ✅ NEW: Preservar parâmetros UTM
-    const finalUrl = url + window.location.search;
-    window.location.href = finalUrl;
+    // ✅ EXATO: Usar função preserveUTMs conforme especificado
+    window.preserveUTMs(url);
   };
 
   const handleReject = () => {
     const url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
     
-    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
     if (url.includes('cartpanda.com')) {
-      if (window.utmify && typeof window.utmify === 'function') {
-        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-        console.log('🎯 InitiateCheckout disparado para upsell reject:', variant);
-      }
+      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+      console.log('🎯 InitiateCheckout disparado para upsell reject:', variant);
     }
     
     trackOfferClick(`upsell-${variant}-reject`);
     
-    // ✅ NEW: Preservar parâmetros UTM
-    const finalUrl = url + window.location.search;
-    window.location.href = finalUrl;
+    // ✅ EXATO: Usar função preserveUTMs conforme especificado
+    window.preserveUTMs(url);
   };
 
   return (

@@ -161,14 +161,14 @@ export const TrackingTestPanel: React.FC = () => {
       if (typeof utmify === 'function') {
         updateStatus(index, { 
           status: 'success', 
-          message: 'UTMify carregado e funcionando',
-          details: 'Pixel ID: 681eb087803be4de5c3bd68b - Script carregado de https://utmify.io/pixel.js'
+          message: 'UTMify funcionando perfeitamente',
+          details: 'Script: https://utmify.io/pixel.js?id=681eb087803be4de5c3bd68b - InitiateCheckout automático ativo'
         });
         
-        // ✅ NEW: Testar InitiateCheckout
+        // ✅ EXATO: Testar InitiateCheckout conforme especificado
         try {
           utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-          console.log('✅ UTMify InitiateCheckout teste executado com sucesso');
+          console.log('✅ UTMify InitiateCheckout teste - comando exato executado');
         } catch (error) {
           console.warn('⚠️ Erro no teste InitiateCheckout:', error);
         }
@@ -176,8 +176,8 @@ export const TrackingTestPanel: React.FC = () => {
       } else {
         updateStatus(index, { 
           status: 'error', 
-          message: 'UTMify não encontrado',
-          details: 'Função window.utmify não está disponível. Verifique se o script carregou.'
+          message: 'UTMify não carregado',
+          details: 'Script https://utmify.io/pixel.js?id=681eb087803be4de5c3bd68b não carregou ou função não disponível'
         });
       }
     } catch (error) {
@@ -567,11 +567,11 @@ export const TrackingTestPanel: React.FC = () => {
           <div className="bg-red-50 p-3 rounded-lg border border-red-200">
             <p className="text-sm font-medium text-red-700 mb-2">🔍 Debug UTMify:</p>
             <div className="space-y-2 text-xs text-red-600">
-              <p>• Abra o Console (F12) e procure por "UTMify"</p>
-              <p>• Verifique se window.utmify está definido</p>
-              <p>• Teste manual: window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b")</p>
-              <p>• Clique em botões CartPanda para ver InitiateCheckout</p>
-              <p>• Verifique se o script https://utmify.io/pixel.js carregou</p>
+              <p>• <strong>Script:</strong> https://utmify.io/pixel.js?id=681eb087803be4de5c3bd68b</p>
+              <p>• <strong>Teste manual:</strong> window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b")</p>
+              <p>• <strong>Automático:</strong> Dispara para URLs com "cartpanda.com"</p>
+              <p>• <strong>Preservação UTM:</strong> window.preserveUTMs(path)</p>
+              <p>• <strong>Console:</strong> Procure por "InitiateCheckout disparado"</p>
             </div>
           </div>
           

@@ -31,12 +31,10 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
     const url = purchaseUrls[packageType];
     const value = purchaseValues[packageType];
     
-    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
     if (url.includes('cartpanda.com')) {
-      if (window.utmify && typeof window.utmify === 'function') {
-        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-        console.log('🎯 InitiateCheckout disparado para:', packageType);
-      }
+      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+      console.log('🎯 InitiateCheckout disparado para:', packageType);
     }
     
     // Track the purchase intent
@@ -45,22 +43,18 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
     // Call the original onPurchase handler
     onPurchase(packageType);
     
-    // ✅ NEW: Preservar parâmetros UTM no redirecionamento
-    const finalUrl = url + window.location.search;
-    console.log('🔗 Redirecionando com UTMs preservados:', url, '->', finalUrl);
-    window.location.href = finalUrl;
+    // ✅ EXATO: Usar função preserveUTMs conforme especificado
+    window.preserveUTMs(url);
   };
 
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
     const url = purchaseUrls[packageType];
     const value = purchaseValues[packageType];
     
-    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
     if (url.includes('cartpanda.com')) {
-      if (window.utmify && typeof window.utmify === 'function') {
-        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-        console.log('🎯 InitiateCheckout disparado para secondary:', packageType);
-      }
+      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+      console.log('🎯 InitiateCheckout disparado para secondary:', packageType);
     }
     
     // Track the secondary package click
@@ -68,6 +62,9 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
     
     // Call the original handler
     onSecondaryPackageClick(packageType);
+    
+    // ✅ EXATO: Usar função preserveUTMs conforme especificado
+    window.preserveUTMs(url);
   };
 
   if (!showPurchaseButton) return null;

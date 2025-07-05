@@ -158,7 +158,7 @@ function App() {
         
         // Track page view with external pixels
         if (typeof window !== 'undefined' && (window as any).utmify) {
-          (window as any).utmify("track", "PageView", {}, "681eb087803be4de5c3bd68b");
+          (window as any).utmify?.("track", "PageView", {}, "681eb087803be4de5c3bd68b");
           console.log('📊 UTMify PageView tracked - ID: 681eb087803be4de5c3bd68b');
         }
       } catch (error) {

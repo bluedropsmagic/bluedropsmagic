@@ -153,40 +153,45 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const handleAccept = () => {
     let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
     
-    // ✅ NEW: Add CID parameter if present
+    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
+    if (url.includes('cartpanda.com')) {
+      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+      console.log('🎯 InitiateCheckout disparado para downsell accept:', variant);
+    }
+    
+    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
-    
-    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
-    if (url.includes('cartpanda.com')) {
-      if (window.utmify && typeof window.utmify === 'function') {
-        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-        console.log('🎯 InitiateCheckout disparado para downsell accept:', variant);
-      }
-    }
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    // ✅ NEW: Preservar parâmetros UTM
-    url = url + window.location.search;
-    window.location.href = url;
+    trackOfferClick(`downsell-${variant}-accept`);
+    
+    // ✅ EXATO: Usar função preserveUTMs conforme especificado
+    window.preserveUTMs(url);
   };
 
   const handleReject = () => {
-    trackOfferClick(`downsell-${variant}-reject`);
-    
-    // ✅ NEW: Add CID parameter if present
     let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
+    
+    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
+    if (url.includes('cartpanda.com')) {
+      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+      console.log('🎯 InitiateCheckout disparado para downsell reject:', variant);
+    }
+    
+    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    // ✅ NEW: Preservar parâmetros UTM
-    url = url + window.location.search;
-    window.location.href = url;
+    trackOfferClick(`downsell-${variant}-reject`);
+    
+    // ✅ EXATO: Usar função preserveUTMs conforme especificado
+    window.preserveUTMs(url);
   };
 
   return (

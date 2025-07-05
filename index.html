@@ -19,11 +19,6 @@
     </script>
 
     <!-- ✅ NEW: UTMify Pixel - Seguindo instruções exatas -->
-    <script>
-      // ✅ UTMify Pixel - Implementação exata conforme instruções
-      console.log('🎯 Loading UTMify pixel with ID: 681eb087803be4de5c3bd68b');
-    </script>
-    
     <!-- ✅ UTMify Pixel Script - Exatamente como especificado -->
     <script async src="https://utmify.io/pixel.js?id=681eb087803be4de5c3bd68b"></script>
 
@@ -84,46 +79,42 @@
   <body>
     <!-- ✅ NEW: UTM Parameter Preservation Script -->
     <script>
-      // ✅ GLOBAL: Funções para preservar parâmetros UTM - Exatamente como especificado
+      // ✅ EXATO: Função para preservar UTMs conforme especificado
       window.preserveUTMs = function(path) {
-        window.location.href = path + window.location.search;
+        window.location.href = `${path}${window.location.search}`;
       };
       
-      // ✅ GLOBAL: Função para detectar URLs CartPanda
-      window.isCartPandaUrl = function(url) {
-        return url.includes('cartpanda.com');
-      };
-      
-      // ✅ GLOBAL: Função para disparar InitiateCheckout
-      window.trackInitiateCheckout = function() {
-        if (window.utmify && typeof window.utmify === 'function') {
-          window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-          console.log('🎯 InitiateCheckout disparado para CartPanda');
-        } else {
-          console.warn('⚠️ UTMify não disponível para InitiateCheckout');
-        }
-      };
-      
-      // ✅ GLOBAL: Setup automático de tracking para botões CartPanda
+      // ✅ EXATO: Setup automático conforme especificado
       document.addEventListener('DOMContentLoaded', function() {
-        // Aguardar um pouco para garantir que todos os elementos estejam carregados
         setTimeout(function() {
-          document.querySelectorAll('a, button').forEach(function(el) {
-            el.addEventListener('click', function(e) {
-              const href = el.getAttribute('href') || el.dataset.href || '';
+          // ✅ EXATO: Implementação conforme especificado
+          document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('click', (e) => {
+              const href =
+                el.getAttribute('href') ||
+                el.dataset.href ||
+                el.getAttribute('data-url') ||
+                '';
               
               if (href.includes('cartpanda.com')) {
-                console.log('🎯 Clique em botão CartPanda detectado:', href);
-                window.trackInitiateCheckout();
+                // ✅ EXATO: Evento InitiateCheckout conforme especificado
+                window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+                console.log('🎯 InitiateCheckout disparado para CartPanda:', href);
+                
+                // ✅ EXATO: Preservar UTMs no redirecionamento para links
+                if (el.tagName === 'A') {
+                  e.preventDefault();
+                  window.location.href = `${href}${window.location.search}`;
+                }
               }
             });
           });
           
-          console.log('✅ Tracking automático configurado para botões CartPanda');
+          console.log('✅ UTMify tracking configurado para CartPanda URLs');
         }, 1000);
       });
       
-      console.log('✅ UTMify functions loaded - ID: 681eb087803be4de5c3bd68b');
+      console.log('✅ UTMify setup completo - ID: 681eb087803be4de5c3bd68b');
     </script>
     
     <!-- Meta Pixel noscript - moved to body -->
