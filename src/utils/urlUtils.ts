@@ -125,8 +125,9 @@ export const initializeTracking = (): void => {
   storeTrackingParams();
   
   // Track page view with Utmify if available
-  if (typeof window !== 'undefined' && (window as any).utmify) {
-    (window as any).utmify('track', 'PageView');
+  if (typeof window !== 'undefined' && (window as any).utmify && (window as any).utmifyLoaded) {
+    (window as any).utmify('track', 'PageView', {}, '681eb087803be4de5c3bd68b');
+    console.log('📊 UTMify PageView tracked with pixel ID');
   }
 };
 
@@ -147,13 +148,13 @@ export const trackConversion = (eventName: string, value?: number, currency?: st
   }
   
   // Utmify conversion tracking
-  if (typeof window !== 'undefined' && (window as any).utmify) {
+  if (typeof window !== 'undefined' && (window as any).utmify && (window as any).utmifyLoaded) {
     const eventData: any = { event: eventName };
     if (value !== undefined) eventData.value = value;
     if (currency) eventData.currency = currency;
     
     console.log('📊 Tracking conversion via Utmify:', eventName, eventData);
-    (window as any).utmify('track', 'Conversion', eventData);
+    (window as any).utmify('track', 'Conversion', eventData, '681eb087803be4de5c3bd68b');
   }
 };
 
@@ -163,8 +164,52 @@ export const trackConversion = (eventName: string, value?: number, currency?: st
 export const trackPurchase = (value: number, currency: string = 'BRL', productType?: string): void => {
   trackConversion('Purchase', value, currency);
   
+  // ✅ NEW: Track InitiateCheckout for UTMify when redirecting to CartPanda
+  if (typeof window !== 'undefined' && (window as any).utmify && (window as any).utmifyLoaded) {
+    (window as any).utmify('track', 'InitiateCheckout', { value, currency, productType }, '681eb087803be4de5c3bd68b');
+    console.log('📊 UTMify InitiateCheckout tracked:', { value, currency, productType });
+  }
+  
   // Additional tracking for specific product types
   if (productType) {
     trackConversion(`Purchase_${productType}`, value, currency);
   }
+};
+
+/**
+ * ✅ NEW: Track InitiateCheckout specifically for CartPanda redirects
+ */
+export const trackInitiateCheckout = (productType?: string, value?: number): void => {
+  if (typeof window !== 'undefined' && (window as any).utmify && (window as any).utmifyLoaded) {
+    const eventData: any = {};
+    if (productType) eventData.productType = productType;
+    if (value) eventData.value = value;
+    
+    (window as any).utmify('track', 'InitiateCheckout', eventData, '681eb087803be4de5c3bd68b');
+    console.log('📊 UTMify InitiateCheckout tracked for CartPanda redirect:', eventData);
+  }
+};
+
+/**
+ * ✅ NEW: Check if URL is CartPanda domain
+ */
+export const isCartPandaUrl = (url: string): boolean => {
+  return url.includes('cartpanda.com') || url.includes('paybluedrops.com');
+};
+
+/**
+ * ✅ NEW: Safe redirect with UTM preservation and InitiateCheckout tracking
+ */
+export const redirectWithTracking = (url: string, productType?: string, value?: number): void => {
+  // Track InitiateCheckout if it's a CartPanda URL
+  if (isCartPandaUrl(url)) {
+    trackInitiateCheckout(productType, value);
+  }
+  
+  // Preserve UTM parameters
+  const query = window.location.search;
+  const finalUrl = url + query;
+  
+  console.log('🔗 Redirecting with UTM preservation:', url, '->', finalUrl);
+  window.location.href = finalUrl;
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
+import { redirectWithTracking, isCartPandaUrl, trackInitiateCheckout } from '../utils/urlUtils';
 import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X } from 'lucide-react';
 
 interface UpsellPageProps {
@@ -128,10 +129,35 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const content = getUpsellContent(variant);
 
   const handleAccept = () => {
+    const url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
+    
+    // ✅ NEW: Track InitiateCheckout BEFORE redirect if CartPanda URL
+    if (isCartPandaUrl(url)) {
+      trackInitiateCheckout(`upsell-${variant}-accept`);
+      console.log('🎯 InitiateCheckout tracked for upsell accept:', variant);
+    }
+    
     trackOfferClick(`upsell-${variant}-accept`);
     
-    // ✅ NEW: Add CID parameter if present
-    let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
+    // ✅ NEW: Use UTM preservation redirect
+    redirectWithTracking(url, `upsell-${variant}-accept`);
+  };
+
+  const handleReject = () => {
+    const url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
+    
+    // ✅ NEW: Track InitiateCheckout BEFORE redirect if CartPanda URL  
+    if (isCartPandaUrl(url)) {
+      trackInitiateCheckout(`upsell-${variant}-reject`);
+      console.log('🎯 InitiateCheckout tracked for upsell reject:', variant);
+    }
+    
+    trackOfferClick(`upsell-${variant}-reject`);
+    
+    // ✅ NEW: Use UTM preservation redirect
+    redirectWithTracking(url, `upsell-${variant}-reject`);
+  };
+
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
     if (cid && !url.includes('cid=')) {

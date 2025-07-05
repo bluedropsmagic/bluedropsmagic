@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Star, Shield, Truck, CreditCard } from 'lucide-react';
-import { buildUrlWithParams, trackPurchase } from '../utils/urlUtils';
+import { buildUrlWithParams, trackPurchase, redirectWithTracking, isCartPandaUrl, trackInitiateCheckout } from '../utils/urlUtils';
 
 interface ProductOffersProps {
   showPurchaseButton: boolean;
@@ -28,32 +28,42 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   };
 
   const handlePurchaseClick = (packageType: '1-bottle' | '3-bottle' | '6-bottle') => {
+    const url = purchaseUrls[packageType];
+    const value = purchaseValues[packageType];
+    
+    // ✅ NEW: Track InitiateCheckout BEFORE redirect if CartPanda URL
+    if (isCartPandaUrl(url)) {
+      trackInitiateCheckout(packageType, value);
+      console.log('🎯 InitiateCheckout tracked for CartPanda redirect:', packageType, value);
+    }
+    
     // Track the purchase intent
-    trackPurchase(purchaseValues[packageType], 'BRL', packageType);
+    trackPurchase(value, 'BRL', packageType);
     
     // Call the original onPurchase handler
     onPurchase(packageType);
     
-    // ✅ NEW: Build URL with tracking parameters + CID if present
-    let urlWithParams = buildUrlWithParams(purchaseUrls[packageType]);
-    
-    // Add CID parameter if present in current URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const cid = urlParams.get('cid');
-    if (cid && !urlWithParams.includes('cid=')) {
-      urlWithParams += (urlWithParams.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
-    }
-    
-    // ✅ FIXED: Use window.location.href instead of window.open for better tracking
-    window.location.href = urlWithParams;
+    // ✅ NEW: Use new redirect function with UTM preservation
+    redirectWithTracking(url, packageType, value);
   };
 
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
+    const url = purchaseUrls[packageType];
+    const value = purchaseValues[packageType];
+    
+    // ✅ NEW: Track InitiateCheckout BEFORE redirect if CartPanda URL
+    if (isCartPandaUrl(url)) {
+      trackInitiateCheckout(`${packageType}-secondary`, value);
+      console.log('🎯 InitiateCheckout tracked for secondary CartPanda redirect:', packageType, value);
+    }
+    
     // Track the secondary package click
-    trackPurchase(purchaseValues[packageType], 'BRL', `${packageType}-secondary`);
+    trackPurchase(value, 'BRL', `${packageType}-secondary`);
     
     // Call the original handler
     onSecondaryPackageClick(packageType);
+    
+    // Note: Secondary clicks don't redirect immediately, they show upsell popup
   };
 
   if (!showPurchaseButton) return null;
