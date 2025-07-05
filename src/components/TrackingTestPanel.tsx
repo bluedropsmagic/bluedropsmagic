@@ -157,34 +157,27 @@ export const TrackingTestPanel: React.FC = () => {
     try {
       // ✅ UPDATED: Check new UTMify implementation
       const utmify = (window as any).utmify;
-      const utmifyLoaded = (window as any).utmifyLoaded;
       
-      if (typeof utmify === 'function' && utmifyLoaded) {
+      if (typeof utmify === 'function') {
         updateStatus(index, { 
           status: 'success', 
-          message: 'UTMify carregado e funcionando perfeitamente',
-          details: 'Pixel ID: 681eb087803be4de5c3bd68b - Nova implementação ativa'
+          message: 'UTMify carregado e funcionando',
+          details: 'Pixel ID: 681eb087803be4de5c3bd68b - Script carregado de https://utmify.io/pixel.js'
         });
         
-        // ✅ Test InitiateCheckout tracking
+        // ✅ NEW: Testar InitiateCheckout
         try {
-          utmify('track', 'InitiateCheckout', { test: true }, '681eb087803be4de5c3bd68b');
-          console.log('✅ UTMify InitiateCheckout test successful');
+          utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+          console.log('✅ UTMify InitiateCheckout teste executado com sucesso');
         } catch (error) {
-          console.warn('⚠️ UTMify InitiateCheckout test failed:', error);
+          console.warn('⚠️ Erro no teste InitiateCheckout:', error);
         }
         
-      } else if (typeof utmify === 'function') {
-        updateStatus(index, { 
-          status: 'warning', 
-          message: 'UTMify função existe mas não confirmado como carregado',
-          details: 'Aguarde o carregamento completo do pixel'
-        });
       } else {
         updateStatus(index, { 
           status: 'error', 
           message: 'UTMify não encontrado',
-          details: 'Script https://utmify.io/pixel.js não carregou corretamente'
+          details: 'Função window.utmify não está disponível. Verifique se o script carregou.'
         });
       }
     } catch (error) {
@@ -571,6 +564,17 @@ export const TrackingTestPanel: React.FC = () => {
             </div>
           </div>
           
+          <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+            <p className="text-sm font-medium text-red-700 mb-2">🔍 Debug UTMify:</p>
+            <div className="space-y-2 text-xs text-red-600">
+              <p>• Abra o Console (F12) e procure por "UTMify"</p>
+              <p>• Verifique se window.utmify está definido</p>
+              <p>• Teste manual: window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b")</p>
+              <p>• Clique em botões CartPanda para ver InitiateCheckout</p>
+              <p>• Verifique se o script https://utmify.io/pixel.js carregou</p>
+            </div>
+          </div>
+          
           <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
             <p className="text-sm font-medium text-blue-700 mb-2">🎬 Debug de Tracking de Vídeo:</p>
             <div className="space-y-2 text-xs text-blue-600">
@@ -604,8 +608,8 @@ export const TrackingTestPanel: React.FC = () => {
           <div className="space-y-2">
             <h4 className="font-medium text-gray-900">Utmify</h4>
             <p className="text-sm text-gray-600">Pixel ID: <code className="bg-gray-100 px-1 rounded">681eb087803be4de5c3bd68b</code></p>
-            <p className="text-sm text-gray-600">URL: <code className="bg-gray-100 px-1 rounded text-xs">https://utmify.io/pixel.js</code></p>
-            <p className="text-sm text-gray-600">Eventos: PageView, Conversion, InitiateCheckout</p>
+            <p className="text-sm text-gray-600">Script: <code className="bg-gray-100 px-1 rounded text-xs">https://utmify.io/pixel.js?id=681eb087803be4de5c3bd68b</code></p>
+            <p className="text-sm text-gray-600">Evento: InitiateCheckout (automático para CartPanda)</p>
           </div>
         </div>
         
@@ -632,7 +636,7 @@ export const TrackingTestPanel: React.FC = () => {
           <p><strong>3. UTMify:</strong> Novo pixel carregado de https://utmify.io/pixel.js com ID 681eb087803be4de5c3bd68b</p>
           <p><strong>4. UTM Parameters:</strong> Teste com URLs que contenham parâmetros UTM</p>
           <p><strong>5. Supabase:</strong> Verifique se os eventos estão sendo salvos no banco de dados</p>
-          <p><strong>6. InitiateCheckout:</strong> Evento disparado automaticamente ao clicar em botões CartPanda</p>
+          <p><strong>6. InitiateCheckout:</strong> Disparado automaticamente para URLs que contenham "cartpanda.com"</p>
         </div>
       </div>
 
@@ -640,7 +644,7 @@ export const TrackingTestPanel: React.FC = () => {
       {/* RedTrack Integration moved to separate component */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
         <p className="text-blue-700 text-sm">
-          <strong>🎯 UTMify + RedTrack:</strong> Parâmetros UTM preservados automaticamente em todos os redirecionamentos
+          <strong>🎯 UTMify Implementado:</strong> ID 681eb087803be4de5c3bd68b - InitiateCheckout automático para CartPanda
         </p>
       </div>
     </div>
