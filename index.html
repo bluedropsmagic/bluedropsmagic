@@ -20,24 +20,12 @@
 
     <!-- ✅ NEW: UTMify Pixel - Seguindo instruções exatas -->
     <script>
-      // ✅ CRITICAL: Load UTMify pixel exactly as specified
-      (function() {
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://utmify.io/pixel.js?id=681eb087803be4de5c3bd68b';
-        
-        script.onload = function() {
-          console.log('✅ UTMify pixel loaded successfully - ID: 681eb087803be4de5c3bd68b');
-          window.utmifyLoaded = true;
-        };
-        
-        script.onerror = function() {
-          console.warn('⚠️ UTMify pixel failed to load');
-        };
-        
-        document.head.appendChild(script);
-      })();
+      // ✅ UTMify Pixel - Implementação exata conforme instruções
+      console.log('🎯 Loading UTMify pixel with ID: 681eb087803be4de5c3bd68b');
     </script>
+    
+    <!-- ✅ UTMify Pixel Script - Exatamente como especificado -->
+    <script async src="https://utmify.io/pixel.js?id=681eb087803be4de5c3bd68b"></script>
 
     <!-- Meta Pixel Code - ✅ FIXED: Prevent duplicate initialization -->
     <script>
@@ -96,19 +84,46 @@
   <body>
     <!-- ✅ NEW: UTM Parameter Preservation Script -->
     <script>
-      // ✅ GLOBAL: Function to preserve UTM parameters as specified
+      // ✅ GLOBAL: Funções para preservar parâmetros UTM - Exatamente como especificado
       window.preserveUTMs = function(path) {
-        const query = window.location.search;
-        window.location.href = path + query;
+        window.location.href = path + window.location.search;
       };
       
-      // ✅ GLOBAL: Safe redirect with UTM preservation
-      window.safeRedirect = function(url) {
-        const query = window.location.search;
-        window.location.href = url + query;
+      // ✅ GLOBAL: Função para detectar URLs CartPanda
+      window.isCartPandaUrl = function(url) {
+        return url.includes('cartpanda.com');
       };
       
-      console.log('✅ UTM preservation functions loaded globally');
+      // ✅ GLOBAL: Função para disparar InitiateCheckout
+      window.trackInitiateCheckout = function() {
+        if (window.utmify && typeof window.utmify === 'function') {
+          window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+          console.log('🎯 InitiateCheckout disparado para CartPanda');
+        } else {
+          console.warn('⚠️ UTMify não disponível para InitiateCheckout');
+        }
+      };
+      
+      // ✅ GLOBAL: Setup automático de tracking para botões CartPanda
+      document.addEventListener('DOMContentLoaded', function() {
+        // Aguardar um pouco para garantir que todos os elementos estejam carregados
+        setTimeout(function() {
+          document.querySelectorAll('a, button').forEach(function(el) {
+            el.addEventListener('click', function(e) {
+              const href = el.getAttribute('href') || el.dataset.href || '';
+              
+              if (href.includes('cartpanda.com')) {
+                console.log('🎯 Clique em botão CartPanda detectado:', href);
+                window.trackInitiateCheckout();
+              }
+            });
+          });
+          
+          console.log('✅ Tracking automático configurado para botões CartPanda');
+        }, 1000);
+      });
+      
+      console.log('✅ UTMify functions loaded - ID: 681eb087803be4de5c3bd68b');
     </script>
     
     <!-- Meta Pixel noscript - moved to body -->

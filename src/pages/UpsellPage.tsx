@@ -131,27 +131,37 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const handleAccept = () => {
     const url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
     
-    if (isCartPandaUrl(url)) {
-      trackInitiateCheckout(`upsell-${variant}-accept`);
-      console.log('🎯 InitiateCheckout tracked for upsell accept:', variant);
+    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    if (url.includes('cartpanda.com')) {
+      if (window.utmify && typeof window.utmify === 'function') {
+        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+        console.log('🎯 InitiateCheckout disparado para upsell accept:', variant);
+      }
     }
     
     trackOfferClick(`upsell-${variant}-accept`);
     
-    redirectWithTracking(url, `upsell-${variant}-accept`);
+    // ✅ NEW: Preservar parâmetros UTM
+    const finalUrl = url + window.location.search;
+    window.location.href = finalUrl;
   };
 
   const handleReject = () => {
     const url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
     
-    if (isCartPandaUrl(url)) {
-      trackInitiateCheckout(`upsell-${variant}-reject`);
-      console.log('🎯 InitiateCheckout tracked for upsell reject:', variant);
+    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    if (url.includes('cartpanda.com')) {
+      if (window.utmify && typeof window.utmify === 'function') {
+        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+        console.log('🎯 InitiateCheckout disparado para upsell reject:', variant);
+      }
     }
     
     trackOfferClick(`upsell-${variant}-reject`);
     
-    redirectWithTracking(url, `upsell-${variant}-reject`);
+    // ✅ NEW: Preservar parâmetros UTM
+    const finalUrl = url + window.location.search;
+    window.location.href = finalUrl;
   };
 
   return (

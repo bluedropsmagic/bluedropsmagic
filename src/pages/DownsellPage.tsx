@@ -151,19 +151,28 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const content = getDownsellContent(variant);
 
   const handleAccept = () => {
-    trackOfferClick(`downsell-${variant}-accept`);
+    let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
     
     // ✅ NEW: Add CID parameter if present
-    let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
-    const urlParams = new URLSearchParams(window.location.search);
-    const cid = urlParams.get('cid');
+    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    if (url.includes('cartpanda.com')) {
+      if (window.utmify && typeof window.utmify === 'function') {
+        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+        console.log('🎯 InitiateCheckout disparado para downsell accept:', variant);
+      }
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    window.location.href = url;
-  };
-
+    let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
+    url = url + window.location.search;
+    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    if (url.includes('cartpanda.com')) {
+      if (window.utmify && typeof window.utmify === 'function') {
+        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+        console.log('🎯 InitiateCheckout disparado para downsell reject:', variant);
+      }
+    }
   const handleReject = () => {
     trackOfferClick(`downsell-${variant}-reject`);
     
@@ -175,6 +184,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
+    // ✅ NEW: Preservar parâmetros UTM
+    url = url + window.location.search;
     window.location.href = url;
   };
 

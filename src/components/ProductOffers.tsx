@@ -31,10 +31,12 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
     const url = purchaseUrls[packageType];
     const value = purchaseValues[packageType];
     
-    // ✅ NEW: Track InitiateCheckout BEFORE redirect if CartPanda URL
-    if (isCartPandaUrl(url)) {
-      trackInitiateCheckout(packageType, value);
-      console.log('🎯 InitiateCheckout tracked for CartPanda redirect:', packageType, value);
+    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    if (url.includes('cartpanda.com')) {
+      if (window.utmify && typeof window.utmify === 'function') {
+        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+        console.log('🎯 InitiateCheckout disparado para:', packageType);
+      }
     }
     
     // Track the purchase intent
@@ -43,18 +45,22 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
     // Call the original onPurchase handler
     onPurchase(packageType);
     
-    // ✅ NEW: Use new redirect function with UTM preservation
-    redirectWithTracking(url, packageType, value);
+    // ✅ NEW: Preservar parâmetros UTM no redirecionamento
+    const finalUrl = url + window.location.search;
+    console.log('🔗 Redirecionando com UTMs preservados:', url, '->', finalUrl);
+    window.location.href = finalUrl;
   };
 
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
     const url = purchaseUrls[packageType];
     const value = purchaseValues[packageType];
     
-    // ✅ NEW: Track InitiateCheckout BEFORE redirect if CartPanda URL
-    if (isCartPandaUrl(url)) {
-      trackInitiateCheckout(`${packageType}-secondary`, value);
-      console.log('🎯 InitiateCheckout tracked for secondary CartPanda redirect:', packageType, value);
+    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
+    if (url.includes('cartpanda.com')) {
+      if (window.utmify && typeof window.utmify === 'function') {
+        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
+        console.log('🎯 InitiateCheckout disparado para secondary:', packageType);
+      }
     }
     
     // Track the secondary package click
@@ -62,8 +68,6 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
     
     // Call the original handler
     onSecondaryPackageClick(packageType);
-    
-    // Note: Secondary clicks don't redirect immediately, they show upsell popup
   };
 
   if (!showPurchaseButton) return null;
