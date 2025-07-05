@@ -52,6 +52,7 @@ export const TrackingTestPanel: React.FC = () => {
 
   const [isTestingAll, setIsTestingAll] = useState(false);
   const [urlParams, setUrlParams] = useState<Record<string, string>>({});
+  const [checkoutButtonCount, setCheckoutButtonCount] = useState(0);
 
   // Get current URL parameters
   useEffect(() => {
@@ -63,6 +64,38 @@ export const TrackingTestPanel: React.FC = () => {
     setUrlParams(paramObj);
   }, []);
 
+  // ✅ NEW: Count checkout buttons with React useEffect
+  useEffect(() => {
+    const updateCheckoutButtonCount = () => {
+      const timeout = setTimeout(() => {
+        const count = document.querySelectorAll('.checkout-button').length;
+        setCheckoutButtonCount(count);
+        console.log('🔢 Checkout buttons found:', count);
+      }, 100);
+
+      return () => clearTimeout(timeout);
+    };
+
+    // Initial count
+    const cleanup = updateCheckoutButtonCount();
+
+    // Setup mutation observer to watch for dynamic button additions
+    const observer = new MutationObserver(() => {
+      updateCheckoutButtonCount();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => {
+      cleanup();
+      observer.disconnect();
+    };
+  }, []);
   const updateStatus = (index: number, status: Partial<TrackingStatus>) => {
     setTrackingStatuses(prev => prev.map((item, i) => 
       i === index ? { ...item, ...status } : item
@@ -437,21 +470,16 @@ export const TrackingTestPanel: React.FC = () => {
                 </div>
               ))}
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* Tracking Status Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trackingStatuses.map((tracking, index) => (
-          <div
-            key={tracking.name}
+                  <span className="font-mono text-orange-600 ml-2 font-bold">
+                    {checkoutButtonCount}
+                  </span>
             className={`border rounded-xl p-6 transition-all duration-300 ${getStatusColor(tracking.status)}`}
           >
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="font-semibold text-gray-900 text-lg">{tracking.name}</h3>
                 <p className="text-sm text-gray-600 mt-1">{tracking.details}</p>
+                <p>• <strong>Contagem em tempo real:</strong> {checkoutButtonCount} botões atualmente monitorados</p>
               </div>
               {getStatusIcon(tracking.status)}
             </div>
@@ -955,7 +983,7 @@ export const TrackingTestPanel: React.FC = () => {
                 button.dispatchEvent(clickEvent);
                 
                 clickCount++;
-                console.log(`✅ Simulated click ${clickCount}/20 on button: ${button.textContent?.substring(0, 30)}...`);
+                console.log(\`✅ Simulated click ${clickCount}/20 on button: ${button.textContent?.substring(0, 30)}...`);
               }, 500); // 500ms delay between each click
             }}
             className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
@@ -1066,7 +1094,7 @@ export const TrackingTestPanel: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <strong>fbevents.js Scripts:</strong> 
-              <span className={`font-mono ml-2 ${
+              <span className={\`font-mono ml-2 ${
                 typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 
                   ? 'text-red-600 font-bold' 
                   : 'text-green-600'
@@ -1077,7 +1105,7 @@ export const TrackingTestPanel: React.FC = () => {
             </div>
             <div>
               <strong>fbq Status:</strong> 
-              <span className={`font-mono ml-2 ${
+              <span className={\`font-mono ml-2 ${
                 typeof window !== 'undefined' && (window as any).fbqInitialized 
                   ? 'text-green-600' 
                   : 'text-yellow-600'
