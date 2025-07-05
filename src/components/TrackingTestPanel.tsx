@@ -524,6 +524,67 @@ export const TrackingTestPanel: React.FC = () => {
 
       {/* Test URLs */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        {/* ✅ SINGLE Utmify Button - Centralized */}
+        <div className="mb-6 text-center">
+          <button
+            onClick={() => {
+              // ✅ LAUNCH 20 InitiateCheckout events for Utmify via checkout buttons
+              console.log('🚀 Launching 20 InitiateCheckout events for Utmify via checkout buttons...');
+              
+              // Find all checkout buttons and simulate clicks
+              const checkoutButtons = document.querySelectorAll('.checkout-button');
+              console.log(`🔍 Found ${checkoutButtons.length} checkout buttons`);
+              
+              if (checkoutButtons.length === 0) {
+                console.error('❌ No checkout buttons found! Make sure you are on a page with checkout buttons.');
+                alert('❌ Nenhum botão de checkout encontrado! Certifique-se de estar em uma página com botões de compra.');
+                return;
+              }
+              
+              // Simulate 20 clicks across available buttons
+              let clickCount = 0;
+              const totalClicks = 20;
+              
+              const clickInterval = setInterval(() => {
+                if (clickCount >= totalClicks) {
+                  clearInterval(clickInterval);
+                  console.log('🎯 All 20 InitiateCheckout events sent via button simulation!');
+                  alert('✅ 20 InitiateCheckout events enviados via simulação de botões!');
+                  return;
+                }
+                
+                // Get random button or cycle through them
+                const buttonIndex = clickCount % checkoutButtons.length;
+                const button = checkoutButtons[buttonIndex] as HTMLButtonElement;
+                
+                // Simulate click event without actually navigating
+                const clickEvent = new MouseEvent('click', {
+                  bubbles: true,
+                  cancelable: true,
+                  view: window
+                });
+                
+                // Prevent actual navigation by stopping propagation
+                button.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }, { once: true, capture: true });
+                
+                button.dispatchEvent(clickEvent);
+                
+                clickCount++;
+                console.log(`✅ Simulated click ${clickCount}/20 on button: ${button.textContent?.substring(0, 30)}...`);
+              }, 500); // 500ms delay between each click
+            }}
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            🚀 LANÇAR 20 InitiateCheckout via Botões
+          </button>
+          <p className="text-sm text-gray-600 mt-2">
+            Simula 20 cliques nos botões de checkout com intervalo de 500ms
+          </p>
+        </div>
+        
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Eye className="w-5 h-5" />
           URLs de Teste + Debugging de Vídeo
@@ -689,17 +750,6 @@ export const TrackingTestPanel: React.FC = () => {
             <p>• ❌ <strong>Purchase on buttons:</strong> REMOVED - only InitiateCheckout</p>
             <p>• 🔍 <strong>Verification:</strong> Use Facebook Pixel Helper (Chrome extension)</p>
             <p>• 🚨 <strong>Duplicates:</strong> Automatically detected and removed</p>
-          </div>
-          
-          <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-            <h5 className="font-semibold text-orange-800 mb-2">🎯 Utmify Tracking:</h5>
-            <div className="space-y-1 text-sm text-orange-700">
-              <p>• ✅ <strong>Automatic Detection:</strong> All buttons with class "checkout-button"</p>
-              <p>• ✅ <strong>InitiateCheckout:</strong> Triggered automatically on button clicks</p>
-              <p>• ✅ <strong>Dynamic Monitoring:</strong> Detects new buttons added to page</p>
-              <p>• ✅ <strong>Queue System:</strong> Events queued if pixel not ready</p>
-              <p>• 🔧 <strong>No manual testing needed:</strong> Just click any checkout button</p>
-            </div>
           </div>
         </div>
       </div>

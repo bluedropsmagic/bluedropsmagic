@@ -27,84 +27,23 @@
       a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
       document.head.appendChild(a);
       
-      // ✅ NEW: Enhanced Utmify integration with checkout-button detection
-      window.utmifyQueue = window.utmifyQueue || [];
-      
-      // Function to track InitiateCheckout when checkout buttons are clicked
-      function trackUtmifyInitiateCheckout(element) {
-        console.log('🎯 Utmify: Tracking InitiateCheckout for element:', element);
+      // ✅ Enhanced Utmify integration with fallback
+      window.addEventListener('utmify-track', function(event) {
+        console.log('📊 Utmify fallback event received:', event.detail);
         
+        // Try to send via Utmify if available
         if (typeof window.utmify === 'function') {
-          window.utmify('track', 'InitiateCheckout', {
-            element_class: element.className,
-            element_text: element.textContent?.substring(0, 50),
-            timestamp: Date.now()
-          });
-          console.log('✅ Utmify: InitiateCheckout tracked successfully');
+          window.utmify('track', event.detail.event, event.detail);
         } else {
-          // Queue for later
-          window.utmifyQueue.push({
-            event: 'InitiateCheckout',
-            element_class: element.className,
-            element_text: element.textContent?.substring(0, 50),
-            timestamp: Date.now()
-          });
-          console.log('📊 Utmify: InitiateCheckout queued (pixel not ready)');
+          // Store for later when Utmify loads
+          window.utmifyQueue = window.utmifyQueue || [];
+          window.utmifyQueue.push(event.detail);
         }
-      }
-      
-      // Setup click listeners for checkout buttons
-      function setupUtmifyTracking() {
-        // Track all existing checkout buttons
-        document.querySelectorAll('.checkout-button').forEach(function(button) {
-          button.addEventListener('click', function() {
-            trackUtmifyInitiateCheckout(this);
-          });
-        });
-        
-        // Setup mutation observer for dynamically added buttons
-        var observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            mutation.addedNodes.forEach(function(node) {
-              if (node.nodeType === 1) { // Element node
-                // Check if the added node is a checkout button
-                if (node.classList && node.classList.contains('checkout-button')) {
-                  node.addEventListener('click', function() {
-                    trackUtmifyInitiateCheckout(this);
-                  });
-                }
-                // Check for checkout buttons within the added node
-                var checkoutButtons = node.querySelectorAll && node.querySelectorAll('.checkout-button');
-                if (checkoutButtons) {
-                  checkoutButtons.forEach(function(button) {
-                    button.addEventListener('click', function() {
-                      trackUtmifyInitiateCheckout(this);
-                    });
-                  });
-                }
-              }
-            });
-          });
-        });
-        
-        observer.observe(document.body, {
-          childList: true,
-          subtree: true
-        });
-        
-        console.log('🎯 Utmify: Checkout button tracking setup complete');
-      }
-      
-      // Setup tracking when DOM is ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupUtmifyTracking);
-      } else {
-        setupUtmifyTracking();
-      }
+      });
       
       // Process queued events when Utmify loads
       var checkUtmify = setInterval(function() {
-        if (typeof window.utmify === 'function' && window.utmifyQueue && window.utmifyQueue.length > 0) {
+        if (typeof window.utmify === 'function' && window.utmifyQueue) {
           console.log('📊 Processing queued Utmify events:', window.utmifyQueue.length);
           window.utmifyQueue.forEach(function(eventData) {
             window.utmify('track', eventData.event, eventData);
@@ -113,18 +52,6 @@
           clearInterval(checkUtmify);
         }
       }, 1000);
-      
-      // Fallback event listener for manual triggers
-      window.addEventListener('utmify-track', function(event) {
-        console.log('📊 Utmify fallback event received:', event.detail);
-        
-        if (typeof window.utmify === 'function') {
-          window.utmify('track', event.detail.event, event.detail);
-        } else {
-          window.utmifyQueue = window.utmifyQueue || [];
-          window.utmifyQueue.push(event.detail);
-        }
-      });
     </script>
 
     <!-- ✅ CORRECT: Meta Pixel Code -->
