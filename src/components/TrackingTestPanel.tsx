@@ -101,22 +101,38 @@ export const TrackingTestPanel: React.FC = () => {
     updateStatus(index, { status: 'loading', message: 'Testando Meta Pixel...' });
     
     try {
-      // Check if Facebook Pixel is loaded
-      if (typeof (window as any).fbq === 'function') {
-        // ✅ FIXED: Check if pixel is properly initialized without triggering events
-        const pixelLoaded = (window as any).fbq && (window as any).fbq.loaded;
+      // ✅ ENHANCED: Check for duplicate initialization
+      const fbq = (window as any).fbq;
+      const fbqInitialized = (window as any).fbqInitialized;
+      const fbqInitializing = (window as any).fbqInitializing;
+      
+      if (typeof fbq === 'function') {
+        // Check for duplication
+        const isDuplicated = document.querySelectorAll('script[src*="fbevents.js"]').length > 1;
         
-        if (pixelLoaded) {
+        if (isDuplicated) {
+          updateStatus(index, { 
+            status: 'error', 
+            message: 'Meta Pixel DUPLICADO detectado!',
+            details: `${document.querySelectorAll('script[src*="fbevents.js"]').length} scripts fbevents.js encontrados`
+          });
+        } else if (fbqInitialized && !fbqInitializing) {
         updateStatus(index, { 
           status: 'success', 
-          message: 'Meta Pixel carregado corretamente',
-          details: 'Pixel inicializado uma única vez, sem duplicação'
+          message: 'Meta Pixel funcionando perfeitamente',
+          details: 'Inicializado uma única vez, sem duplicação detectada'
         });
+        } else if (fbqInitializing) {
+          updateStatus(index, { 
+            status: 'warning', 
+            message: 'Meta Pixel inicializando...',
+            details: 'Aguarde a inicialização completa'
+          });
         } else {
           updateStatus(index, { 
             status: 'warning', 
-            message: 'Meta Pixel carregando...',
-            details: 'Pixel detectado mas ainda inicializando'
+            message: 'Meta Pixel carregado mas não inicializado',
+            details: 'Função fbq existe mas inicialização não confirmada'
           });
         }
       } else {
@@ -366,6 +382,20 @@ export const TrackingTestPanel: React.FC = () => {
   // Auto-test on component mount
   useEffect(() => {
     testAll();
+    
+    // ✅ Load pixel monitoring script
+    const script = document.createElement('script');
+    script.src = '/pixel-monitor.js';
+    script.async = true;
+    document.head.appendChild(script);
+    
+    return () => {
+      // Cleanup
+      const existingScript = document.querySelector('script[src="/pixel-monitor.js"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
   }, []);
 
   return (
@@ -521,6 +551,18 @@ export const TrackingTestPanel: React.FC = () => {
             </code>
           </div>
           
+          {/* ✅ NEW: Meta Pixel Debug Section */}
+          <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+            <p className="text-sm font-medium text-red-700 mb-2">🔍 Debug Meta Pixel:</p>
+            <div className="space-y-2 text-xs text-red-600">
+              <p>• Abra o Console (F12) e procure por "Meta Pixel"</p>
+              <p>• Instale a extensão "Facebook Pixel Helper" no Chrome</p>
+              <p>• Verifique se há apenas 1 script fbevents.js carregado</p>
+              <p>• Procure por mensagens de duplicação no console</p>
+              <p>• Use o teste acima para verificar status</p>
+            </div>
+          </div>
+          
           <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
             <p className="text-sm font-medium text-blue-700 mb-2">🎬 Debug de Tracking de Vídeo:</p>
             <div className="space-y-2 text-xs text-blue-600">
@@ -547,13 +589,27 @@ export const TrackingTestPanel: React.FC = () => {
           <div className="space-y-2">
             <h4 className="font-medium text-gray-900">Meta Pixel</h4>
             <p className="text-sm text-gray-600">Pixel ID: <code className="bg-gray-100 px-1 rounded">1205864517252800</code></p>
-            <p className="text-sm text-gray-600">Eventos: PageView, Purchase, Lead</p>
+            <p className="text-sm text-gray-600">Status: <span id="pixel-status" className="font-bold text-green-600">Protegido contra duplicação</span></p>
+            <p className="text-sm text-gray-600">Scripts: <span id="pixel-scripts-count" className="font-mono">Verificando...</span></p>
           </div>
           
           <div className="space-y-2">
             <h4 className="font-medium text-gray-900">Utmify</h4>
             <p className="text-sm text-gray-600">Pixel ID: <code className="bg-gray-100 px-1 rounded">681eb087803be4de5c3bd68b</code></p>
             <p className="text-sm text-gray-600">Carregamento: Assíncrono</p>
+          </div>
+        </div>
+        
+        {/* ✅ NEW: Real-time pixel monitoring */}
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <h4 className="font-medium text-gray-700 mb-2">🔍 Monitoramento em Tempo Real:</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <strong>Scripts fbevents.js:</strong> <span id="live-scripts-count" className="font-mono text-blue-600">0</span>
+            </div>
+            <div>
+              <strong>Status fbq:</strong> <span id="live-fbq-status" className="font-mono text-green-600">Verificando...</span>
+            </div>
           </div>
         </div>
       </div>

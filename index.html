@@ -30,20 +30,57 @@
 
     <!-- Meta Pixel Code - ✅ FIXED: Prevent duplicate initialization -->
     <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1205864517252800');
-    fbq('track', 'PageView');
+    (function() {
+      // ✅ CRITICAL: Prevent multiple Meta Pixel initializations
+      if (window.fbq && window.fbq.loaded) {
+        console.log('🛡️ Meta Pixel already loaded, skipping duplicate initialization');
+        return;
+      }
+      
+      // ✅ Mark as initializing to prevent race conditions
+      window.fbqInitializing = true;
+      
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      
+      // ✅ Initialize only once
+      fbq('init', '1205864517252800');
+      fbq('track', 'PageView');
+      
+      // ✅ Mark as fully loaded
+      window.fbqInitialized = true;
+      window.fbqInitializing = false;
+      
+      console.log('✅ Meta Pixel initialized successfully - ID: 1205864517252800');
+    })();
     </script>
 
-    <!-- ✅ RedTrack Universal Script -->
-    <script src="https://rdt.obluemagicdrops.com/uniclick.js?attribution=lastpaid&cookiedomain=elaborate-smakager-4592e9.netlify.app&cookieduration=90&defaultcampaignid=68685bcb51f1690d1f917171&regviewonce=false"></script>
+    <!-- ✅ RedTrack Universal Script - Load after Meta Pixel -->
+    <script>
+      // ✅ Load RedTrack after Meta Pixel to prevent conflicts
+      (function() {
+        var script = document.createElement('script');
+        script.src = 'https://rdt.obluemagicdrops.com/uniclick.js?attribution=lastpaid&cookiedomain=elaborate-smakager-4592e9.netlify.app&cookieduration=90&defaultcampaignid=68685bcb51f1690d1f917171&regviewonce=false';
+        script.async = true;
+        script.defer = true;
+        
+        script.onload = function() {
+          console.log('✅ RedTrack script loaded successfully');
+        };
+        
+        script.onerror = function() {
+          console.warn('⚠️ RedTrack script failed to load');
+        };
+        
+        document.head.appendChild(script);
+      })();
+    </script>
   </head>
   <body>
     <!-- Meta Pixel noscript - moved to body -->
