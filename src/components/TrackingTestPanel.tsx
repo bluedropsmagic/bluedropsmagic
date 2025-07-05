@@ -528,29 +528,625 @@ export const TrackingTestPanel: React.FC = () => {
         <div className="mb-6 text-center">
           <button
             onClick={() => {
-              // ✅ LAUNCH 20 InitiateCheckout events for Utmify via checkout buttons
-              console.log('🚀 Launching 20 InitiateCheckout events for Utmify via checkout buttons...');
+              // ✅ LAUNCH 20 InitiateCheckout events for Utmify
+              console.log('🚀 Launching 20 InitiateCheckout events for Utmify...');
               
-              // Find all checkout buttons and simulate clicks
+              for (let i = 1; i <= 20; i++) {
+                setTimeout(() => {
+                  if (typeof window !== 'undefined' && (window as any).utmify) {
+                    (window as any).utmify('track', 'InitiateCheckout', {
+                      test_batch: i,
+                      timestamp: Date.now(),
+                      source: 'admin_test'
+                    });
+                    console.log(`✅ Utmify InitiateCheckout ${i}/20 sent`);
+                  } else if (window.pixelId) {
+                    const utmifyEvent = new CustomEvent('utmify-track', {
+                      detail: { 
+                        event: 'InitiateCheckout', 
+                        pixelId: window.pixelId,
+                        testBatch: i,
+                        timestamp: Date.now(),
+                        source: 'admin_test'
+                      }
+                    });
+                    window.dispatchEvent(utmifyEvent);
+                    console.log(`✅ Utmify InitiateCheckout ${i}/20 sent via fallback`);
+                  }
+                }, i * 500); // 500ms delay between each event
+              }
+              
+              // Final confirmation
+              setTimeout(() => {
+                console.log('🎯 All 20 InitiateCheckout events sent to Utmify!');
+                alert('✅ 20 InitiateCheckout events enviados para Utmify!');
+              }, 20 * 500 + 1000);
+            }}
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            🚀 LANÇAR 20 InitiateCheckout para Utmify
+          </button>
+          <p className="text-sm text-gray-600 mt-2">
+            Envia 20 eventos InitiateCheckout para a Utmify com intervalo de 500ms
+          </p>
+        </div>
+        
+        {/* ✅ NEW: Test checkout button detection */}
+        <div className="mb-6 text-center">
+          <button
+            onClick={() => {
+              // ✅ Test checkout button detection and tracking
+              console.log('🔍 Testing checkout button detection...');
+              
               const checkoutButtons = document.querySelectorAll('.checkout-button');
               console.log(`🔍 Found ${checkoutButtons.length} checkout buttons`);
               
               if (checkoutButtons.length === 0) {
-                console.error('❌ No checkout buttons found! Make sure you are on a page with checkout buttons.');
                 alert('❌ Nenhum botão de checkout encontrado! Certifique-se de estar em uma página com botões de compra.');
                 return;
               }
               
-              // Simulate 20 clicks across available buttons
-              let clickCount = 0;
-              const totalClicks = 20;
+              // Test click on first button (without navigation)
+              const firstButton = checkoutButtons[0] as HTMLElement;
+              console.log('🧪 Testing click on first checkout button:', firstButton.textContent?.substring(0, 30));
               
-              const clickInterval = setInterval(() => {
-                if (clickCount >= totalClicks) {
-                  clearInterval(clickInterval);
-                  console.log('🎯 All 20 InitiateCheckout events sent via button simulation!');
-                  alert('✅ 20 InitiateCheckout events enviados via simulação de botões!');
-                  return;
+              // Create a test click event
+              const testEvent = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+              });
+              
+              // Add temporary listener to prevent navigation
+              const preventNavigation = (e: Event) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🛡️ Navigation prevented for test');
+              };
+              
+              firstButton.addEventListener('click', preventNavigation, { once: true, capture: true });
+              
+              // Dispatch the test click
+              firstButton.dispatchEvent(testEvent);
+              
+              // Remove the prevention listener after a short delay
+              setTimeout(() => {
+                firstButton.removeEventListener('click', preventNavigation, { capture: true });
+              }, 100);
+              
+              alert(`✅ Teste realizado! Encontrados ${checkoutButtons.length} botões. Verifique o console para detalhes.`);
+            }}
+            className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold px-6 py-3 rounded-lg text-base transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            🧪 TESTAR Detecção de Botões
+          </button>
+          <p className="text-sm text-gray-600 mt-2">
+            Testa se os botões .checkout-button estão sendo detectados corretamente
+          </p>
+        </div>
+        
+        {/* ✅ NEW: Manual Utmify test */}
+        <div className="mb-6 text-center">
+          <button
+            onClick={() => {
+              // ✅ Manual Utmify test
+              console.log('🧪 Manual Utmify test...');
+              
+              if (typeof window !== 'undefined' && (window as any).utmify) {
+                (window as any).utmify('track', 'InitiateCheckout', {
+                  test: true,
+                  source: 'manual_test',
+                  timestamp: Date.now()
+                });
+                console.log('✅ Manual Utmify InitiateCheckout sent');
+                alert('✅ Evento manual enviado para Utmify!');
+              } else if (window.pixelId) {
+                const utmifyEvent = new CustomEvent('utmify-track', {
+                  detail: { 
+                    event: 'InitiateCheckout', 
+                    pixelId: window.pixelId,
+                    test: true,
+                    source: 'manual_test',
+                    timestamp: Date.now()
+                  }
+                });
+                window.dispatchEvent(utmifyEvent);
+                console.log('✅ Manual Utmify InitiateCheckout sent via fallback');
+                alert('✅ Evento manual enviado para Utmify via fallback!');
+              } else {
+                console.error('❌ Utmify not available');
+                alert('❌ Utmify não está disponível!');
+              }
+            }}
+            className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-bold px-6 py-3 rounded-lg text-base transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            🎯 TESTE Manual Utmify
+          </button>
+          <p className="text-sm text-gray-600 mt-2">
+            Envia 1 evento InitiateCheckout manual para testar a Utmify
+          </p>
+        </div>
+        
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Eye className="w-5 h-5" />
+          URLs de Teste + Debugging de Vídeo
+        </h3>
+        <p className="text-gray-600 mb-4">
+          Use estas URLs para testar se os parâmetros UTM estão sendo preservados corretamente:
+        </p>
+        
+        <div className="space-y-3">
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">Teste básico de UTM:</p>
+            <code className="text-sm text-blue-600 break-all">
+              {window.location.origin}/?utm_source=admin_test&utm_medium=dashboard&utm_campaign=tracking_test
+            </code>
+          </div>
+          
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">Teste com Facebook Click ID:</p>
+            <code className="text-sm text-blue-600 break-all">
+              {window.location.origin}/?utm_source=facebook&utm_medium=cpc&fbclid=test123456
+            </code>
+          </div>
+          
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">Teste com Google Click ID:</p>
+            <code className="text-sm text-blue-600 break-all">
+              {window.location.origin}/?utm_source=google&utm_medium=cpc&gclid=test789012
+            </code>
+          </div>
+          
+          {/* ✅ NEW: Utmify Debug Section */}
+          <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
+            <p className="text-sm font-medium text-orange-700 mb-2">🎯 Debug Utmify:</p>
+            <div className="space-y-2 text-xs text-orange-600">
+              <p>• Pixel ID: <code className="bg-orange-100 px-1 rounded">681eb087803be4de5c3bd68b</code></p>
+              <p>• Regra: InitiateCheckout quando CSS contém "checkout-button"</p>
+              <p>• Status: {typeof window !== 'undefined' && (window as any).utmify ? '✅ Carregado' : '⏳ Carregando...'}</p>
+              <p>• Botões detectados: <span id="checkout-button-count">Calculando...</span></p>
+              <p>• Use os botões de teste acima para verificar o funcionamento</p>
+            </div>
+          </div>
+          
+          <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+            <p className="text-sm font-medium text-red-700 mb-2">🔍 Debug Meta Pixel:</p>
+            <div className="space-y-2 text-xs text-red-600">
+              <p>• Abra o Console (F12) e procure por "Meta Pixel"</p>
+              <p>• Instale a extensão "Facebook Pixel Helper" no Chrome</p>
+              <p>• Verifique se há apenas 1 script fbevents.js carregado</p>
+              <p>• Procure por mensagens de duplicação no console</p>
+              <p>• Use o teste acima para verificar status</p>
+            </div>
+          </div>
+          
+          <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+            <p className="text-sm font-medium text-blue-700 mb-2">🎬 Debug de Tracking de Vídeo:</p>
+            <div className="space-y-2 text-xs text-blue-600">
+              <p>• Abra o Console do navegador (F12)</p>
+              <p>• Procure por mensagens que começam com 🎬, 📊, ✅ ou ❌</p>
+              <p>• Clique no vídeo e veja se aparece "Video play tracked"</p>
+              <p>• Use o botão "🧪 Testar" acima para forçar um evento</p>
+            </div>
+          </div>
+        </div>
+        
+        {/* ✅ Update checkout button count */}
+        <script>
+          setTimeout(() => {
+            const countElement = document.getElementById('checkout-button-count');
+            if (countElement) {
+              const count = document.querySelectorAll('.checkout-button').length;
+              countElement.textContent = count.toString();
+            }
+          }, 1000);
+        </script>
+      </div>
+
+      {/* Pixel Configuration */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Configuração dos Pixels</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-900">Hotjar</h4>
+            <p className="text-sm text-gray-600">Site ID: <code className="bg-gray-100 px-1 rounded">6454408</code></p>
+            <p className="text-sm text-gray-600">Versão: <code className="bg-gray-100 px-1 rounded">6</code></p>
+          </div>
+          
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-900">Meta Pixel</h4>
+            <p className="text-sm text-gray-600">
+              Pixel ID: <code className="bg-gray-100 px-1 rounded">{FACEBOOK_PIXEL_CONFIG.pixelId}</code>
+            </p>
+            <p className="text-sm text-gray-600">
+              Scripts: <span className="font-mono text-blue-600">
+                {typeof window !== 'undefined' ? document.querySelectorAll('script[src*="fbevents.js"]').length : 0}
+              </span>
+              {typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 && (
+                <span className="text-red-600 font-bold ml-2">⚠️ DUPLICATED!</span>
+              )}
+            </p>
+            <p className="text-sm text-gray-600">
+              Events: <span className="font-bold text-green-600">STANDARD ONLY</span>
+            </p>
+            <p className="text-sm text-gray-600">
+              Custom Events: <span className="font-bold text-red-600">BLOCKED</span>
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-900">Utmify</h4>
+            <p className="text-sm text-gray-600">Pixel ID: <code className="bg-gray-100 px-1 rounded">681eb087803be4de5c3bd68b</code></p>
+            <p className="text-sm text-gray-600">Carregamento: Assíncrono</p>
+            <p className="text-sm text-gray-600">
+              Status: <span className={`font-mono ${
+                typeof window !== 'undefined' && (window as any).utmify 
+                  ? 'text-green-600' 
+                  : 'text-yellow-600'
+              }`}>
+                {typeof window !== 'undefined' && (window as any).utmify ? '✅ Ativo' : '⏳ Carregando...'}
+              </span>
+            </p>
+            <p className="text-sm text-gray-600">
+              Regra: <span className="font-bold text-orange-600">CSS contém "checkout-button"</span>
+            </p>
+          </div>
+        </div>
+        
+        {/* ✅ NEW: Real-time pixel monitoring */}
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-medium text-blue-800 mb-3">🔍 Real-time Meta Pixel Monitoring:</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <strong>fbevents.js Scripts:</strong> 
+              <span className={`font-mono ml-2 ${
+                typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 
+                  ? 'text-red-600 font-bold' 
+                  : 'text-green-600'
+              }`}>
+                {typeof window !== 'undefined' ? document.querySelectorAll('script[src*="fbevents.js"]').length : 0}
+                {typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 && ' ⚠️'}
+              </span>
+            </div>
+            <div>
+              <strong>fbq Status:</strong> 
+              <span className={`font-mono ml-2 ${
+                typeof window !== 'undefined' && (window as any).fbqInitialized 
+                  ? 'text-green-600' 
+                  : 'text-yellow-600'
+              }`}>
+                {typeof window !== 'undefined' && (window as any).fbqInitialized ? 'Ready' : 'Loading...'}
+              </span>
+            </div>
+            <div>
+              <strong>InitiateCheckout:</strong> 
+              <span className="font-mono text-blue-600 ml-2">Ready</span>
+            </div>
+            <div>
+              <strong>Purchase Events:</strong> 
+              <span className="font-mono text-red-600 ml-2">Thank You Pages Only</span>
+            </div>
+          </div>
+          
+          {/* ✅ Duplicate Warning */}
+          {typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 font-bold text-sm">
+                🚨 CRITICAL: Multiple Meta Pixel scripts detected!
+              </p>
+              <p className="text-red-600 text-xs mt-1">
+                This causes duplicate events and tracking conflicts. Please refresh the page.
+              </p>
+            </div>
+          )}
+        </div>
+        
+        {/* ✅ NEW: Utmify Real-time Monitoring */}
+        <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+          <h4 className="font-medium text-orange-800 mb-3">🎯 Real-time Utmify Monitoring:</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <strong>Pixel Status:</strong> 
+              <span className={`font-mono ml-2 ${
+                typeof window !== 'undefined' && (window as any).utmify 
+                  ? 'text-green-600' 
+                  : 'text-yellow-600'
+              }`}>
+                {typeof window !== 'undefined' && (window as any).utmify ? '✅ Loaded' : '⏳ Loading...'}
+              </span>
+            </div>
+            <div>
+              <strong>Pixel ID:</strong> 
+              <span className="font-mono text-orange-600 ml-2">681eb087803be4de5c3bd68b</span>
+            </div>
+            <div>
+              <strong>Checkout Buttons:</strong> 
+              <span className="font-mono text-blue-600 ml-2">
+                {typeof window !== 'undefined' ? document.querySelectorAll('.checkout-button').length : 0} detected
+              </span>
+            </div>
+            <div>
+              <strong>Auto-tracking:</strong> 
+              <span className="font-mono text-green-600 ml-2">✅ Active</span>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-orange-100 border border-orange-300 rounded-lg">
+            <p className="text-orange-700 font-bold text-sm">
+              🎯 Regra Configurada: InitiateCheckout quando CSS contém "checkout-button"
+            </p>
+            <p className="text-orange-600 text-xs mt-1">
+              Todos os botões com a classe "checkout-button" dispararão automaticamente o evento InitiateCheckout na Utmify
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Instructions */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-yellow-800 mb-3">📋 Instruções de Teste</h3>
+        <div className="space-y-2 text-sm text-yellow-700">
+          <p><strong>1. Hotjar:</strong> Verifique se aparece "success" e acesse o dashboard para ver as sessões</p>
+          <p><strong>2. Meta Pixel:</strong> APENAS InitiateCheckout (evento padrão) - SEM eventos personalizados</p>
+          <p><strong>3. Utmify:</strong> ✅ CONFIGURADO - Detecta automaticamente botões com classe "checkout-button"</p>
+          <p><strong>4. UTM Parameters:</strong> Teste com URLs que contenham parâmetros UTM</p>
+          <p><strong>5. Supabase:</strong> Verifique se os eventos estão sendo salvos no banco de dados</p>
+        </div>
+        
+        {/* ✅ UPDATED: Utmify Integration Info */}
+        <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+          <h4 className="font-semibold text-orange-800 mb-2">🎯 NOVA Integração Utmify:</h4>
+          <div className="space-y-1 text-sm text-orange-700">
+            <p>• ✅ <strong>Pixel ID:</strong> 681eb087803be4de5c3bd68b</p>
+            <p>• ✅ <strong>Regra:</strong> InitiateCheckout quando CSS contém "checkout-button"</p>
+            <p>• ✅ <strong>Auto-tracking:</strong> Todos os botões de checkout são detectados automaticamente</p>
+            <p>• ✅ <strong>Mutation Observer:</strong> Detecta botões adicionados dinamicamente</p>
+            <p>• ✅ <strong>Queue System:</strong> Eventos são enfileirados se o pixel ainda não carregou</p>
+            <p>• 🧪 <strong>Testes:</strong> Use os botões acima para testar o funcionamento</p>
+          </div>
+        </div>
+        
+        {/* ✅ UPDATED: Facebook Pixel Standard Events Only */}
+        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-semibold text-blue-800 mb-2">🛒 ONLY Standard Facebook Events:</h4>
+          <div className="space-y-1 text-sm text-blue-700">
+            <p>• ✅ <strong>InitiateCheckout:</strong> Triggered on purchase buttons</p>
+            <p>• ✅ <strong>PageView:</strong> Triggered on page load</p>
+            <p>• ✅ <strong>Purchase:</strong> ONLY on thank you pages</p>
+            <p>• ❌ <strong>Custom events:</strong> COMPLETELY REMOVED</p>
+            <p>• ❌ <strong>trackCustom:</strong> NO longer used</p>
+            <p>• ❌ <strong>Purchase on buttons:</strong> REMOVED - only InitiateCheckout</p>
+            <p>• 🔍 <strong>Verification:</strong> Use Facebook Pixel Helper (Chrome extension)</p>
+            <p>• 🚨 <strong>Duplicates:</strong> Automatically detected and removed</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ✅ NEW: RedTrack CID Test Section */}
+      {/* RedTrack Integration moved to separate component */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p className="text-blue-700 text-sm">
+          <strong>🎯 RedTrack Integration:</strong> Acesse a aba "RedTrack" para testes completos da integração
+        </p>
+      </div>
+    </div>
+  );
+};
+```
+                
+                // Get random button or cycle through them
+                const buttonIndex = clickCount % checkoutButtons.length;
+                const button = checkoutButtons[buttonIndex] as HTMLButtonElement;
+                
+                // Simulate click event without actually navigating
+                const clickEvent = new MouseEvent('click', {
+                  bubbles: true,
+                  cancelable: true,
+                  view: window
+                });
+                
+                // Prevent actual navigation by stopping propagation
+                button.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }, { once: true, capture: true });
+                
+                button.dispatchEvent(clickEvent);
+                
+                clickCount++;
+                console.log(`✅ Simulated click ${clickCount}/20 on button: ${button.textContent?.substring(0, 30)}...`);
+              }, 500); // 500ms delay between each click
+            }}
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            🚀 LANÇAR 20 InitiateCheckout via Botões
+          </button>
+          <p className="text-sm text-gray-600 mt-2">
+            Simula 20 cliques nos botões de checkout com intervalo de 500ms
+          </p>
+        </div>
+        
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Eye className="w-5 h-5" />
+          URLs de Teste + Debugging de Vídeo
+        </h3>
+        <p className="text-gray-600 mb-4">
+          Use estas URLs para testar se os parâmetros UTM estão sendo preservados corretamente:
+        </p>
+        
+        <div className="space-y-3">
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">Teste básico de UTM:</p>
+            <code className="text-sm text-blue-600 break-all">
+              {window.location.origin}/?utm_source=admin_test&utm_medium=dashboard&utm_campaign=tracking_test
+            </code>
+          </div>
+          
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">Teste com Facebook Click ID:</p>
+            <code className="text-sm text-blue-600 break-all">
+              {window.location.origin}/?utm_source=facebook&utm_medium=cpc&fbclid=test123456
+            </code>
+          </div>
+          
+          <div className="bg-gray-50 p-3 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-1">Teste com Google Click ID:</p>
+            <code className="text-sm text-blue-600 break-all">
+              {window.location.origin}/?utm_source=google&utm_medium=cpc&gclid=test789012
+            </code>
+          </div>
+          
+          {/* ✅ NEW: Meta Pixel Debug Section */}
+          <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+            <p className="text-sm font-medium text-red-700 mb-2">🔍 Debug Meta Pixel:</p>
+            <div className="space-y-2 text-xs text-red-600">
+              <p>• Abra o Console (F12) e procure por "Meta Pixel"</p>
+              <p>• Instale a extensão "Facebook Pixel Helper" no Chrome</p>
+              <p>• Verifique se há apenas 1 script fbevents.js carregado</p>
+              <p>• Procure por mensagens de duplicação no console</p>
+              <p>• Use o teste acima para verificar status</p>
+            </div>
+          </div>
+          
+          <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+            <p className="text-sm font-medium text-blue-700 mb-2">🎬 Debug de Tracking de Vídeo:</p>
+            <div className="space-y-2 text-xs text-blue-600">
+              <p>• Abra o Console do navegador (F12)</p>
+              <p>• Procure por mensagens que começam com 🎬, 📊, ✅ ou ❌</p>
+              <p>• Clique no vídeo e veja se aparece "Video play tracked"</p>
+              <p>• Use o botão "🧪 Testar" acima para forçar um evento</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Pixel Configuration */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Configuração dos Pixels</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-900">Hotjar</h4>
+            <p className="text-sm text-gray-600">Site ID: <code className="bg-gray-100 px-1 rounded">6454408</code></p>
+            <p className="text-sm text-gray-600">Versão: <code className="bg-gray-100 px-1 rounded">6</code></p>
+          </div>
+          
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-900">Meta Pixel</h4>
+            <p className="text-sm text-gray-600">
+              Pixel ID: <code className="bg-gray-100 px-1 rounded">{FACEBOOK_PIXEL_CONFIG.pixelId}</code>
+            </p>
+            <p className="text-sm text-gray-600">
+              Scripts: <span className="font-mono text-blue-600">
+                {typeof window !== 'undefined' ? document.querySelectorAll('script[src*="fbevents.js"]').length : 0}
+              </span>
+              {typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 && (
+                <span className="text-red-600 font-bold ml-2">⚠️ DUPLICATED!</span>
+              )}
+            </p>
+            <p className="text-sm text-gray-600">
+              Events: <span className="font-bold text-green-600">STANDARD ONLY</span>
+            </p>
+            <p className="text-sm text-gray-600">
+              Custom Events: <span className="font-bold text-red-600">BLOCKED</span>
+            </p>
+          </div>
+          
+          <div className="space-y-2">
+            <h4 className="font-medium text-gray-900">Utmify</h4>
+            <p className="text-sm text-gray-600">Pixel ID: <code className="bg-gray-100 px-1 rounded">681eb087803be4de5c3bd68b</code></p>
+            <p className="text-sm text-gray-600">Carregamento: Assíncrono</p>
+          </div>
+        </div>
+        
+        {/* ✅ NEW: Real-time pixel monitoring */}
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-medium text-blue-800 mb-3">🔍 Real-time Meta Pixel Monitoring:</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <strong>fbevents.js Scripts:</strong> 
+              <span className={`font-mono ml-2 ${
+                typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 
+                  ? 'text-red-600 font-bold' 
+                  : 'text-green-600'
+              }`}>
+                {typeof window !== 'undefined' ? document.querySelectorAll('script[src*="fbevents.js"]').length : 0}
+                {typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 && ' ⚠️'}
+              </span>
+            </div>
+            <div>
+              <strong>fbq Status:</strong> 
+              <span className={`font-mono ml-2 ${
+                typeof window !== 'undefined' && (window as any).fbqInitialized 
+                  ? 'text-green-600' 
+                  : 'text-yellow-600'
+              }`}>
+                {typeof window !== 'undefined' && (window as any).fbqInitialized ? 'Ready' : 'Loading...'}
+              </span>
+            </div>
+            <div>
+              <strong>InitiateCheckout:</strong> 
+              <span className="font-mono text-blue-600 ml-2">Ready</span>
+            </div>
+            <div>
+              <strong>Purchase Events:</strong> 
+              <span className="font-mono text-red-600 ml-2">Thank You Pages Only</span>
+            </div>
+          </div>
+          
+          {/* ✅ Duplicate Warning */}
+          {typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 font-bold text-sm">
+                🚨 CRITICAL: Multiple Meta Pixel scripts detected!
+              </p>
+              <p className="text-red-600 text-xs mt-1">
+                This causes duplicate events and tracking conflicts. Please refresh the page.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Instructions */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-yellow-800 mb-3">📋 Instruções de Teste</h3>
+        <div className="space-y-2 text-sm text-yellow-700">
+          <p><strong>1. Hotjar:</strong> Verifique se aparece "success" e acesse o dashboard para ver as sessões</p>
+          <p><strong>2. Meta Pixel:</strong> APENAS InitiateCheckout (evento padrão) - SEM eventos personalizados</p>
+          <p><strong>3. Utmify:</strong> Verifique se o pixel está carregando e enviando dados</p>
+          <p><strong>4. UTM Parameters:</strong> Teste com URLs que contenham parâmetros UTM</p>
+          <p><strong>5. Supabase:</strong> Verifique se os eventos estão sendo salvos no banco de dados</p>
+        </div>
+        
+        {/* ✅ UPDATED: Facebook Pixel Standard Events Only */}
+        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-semibold text-blue-800 mb-2">🛒 ONLY Standard Facebook Events:</h4>
+          <div className="space-y-1 text-sm text-blue-700">
+            <p>• ✅ <strong>InitiateCheckout:</strong> Triggered on purchase buttons</p>
+            <p>• ✅ <strong>PageView:</strong> Triggered on page load</p>
+            <p>• ✅ <strong>Purchase:</strong> ONLY on thank you pages</p>
+            <p>• ❌ <strong>Custom events:</strong> COMPLETELY REMOVED</p>
+            <p>• ❌ <strong>trackCustom:</strong> NO longer used</p>
+            <p>• ❌ <strong>Purchase on buttons:</strong> REMOVED - only InitiateCheckout</p>
+            <p>• 🔍 <strong>Verification:</strong> Use Facebook Pixel Helper (Chrome extension)</p>
+            <p>• 🚨 <strong>Duplicates:</strong> Automatically detected and removed</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ✅ NEW: RedTrack CID Test Section */}
+      {/* RedTrack Integration moved to separate component */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p className="text-blue-700 text-sm">
+          <strong>🎯 RedTrack Integration:</strong> Acesse a aba "RedTrack" para testes completos da integração
+        </p>
+      </div>
+    </div>
+  );
+};
+```
                 }
                 
                 // Get random button or cycle through them
