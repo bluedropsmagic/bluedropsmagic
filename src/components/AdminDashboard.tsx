@@ -102,7 +102,7 @@ export const AdminDashboard: React.FC = () => {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
   const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'settings'>('analytics');
-  const [contentDelay, setContentDelay] = useState(0); // ✅ FIXED: No delay by default
+  const [contentDelay, setContentDelay] = useState(2155); // ✅ CHANGED: Default to 35:55 (2155 seconds)
 
   const navigate = useNavigate();
 
@@ -175,11 +175,11 @@ export const AdminDashboard: React.FC = () => {
     // Dispatch custom event to notify main app
     window.dispatchEvent(new CustomEvent('delayChanged'));
     
-    console.log('🕐 Admin changed delay to:', newDelay, 'seconds - NOTE: Delay system has been removed, this setting has no effect');
+    console.log('🕐 Admin changed delay to:', newDelay, 'seconds');
   };
 
   const resetToDefault = () => {
-    handleDelayChange(0); // ✅ FIXED: Default to no delay
+    handleDelayChange(2155); // ✅ CHANGED: Default to 35:55
   };
 
   // Enhanced country flag mapping
@@ -1051,49 +1051,51 @@ export const AdminDashboard: React.FC = () => {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Clock className="w-5 h-5 text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Configuração de Delay (DESABILITADO)</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">Configuração de Delay de Conteúdo</h3>
                 </div>
 
-                <p className="text-sm text-red-600 mb-6 font-semibold">
-                  ⚠️ SISTEMA DE DELAY REMOVIDO: Todos os botões e seções agora aparecem imediatamente. Esta configuração não tem mais efeito.
+                <p className="text-sm text-blue-600 mb-6 font-semibold">
+                  ⏰ SISTEMA DE DELAY ATIVO: O conteúdo completo aparece após o tempo configurado (padrão: 35min55s).
                 </p>
 
                 {/* Current Status */}
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                   <div className="flex items-center gap-2 mb-2">
-                    <Eye className="w-4 h-4 text-red-600" />
-                    <span className="text-sm font-medium text-red-800">
-                      Status atual: DELAY REMOVIDO - Conteúdo sempre visível
+                    <Eye className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-800">
+                      Status atual: Delay de {Math.floor(contentDelay / 60)}min{contentDelay % 60 > 0 ? ` ${contentDelay % 60}s` : ''}
                     </span>
                   </div>
-                  <div className="bg-red-100 border border-red-300 rounded px-2 py-1 inline-block">
-                    <span className="text-red-800 text-xs font-bold">SISTEMA DESABILITADO</span>
+                  <div className="bg-blue-100 border border-blue-300 rounded px-2 py-1 inline-block">
+                    <span className="text-blue-800 text-xs font-bold">
+                      {contentDelay === 0 ? 'SEM DELAY' : `DELAY: ${contentDelay}s`}
+                    </span>
                   </div>
                 </div>
 
-                {/* Preset Buttons - Disabled */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6 opacity-50">
+                {/* Preset Buttons */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                   {[
                     { label: 'Sem delay', value: 0 },
                     { label: '30 segundos', value: 30 },
                     { label: '1 minuto', value: 60 },
                     { label: '2 minutos', value: 120 },
                     { label: '5 minutos', value: 300 },
-                    { label: '35min55s (REMOVIDO)', value: 2155, isDefault: true }
+                    { label: '35min55s (Padrão)', value: 2155, isDefault: true }
                   ].map((preset) => (
                     <button
                       key={preset.value}
                       onClick={() => handleDelayChange(preset.value)}
-                      disabled={true}
+                      disabled={false}
                       className={`p-3 text-sm rounded-lg border transition-colors ${
                         contentDelay === preset.value
                           ? preset.isDefault 
-                            ? 'bg-red-500 text-white border-red-600'
-                            : 'bg-red-600 text-white border-red-600'
+                            ? 'bg-blue-500 text-white border-blue-600'
+                            : 'bg-blue-600 text-white border-blue-600'
                           : preset.isDefault
-                            ? 'bg-red-50 text-red-700 border-red-200'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200'
                             : 'bg-gray-50 text-gray-700 border-gray-200'
-                      } cursor-not-allowed`}
+                      } hover:bg-blue-100`}
                     >
                       {preset.label}
                     </button>
@@ -1115,29 +1117,29 @@ export const AdminDashboard: React.FC = () => {
                         const value = parseInt(e.target.value) || 0;
                         handleDelayChange(value);
                       }}
-                      disabled={true}
+                      disabled={false}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="0"
                     />
                     <button
                       onClick={resetToDefault}
-                      disabled={true}
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg font-medium cursor-not-allowed opacity-50"
+                      disabled={false}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                     >
-                      Removido
+                      Padrão (35:55)
                     </button>
                   </div>
                 </div>
 
                 {/* Info */}
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-red-800 mb-2">⚠️ Sistema de Delay Removido:</h4>
-                  <ul className="text-sm text-red-700 space-y-1">
-                    <li>• <strong>Todos os botões e seções</strong> agora aparecem imediatamente</li>
-                    <li>• <strong>Não há mais delay</strong> - o conteúdo é sempre visível</li>
-                    <li>• <strong>Esta configuração</strong> foi mantida apenas para referência</li>
-                    <li>• <strong>Para reativar o delay</strong> seria necessário modificar o código</li>
-                    <li>• <strong>Conversões podem aumentar</strong> com acesso imediato aos botões</li>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-800 mb-2">⏰ Sistema de Delay Ativo:</h4>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li>• <strong>Conteúdo inicial:</strong> Vídeo + avisos até "Watch now before it's removed"</li>
+                    <li>• <strong>Conteúdo completo:</strong> Aparece após {Math.floor(contentDelay / 60)}min{contentDelay % 60 > 0 ? ` ${contentDelay % 60}s` : ''}</li>
+                    <li>• <strong>Inclui:</strong> Botões de compra, depoimentos, médicos, notícias, garantia</li>
+                    <li>• <strong>Admin override:</strong> Botão no canto superior direito para mostrar tudo</li>
+                    <li>• <strong>Objetivo:</strong> Usuário assiste mais tempo antes de ver ofertas</li>
                   </ul>
                 </div>
               </div>
