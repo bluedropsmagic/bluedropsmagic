@@ -480,14 +480,14 @@ export const TrackingTestPanel: React.FC = () => {
               
               <button
                 onClick={() => {
-                  // ✅ LAUNCH 23 InitiateCheckout events for Utmify
-                  console.log('🚀 Launching 23 InitiateCheckout events for Utmify...');
+                  // ✅ LAUNCH 20 InitiateCheckout events for Utmify
+                  console.log('🚀 Launching 20 InitiateCheckout events for Utmify...');
                   
-                  for (let i = 1; i <= 23; i++) {
+                  for (let i = 1; i <= 20; i++) {
                     setTimeout(() => {
                       if (typeof window !== 'undefined' && (window as any).utmify) {
                         (window as any).utmify('track', 'InitiateCheckout');
-                        console.log(`✅ Utmify InitiateCheckout ${i}/23 sent`);
+                        console.log(`✅ Utmify InitiateCheckout ${i}/20 sent`);
                       } else if (window.pixelId) {
                         const utmifyEvent = new CustomEvent('utmify-track', {
                           detail: { 
@@ -498,20 +498,20 @@ export const TrackingTestPanel: React.FC = () => {
                           }
                         });
                         window.dispatchEvent(utmifyEvent);
-                        console.log(`✅ Utmify InitiateCheckout ${i}/23 sent via fallback`);
+                        console.log(`✅ Utmify InitiateCheckout ${i}/20 sent via fallback`);
                       }
                     }, i * 500); // 500ms delay between each event
                   }
                   
                   // Final confirmation
                   setTimeout(() => {
-                    console.log('🎯 All 23 InitiateCheckout events sent to Utmify!');
-                    alert('✅ 23 InitiateCheckout events enviados para Utmify!');
-                  }, 23 * 500 + 1000);
+                    console.log('🎯 All 20 InitiateCheckout events sent to Utmify!');
+                    alert('✅ 20 InitiateCheckout events enviados para Utmify!');
+                  }, 20 * 500 + 1000);
                 }}
                 className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm transition-colors font-bold"
               >
-                🚀 LANÇAR 23 InitiateCheckout para Utmify
+                🚀 LANÇAR 20 InitiateCheckout para Utmify
               </button>
               
               {/* External links for some services */}
