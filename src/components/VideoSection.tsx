@@ -155,7 +155,7 @@ export const VideoSection: React.FC = () => {
       {/* Fixed aspect ratio container for mobile VSL */}
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
-          {/* ✅ UPDATED: VTurb Video Container with better loading states */}
+          {/* ✅ FIXED: VTurb Video Container - Ensure container exists */}
           <div
             id="vid_683ba3d1b87ae17c6e07e7db"
             className="absolute inset-0 w-full h-full z-30 cursor-pointer"
@@ -165,39 +165,54 @@ export const VideoSection: React.FC = () => {
               left: 0,
               width: '100%',
               height: '100%',
-              touchAction: 'manipulation' // ✅ FIXED: Better touch interaction
+              touchAction: 'manipulation',
+              isolation: 'isolate', // ✅ NEW: Isolate container
+              contain: 'layout style paint' // ✅ NEW: Contain layout
             }} 
             onClick={() => {
-              // ✅ FIXED: Ensure video can be clicked on mobile
               console.log('🎬 Video container clicked');
             }}
           >
-            {/* ✅ Main video content will be injected here by VTurb */}
-            {/* Thumbnail - Always show as fallback */}
+            {/* ✅ FIXED: Ensure thumbnail and backdrop are always present */}
             <img 
               id="thumb_683ba3d1b87ae17c6e07e7db" 
               src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/thumbnail.jpg" 
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
               loading="eager"
-              style={{ touchAction: 'manipulation' }}
+              style={{ 
+                touchAction: 'manipulation',
+                zIndex: 1
+              }}
             />
             
-            {/* Backdrop */}
+            {/* ✅ FIXED: Backdrop with proper z-index */}
             <div 
               id="backdrop_683ba3d1b87ae17c6e07e7db" 
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
                 backdropFilter: 'blur(5px)',
-                zIndex: 5,
+                zIndex: 2,
                 touchAction: 'manipulation'
               }}
             />
+            
+            {/* ✅ NEW: VTurb content will be injected here with higher z-index */}
+            <div 
+              id="vturb-content-683ba3d1b87ae17c6e07e7db"
+              className="absolute inset-0 w-full h-full"
+              style={{
+                zIndex: 10,
+                isolation: 'isolate'
+              }}
+            >
+              {/* VTurb player will be injected here */}
+            </div>
 
             {/* Loading Overlay */}
             {(isLoading || !window.vslVideoLoaded) && !hasError && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-20">
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>
                 <div className="text-center text-white p-4">
                   <RefreshCw className="w-12 h-12 text-white/80 animate-spin mb-3 mx-auto" />
                   <p className="text-sm font-medium mb-1">Carregando vídeo principal...</p>
@@ -218,7 +233,7 @@ export const VideoSection: React.FC = () => {
 
             {/* Error Overlay */}
             {hasError && (
-              <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">
+              <div className="absolute inset-0 bg-black/70 flex items-center justify-center" style={{ zIndex: 15 }}>
                 <div className="text-center text-white p-6">
                   <div className="w-12 h-12 bg-red-500/30 rounded-full flex items-center justify-center mb-3 mx-auto">
                     <AlertTriangle className="w-6 h-6 text-red-400" />
@@ -247,14 +262,16 @@ export const VideoSection: React.FC = () => {
               </div>
             )}
 
-            {/* ✅ FIXED: Play Button Overlay with better mobile interaction */}
+            {/* ✅ FIXED: Play Button Overlay */}
             {!window.vslVideoLoaded && !hasError && (
             <div 
-              className="absolute inset-0 flex items-center justify-center z-25 cursor-pointer"
-              style={{ touchAction: 'manipulation' }}
+              className="absolute inset-0 flex items-center justify-center cursor-pointer"
+              style={{ 
+                touchAction: 'manipulation',
+                zIndex: 20
+              }}
               onClick={() => {
                 console.log('🎬 Play button clicked');
-                // Try to trigger video play
                 const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
                 if (videoContainer) {
                   videoContainer.click();
