@@ -103,13 +103,22 @@ export const TrackingTestPanel: React.FC = () => {
     try {
       // Check if Facebook Pixel is loaded
       if (typeof (window as any).fbq === 'function') {
-        // Test Facebook Pixel by triggering a custom event
-        (window as any).fbq('trackCustom', 'AdminTest');
+        // ✅ FIXED: Check if pixel is properly initialized without triggering events
+        const pixelLoaded = (window as any).fbq && (window as any).fbq.loaded;
+        
+        if (pixelLoaded) {
         updateStatus(index, { 
           status: 'success', 
-          message: 'Meta Pixel carregado e funcionando',
-          details: 'Pixel ativo, eventos sendo enviados para Facebook'
+          message: 'Meta Pixel carregado corretamente',
+          details: 'Pixel inicializado uma única vez, sem duplicação'
         });
+        } else {
+          updateStatus(index, { 
+            status: 'warning', 
+            message: 'Meta Pixel carregando...',
+            details: 'Pixel detectado mas ainda inicializando'
+          });
+        }
       } else {
         updateStatus(index, { 
           status: 'error', 

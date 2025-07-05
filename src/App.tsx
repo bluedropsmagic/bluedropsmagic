@@ -157,10 +157,6 @@ function App() {
         }
         
         // Track page view with external pixels
-        if (typeof window !== 'undefined' && (window as any).fbq) {
-          (window as any).fbq('track', 'PageView');
-        }
-        
         if (typeof window !== 'undefined' && (window as any).utmify) {
           (window as any).utmify('track', 'PageView');
         }

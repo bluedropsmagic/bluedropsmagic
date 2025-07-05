@@ -124,11 +124,6 @@ export const initializeTracking = (): void => {
   // Store current URL parameters
   storeTrackingParams();
   
-  // Track page view with Facebook Pixel if available
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', 'PageView');
-  }
-  
   // Track page view with Utmify if available
   if (typeof window !== 'undefined' && (window as any).utmify) {
     (window as any).utmify('track', 'PageView');
