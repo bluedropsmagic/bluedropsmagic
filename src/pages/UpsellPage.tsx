@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { redirectWithTracking, isCartPandaUrl, trackInitiateCheckout } from '../utils/urlUtils';
 import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X } from 'lucide-react';
 
 interface UpsellPageProps {
@@ -86,7 +85,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       '3-bottle': {
         offer: {
           title: 'COMPLETE 9‑MONTH TREATMENT',
-          subtitle: '✔️ Add 3 More Bottles + Get 3 Extra Bottles FREE',
+          subtitle: '✔️ Add 3 More Bottles + Get 3 Extra Bottles FREE', // ✅ FIXED: 3+3
           description: 'Complete your transformation with the full protocol'
         },
         pricing: {
@@ -94,7 +93,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           totalPrice: '270 days of treatment',
           savings: 'Save $585 instantly',
           freeBottles: '3 FREE',
-          paidBottles: '3 PAID'
+          paidBottles: '3 PAID' // ✅ FIXED: 3 paid
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=no',
@@ -105,7 +104,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       '6-bottle': {
         offer: {
           title: 'COMPLETE 9‑MONTH TREATMENT',
-          subtitle: '✔️ Add 1 More Bottle + Get 2 Extra Bottles FREE',
+          subtitle: '✔️ Add 1 More Bottle + Get 2 Extra Bottles FREE', // ✅ FIXED: 1+2
           description: 'Just 1 more bottle to ensure complete, permanent results'
         },
         pricing: {
@@ -113,7 +112,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           totalPrice: '270 days of treatment',
           savings: 'Save $585 instantly',
           freeBottles: '2 FREE',
-          paidBottles: '1 PAID'
+          paidBottles: '1 PAID' // ✅ FIXED: 1 paid
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=no',
@@ -129,33 +128,31 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const content = getUpsellContent(variant);
 
   const handleAccept = () => {
-    const url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
-    
-    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
-    if (url.includes('cartpanda.com')) {
-      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-      console.log('🎯 InitiateCheckout disparado para upsell accept:', variant);
-    }
-    
     trackOfferClick(`upsell-${variant}-accept`);
     
-    // ✅ EXATO: Usar função preserveUTMs conforme especificado
-    window.preserveUTMs(url);
+    // ✅ NEW: Add CID parameter if present
+    let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
+    const urlParams = new URLSearchParams(window.location.search);
+    const cid = urlParams.get('cid');
+    if (cid && !url.includes('cid=')) {
+      url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    }
+    
+    window.location.href = url;
   };
 
   const handleReject = () => {
-    const url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
-    
-    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
-    if (url.includes('cartpanda.com')) {
-      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-      console.log('🎯 InitiateCheckout disparado para upsell reject:', variant);
-    }
-    
     trackOfferClick(`upsell-${variant}-reject`);
     
-    // ✅ EXATO: Usar função preserveUTMs conforme especificado
-    window.preserveUTMs(url);
+    // ✅ NEW: Add CID parameter if present
+    let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
+    const urlParams = new URLSearchParams(window.location.search);
+    const cid = urlParams.get('cid');
+    if (cid && !url.includes('cid=')) {
+      url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    }
+    
+    window.location.href = url;
   };
 
   return (
@@ -196,7 +193,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             </p>
           </div>
 
-          {/* Warning Sections */}
+          {/* Warning Sections - MOVED BEFORE product box */}
           <div className="space-y-4 sm:space-y-6 mb-6">
             {/* Critical Warning */}
             <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-red-200 shadow-lg animate-fadeInUp animation-delay-600">
@@ -302,7 +299,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             </div>
           </div>
 
-          {/* Product Box */}
+          {/* ✅ MOVED: Product Box to the END - AFTER all arguments */}
           <div className="mb-6 relative animate-fadeInUp animation-delay-1400">
             {/* FINAL CHANCE Tag */}
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
@@ -366,7 +363,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                   </div>
                 </div>
 
-                {/* CTA Button */}
+                {/* ✅ CTA Button - NOW in the product box at the end */}
                 <div className="relative mb-4">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 rounded-xl blur opacity-75 animate-pulse"></div>
                   <button 

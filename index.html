@@ -18,9 +18,15 @@
         })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
     </script>
 
-    <!-- ✅ NEW: UTMify Pixel - Seguindo instruções exatas -->
-    <!-- ✅ UTMify Pixel Script - Exatamente como especificado -->
-    <script async src="https://utmify.io/pixel.js?id=681eb087803be4de5c3bd68b"></script>
+    <!-- Utmify Tracking Code -->
+    <script>
+      window.pixelId = "681eb087803be4de5c3bd68b";
+      var a = document.createElement("script");
+      a.setAttribute("async", "");
+      a.setAttribute("defer", "");
+      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+      document.head.appendChild(a);
+    </script>
 
     <!-- Meta Pixel Code - ✅ FIXED: Prevent duplicate initialization -->
     <script>
@@ -77,46 +83,6 @@
     </script>
   </head>
   <body>
-    <!-- ✅ NEW: UTM Parameter Preservation Script -->
-    <script>
-      // ✅ EXATO: Função para preservar UTMs conforme especificado
-      window.preserveUTMs = function(path) {
-        window.location.href = `${path}${window.location.search}`;
-      };
-      
-      // ✅ EXATO: Setup automático conforme especificado
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-          // ✅ EXATO: Implementação conforme especificado
-          document.querySelectorAll('a, button').forEach(el => {
-            el.addEventListener('click', (e) => {
-              const href =
-                el.getAttribute('href') ||
-                el.dataset.href ||
-                el.getAttribute('data-url') ||
-                '';
-              
-              if (href.includes('cartpanda.com')) {
-                // ✅ EXATO: Evento InitiateCheckout conforme especificado
-                window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-                console.log('🎯 InitiateCheckout disparado para CartPanda:', href);
-                
-                // ✅ EXATO: Preservar UTMs no redirecionamento para links
-                if (el.tagName === 'A') {
-                  e.preventDefault();
-                  window.location.href = `${href}${window.location.search}`;
-                }
-              }
-            });
-          });
-          
-          console.log('✅ UTMify tracking configurado para CartPanda URLs');
-        }, 1000);
-      });
-      
-      console.log('✅ UTMify setup completo - ID: 681eb087803be4de5c3bd68b');
-    </script>
-    
     <!-- Meta Pixel noscript - moved to body -->
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1205864517252800&ev=PageView&noscript=1"

@@ -151,47 +151,31 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const content = getDownsellContent(variant);
 
   const handleAccept = () => {
+    trackOfferClick(`downsell-${variant}-accept`);
+    
+    // ✅ NEW: Add CID parameter if present
     let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
-    
-    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
-    if (url.includes('cartpanda.com')) {
-      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-      console.log('🎯 InitiateCheckout disparado para downsell accept:', variant);
-    }
-    
-    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    trackOfferClick(`downsell-${variant}-accept`);
-    
-    // ✅ EXATO: Usar função preserveUTMs conforme especificado
-    window.preserveUTMs(url);
+    window.location.href = url;
   };
 
   const handleReject = () => {
+    trackOfferClick(`downsell-${variant}-reject`);
+    
+    // ✅ NEW: Add CID parameter if present
     let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
-    
-    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
-    if (url.includes('cartpanda.com')) {
-      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-      console.log('🎯 InitiateCheckout disparado para downsell reject:', variant);
-    }
-    
-    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    trackOfferClick(`downsell-${variant}-reject`);
-    
-    // ✅ EXATO: Usar função preserveUTMs conforme especificado
-    window.preserveUTMs(url);
+    window.location.href = url;
   };
 
   return (

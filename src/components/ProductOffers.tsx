@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Star, Shield, Truck, CreditCard } from 'lucide-react';
-import { buildUrlWithParams, trackPurchase, redirectWithTracking, isCartPandaUrl, trackInitiateCheckout } from '../utils/urlUtils';
+import { buildUrlWithParams, trackPurchase } from '../utils/urlUtils';
 
 interface ProductOffersProps {
   showPurchaseButton: boolean;
@@ -28,43 +28,32 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   };
 
   const handlePurchaseClick = (packageType: '1-bottle' | '3-bottle' | '6-bottle') => {
-    const url = purchaseUrls[packageType];
-    const value = purchaseValues[packageType];
-    
-    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
-    if (url.includes('cartpanda.com')) {
-      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-      console.log('🎯 InitiateCheckout disparado para:', packageType);
-    }
-    
     // Track the purchase intent
-    trackPurchase(value, 'BRL', packageType);
+    trackPurchase(purchaseValues[packageType], 'BRL', packageType);
     
     // Call the original onPurchase handler
     onPurchase(packageType);
     
-    // ✅ EXATO: Usar função preserveUTMs conforme especificado
-    window.preserveUTMs(url);
+    // ✅ NEW: Build URL with tracking parameters + CID if present
+    let urlWithParams = buildUrlWithParams(purchaseUrls[packageType]);
+    
+    // Add CID parameter if present in current URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const cid = urlParams.get('cid');
+    if (cid && !urlWithParams.includes('cid=')) {
+      urlWithParams += (urlWithParams.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    }
+    
+    // ✅ FIXED: Use window.location.href instead of window.open for better tracking
+    window.location.href = urlWithParams;
   };
 
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
-    const url = purchaseUrls[packageType];
-    const value = purchaseValues[packageType];
-    
-    // ✅ EXATO: Disparar InitiateCheckout conforme especificado
-    if (url.includes('cartpanda.com')) {
-      window.utmify?.("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-      console.log('🎯 InitiateCheckout disparado para secondary:', packageType);
-    }
-    
     // Track the secondary package click
-    trackPurchase(value, 'BRL', `${packageType}-secondary`);
+    trackPurchase(purchaseValues[packageType], 'BRL', `${packageType}-secondary`);
     
     // Call the original handler
     onSecondaryPackageClick(packageType);
-    
-    // ✅ EXATO: Usar função preserveUTMs conforme especificado
-    window.preserveUTMs(url);
   };
 
   if (!showPurchaseButton) return null;

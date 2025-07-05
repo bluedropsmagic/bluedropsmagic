@@ -126,8 +126,7 @@ export const initializeTracking = (): void => {
   
   // Track page view with Utmify if available
   if (typeof window !== 'undefined' && (window as any).utmify) {
-    (window as any).utmify?.('track', 'PageView', {}, '681eb087803be4de5c3bd68b');
-    console.log('📊 UTMify PageView tracked with pixel ID');
+    (window as any).utmify('track', 'PageView');
   }
 };
 
@@ -154,7 +153,7 @@ export const trackConversion = (eventName: string, value?: number, currency?: st
     if (currency) eventData.currency = currency;
     
     console.log('📊 Tracking conversion via Utmify:', eventName, eventData);
-    (window as any).utmify?.('track', 'Conversion', eventData, '681eb087803be4de5c3bd68b');
+    (window as any).utmify('track', 'Conversion', eventData);
   }
 };
 
@@ -164,16 +163,8 @@ export const trackConversion = (eventName: string, value?: number, currency?: st
 export const trackPurchase = (value: number, currency: string = 'BRL', productType?: string): void => {
   trackConversion('Purchase', value, currency);
   
-  // ✅ EXATO: Track InitiateCheckout conforme especificado
-  if (typeof window !== 'undefined' && (window as any).utmify) {
-    (window as any).utmify?.('track', 'InitiateCheckout', { value, currency, productType }, '681eb087803be4de5c3bd68b');
-    console.log('📊 UTMify InitiateCheckout tracked:', { value, currency, productType });
-  }
-  
   // Additional tracking for specific product types
   if (productType) {
     trackConversion(`Purchase_${productType}`, value, currency);
   }
 };
-
-// ✅ REMOVIDO: Funções desnecessárias - usando implementação global conforme especificado
