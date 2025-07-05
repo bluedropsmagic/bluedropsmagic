@@ -31,13 +31,13 @@
     <!-- Meta Pixel Code - ✅ FIXED: Prevent duplicate initialization -->
     <script>
     (function() {
-      // ✅ CRITICAL: Prevent multiple Meta Pixel initializations
+      // ✅ CRITICAL: Prevent multiple Meta Pixel initializations and duplicate events
       if (window.fbq && window.fbq.loaded) {
         console.log('🛡️ Meta Pixel already loaded, skipping duplicate initialization');
         return;
       }
       
-      // ✅ Mark as initializing to prevent race conditions
+      // ✅ FIXED: Mark as initializing to prevent race conditions
       window.fbqInitializing = true;
       
       !function(f,b,e,v,n,t,s)
@@ -49,15 +49,35 @@
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
       
-      // ✅ Initialize only once
+      // ✅ CRITICAL: Initialize only once with ONLY PageView
       fbq('init', '1205864517252800');
-      fbq('track', 'PageView'); // ✅ ONLY standard PageView event
+      fbq('track', 'PageView'); // ✅ ONLY PageView on page load
       
-      // ✅ Mark as fully loaded
+      // ✅ FIXED: Mark as fully loaded and prevent duplicate events
       window.fbqInitialized = true;
       window.fbqInitializing = false;
       
-      console.log('✅ Meta Pixel initialized - ONLY standard events allowed');
+      console.log('✅ Meta Pixel initialized - PageView tracked, InitiateCheckout ready for buttons');
+      
+      // ✅ CRITICAL: Override fbq to prevent duplicate Purchase events on button clicks
+      const originalFbq = window.fbq;
+      window.fbq = function(action, event, data) {
+        // ✅ BLOCK Purchase events that are not from thank you pages
+        if (action === 'track' && event === 'Purchase' && !window.location.pathname.includes('thank')) {
+          console.warn('🚫 BLOCKED Purchase event on non-thank-you page:', window.location.pathname);
+          console.log('💡 Use InitiateCheckout for button clicks, Purchase only for completed orders');
+          return;
+        }
+        
+        // ✅ Allow all other standard events
+        return originalFbq.apply(this, arguments);
+      };
+      
+      // ✅ Copy properties from original fbq
+      Object.keys(originalFbq).forEach(key => {
+        window.fbq[key] = originalFbq[key];
+      });
+      
     })();
     </script>
 

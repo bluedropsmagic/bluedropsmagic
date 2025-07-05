@@ -168,12 +168,13 @@ export const trackConversion = (eventName: string, value?: number, currency?: st
  * Track purchase events
  */
 export const trackPurchase = (value: number, currency: string = 'BRL', productType?: string): void => {
-  // ✅ ONLY track standard Purchase event - NO custom "Comprar" event
-  trackConversion('Purchase', value, currency); // Standard event only
+  // ✅ CRITICAL: This function should ONLY be used on thank you pages
+  // NOT on button clicks - button clicks should use InitiateCheckout
+  console.warn('⚠️ trackPurchase called - this should ONLY be used on thank you pages, not button clicks');
   
-  // Additional tracking for specific product types
-  if (productType) {
-    // ✅ REMOVED: No custom events like Purchase_1-bottle - only standard Purchase
-    console.log('📊 Purchase tracked for product type:', productType, 'Value:', value, currency);
-  }
+  // ✅ REMOVED: Actual Purchase tracking - should be done via facebookPixelTracking.ts
+  // trackConversion('Purchase', value, currency);
+  
+  console.log('📊 Purchase intent logged for product type:', productType, 'Value:', value, currency);
+  console.log('💡 Use trackInitiateCheckout() for button clicks, trackPurchase() only for completed purchases');
 };

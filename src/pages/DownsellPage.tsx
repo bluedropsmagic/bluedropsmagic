@@ -152,7 +152,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const content = getDownsellContent(variant);
 
   const handleAccept = () => {
-    // ✅ NEW: Track Facebook Pixel InitiateCheckout before redirect
+    // ✅ FIXED: ONLY track InitiateCheckout - NO Purchase event
     trackInitiateCheckout(content.acceptUrl);
     
     trackOfferClick(`downsell-${variant}-accept`);
@@ -172,7 +172,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   };
 
   const handleReject = () => {
-    // ✅ NEW: Track Facebook Pixel InitiateCheckout for reject (still a checkout action)
+    // ✅ FIXED: ONLY track InitiateCheckout for reject
     trackInitiateCheckout(content.rejectUrl);
     
     trackOfferClick(`downsell-${variant}-reject`);

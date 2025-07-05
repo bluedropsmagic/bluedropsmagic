@@ -31,11 +31,11 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   const handlePurchaseClick = (packageType: '1-bottle' | '3-bottle' | '6-bottle') => {
     const targetUrl = purchaseUrls[packageType];
     
-    // ✅ NEW: Track Facebook Pixel InitiateCheckout BEFORE redirect
+    // ✅ FIXED: ONLY track InitiateCheckout - NO Purchase event
     trackInitiateCheckout(targetUrl);
     
-    // Track the purchase intent
-    trackPurchase(purchaseValues[packageType], 'BRL', packageType);
+    // ✅ REMOVED: trackPurchase call - Purchase should only be tracked on thank you page
+    // trackPurchase(purchaseValues[packageType], 'BRL', packageType);
     
     // Call the original onPurchase handler
     onPurchase(packageType);
@@ -59,11 +59,11 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
     const targetUrl = purchaseUrls[packageType];
     
-    // ✅ NEW: Track Facebook Pixel InitiateCheckout for secondary clicks
+    // ✅ FIXED: ONLY track InitiateCheckout for secondary clicks
     trackInitiateCheckout(targetUrl);
     
-    // Track the secondary package click
-    trackPurchase(purchaseValues[packageType], 'BRL', `${packageType}-secondary`);
+    // ✅ REMOVED: trackPurchase call - Purchase should only be tracked on thank you page
+    // trackPurchase(purchaseValues[packageType], 'BRL', `${packageType}-secondary`);
     
     // Call the original handler
     onSecondaryPackageClick(packageType);

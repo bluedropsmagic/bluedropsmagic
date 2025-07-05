@@ -140,7 +140,7 @@ export const CheckoutButtons: React.FC<CheckoutButtonsProps> = ({
 
   // Handler para clique nos botões
   const handleButtonClick = (buttonConfig: ButtonConfig) => {
-    // ✅ NEW: Track Facebook Pixel InitiateCheckout before redirect
+    // ✅ FIXED: ONLY track InitiateCheckout - NO Purchase event
     trackInitiateCheckout(buttonConfig.url);
     
     const urlWithCid = addCidToUrl(buttonConfig.url);
@@ -156,7 +156,7 @@ export const CheckoutButtons: React.FC<CheckoutButtonsProps> = ({
       onButtonClick(urlWithCid, buttonConfig.action);
     }
     
-    // ✅ NEW: Small delay to ensure Facebook Pixel event is sent
+    // ✅ FIXED: Small delay to ensure ONLY InitiateCheckout event is sent
     setTimeout(() => {
       window.location.href = urlWithCid;
     }, 150);

@@ -73,12 +73,11 @@ export const trackInitiateCheckout = (url?: string): void => {
   }
   
   try {
-    // ✅ ONLY standard InitiateCheckout event - NO custom events like "Comprar"
+    // ✅ CRITICAL: ONLY InitiateCheckout event - NO Purchase event here
     (window as any).fbq('track', 'InitiateCheckout');
     
     console.log('✅ Facebook Pixel: InitiateCheckout event tracked successfully');
     
-    // ✅ CRITICAL: NO custom events like "Comprar" - ONLY standard events
     if (url) {
       console.log('🔗 InitiateCheckout for URL:', url);
     }
@@ -89,7 +88,35 @@ export const trackInitiateCheckout = (url?: string): void => {
 };
 
 /**
- * ✅ REMOVED: trackComprar function - NO custom events allowed
+ * Track Purchase event with Facebook Pixel (ONLY for actual purchases)
+ */
+export const trackPurchase = (value: number, currency: string = 'BRL'): void => {
+  if (!FACEBOOK_PIXEL_CONFIG.enabled) {
+    console.log('📊 Facebook Pixel tracking disabled');
+    return;
+  }
+  
+  if (!isFacebookPixelReady()) {
+    console.warn('⚠️ Facebook Pixel not ready for Purchase tracking');
+    return;
+  }
+  
+  try {
+    // ✅ ONLY track Purchase for actual completed purchases
+    (window as any).fbq('track', 'Purchase', {
+      value: value,
+      currency: currency
+    });
+    
+    console.log('✅ Facebook Pixel: Purchase event tracked successfully', { value, currency });
+    
+  } catch (error) {
+    console.error('❌ Error tracking Purchase:', error);
+  }
+};
+
+/**
+ * ✅ CRITICAL: NO custom events allowed
  * Only standard Facebook Pixel events are permitted:
  * - PageView
  * - InitiateCheckout  

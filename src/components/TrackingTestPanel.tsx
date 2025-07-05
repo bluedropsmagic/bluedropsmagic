@@ -528,7 +528,7 @@ export const TrackingTestPanel: React.FC = () => {
               {tracking.name === 'Video Tracking' && (
                 <button
                   onClick={() => {
-                    // Force trigger video play event for testing
+                    // ✅ FIXED: Force trigger video play event for testing
                     console.log('🧪 Teste manual: Disparando evento de video_play');
                     if (typeof window !== 'undefined' && (window as any).trackVideoPlay) {
                       (window as any).trackVideoPlay();
@@ -660,8 +660,10 @@ export const TrackingTestPanel: React.FC = () => {
           <div className="space-y-1 text-sm text-blue-700">
             <p>• ✅ <strong>InitiateCheckout:</strong> Disparado nos botões de compra</p>
             <p>• ✅ <strong>PageView:</strong> Disparado no carregamento da página</p>
+            <p>• ✅ <strong>Purchase:</strong> APENAS na página de obrigado (thank you page)</p>
             <p>• ❌ <strong>Eventos personalizados:</strong> REMOVIDOS completamente</p>
             <p>• ❌ <strong>trackCustom:</strong> NÃO é mais usado</p>
+            <p>• ❌ <strong>Purchase nos botões:</strong> REMOVIDO - apenas InitiateCheckout</p>
             <p>• 🔍 <strong>Verificação:</strong> Use Facebook Pixel Helper (Chrome)</p>
           </div>
         </div>
