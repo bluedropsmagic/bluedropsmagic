@@ -230,6 +230,8 @@ export const Modals: React.FC<ModalsProps> = ({
           </div>
         </div>
       )}
+    )
+    }
     </>
   );
 };
