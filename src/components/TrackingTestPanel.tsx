@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, AlertTriangle, RefreshCw, ExternalLink, Eye, Settings } from 'lucide-react';
+import { isFacebookPixelReady, trackInitiateCheckout, FACEBOOK_PIXEL_CONFIG } from '../utils/facebookPixelTracking';
 
 interface TrackingStatus {
   name: string;
@@ -109,6 +110,7 @@ export const TrackingTestPanel: React.FC = () => {
       if (typeof fbq === 'function') {
         // Check for duplication
         const isDuplicated = document.querySelectorAll('script[src*="fbevents.js"]').length > 1;
+        const isReady = isFacebookPixelReady();
         
         if (isDuplicated) {
           updateStatus(index, { 
@@ -116,10 +118,26 @@ export const TrackingTestPanel: React.FC = () => {
             message: 'Meta Pixel DUPLICADO detectado!',
             details: `${document.querySelectorAll('script[src*="fbevents.js"]').length} scripts fbevents.js encontrados`
           });
+        } else if (isReady) {
+          // ✅ NEW: Test InitiateCheckout event
+          try {
+            trackInitiateCheckout('https://test.cartpanda.com/test');
+            updateStatus(index, { 
+              status: 'success', 
+              message: 'Meta Pixel funcionando perfeitamente',
+              details: 'InitiateCheckout testado com sucesso, sem duplicação'
+            });
+          } catch (error) {
+            updateStatus(index, { 
+              status: 'warning', 
+              message: 'Meta Pixel carregado mas erro no teste',
+              details: `Erro ao testar InitiateCheckout: ${error}`
+            });
+          }
         } else if (fbqInitialized && !fbqInitializing) {
         updateStatus(index, { 
           status: 'success', 
-          message: 'Meta Pixel funcionando perfeitamente',
+          message: 'Meta Pixel carregado e inicializado',
           details: 'Inicializado uma única vez, sem duplicação detectada'
         });
         } else if (fbqInitializing) {
@@ -595,9 +613,10 @@ export const TrackingTestPanel: React.FC = () => {
           
           <div className="space-y-2">
             <h4 className="font-medium text-gray-900">Meta Pixel</h4>
-            <p className="text-sm text-gray-600">Pixel ID: <code className="bg-gray-100 px-1 rounded">1205864517252800</code></p>
+            <p className="text-sm text-gray-600">Pixel ID: <code className="bg-gray-100 px-1 rounded">{FACEBOOK_PIXEL_CONFIG.pixelId}</code></p>
             <p className="text-sm text-gray-600">Status: <span id="pixel-status" className="font-bold text-green-600">Protegido contra duplicação</span></p>
             <p className="text-sm text-gray-600">Scripts: <span id="pixel-scripts-count" className="font-mono">Verificando...</span></p>
+            <p className="text-sm text-gray-600">InitiateCheckout: <span className="font-bold text-blue-600">Configurado</span></p>
           </div>
           
           <div className="space-y-2">
@@ -617,6 +636,9 @@ export const TrackingTestPanel: React.FC = () => {
             <div>
               <strong>Status fbq:</strong> <span id="live-fbq-status" className="font-mono text-green-600">Verificando...</span>
             </div>
+            <div>
+              <strong>InitiateCheckout:</strong> <span className="font-mono text-blue-600">Ready</span>
+            </div>
           </div>
         </div>
       </div>
@@ -626,10 +648,22 @@ export const TrackingTestPanel: React.FC = () => {
         <h3 className="text-lg font-semibold text-yellow-800 mb-3">📋 Instruções de Teste</h3>
         <div className="space-y-2 text-sm text-yellow-700">
           <p><strong>1. Hotjar:</strong> Verifique se aparece "success" e acesse o dashboard para ver as sessões</p>
-          <p><strong>2. Meta Pixel:</strong> Use o Facebook Pixel Helper (extensão do Chrome) para verificar eventos</p>
+          <p><strong>2. Meta Pixel:</strong> Use o Facebook Pixel Helper para verificar InitiateCheckout nos botões</p>
           <p><strong>3. Utmify:</strong> Verifique se o pixel está carregando e enviando dados</p>
           <p><strong>4. UTM Parameters:</strong> Teste com URLs que contenham parâmetros UTM</p>
           <p><strong>5. Supabase:</strong> Verifique se os eventos estão sendo salvos no banco de dados</p>
+        </div>
+        
+        {/* ✅ NEW: Facebook Pixel InitiateCheckout Instructions */}
+        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-semibold text-blue-800 mb-2">🛒 Teste do InitiateCheckout:</h4>
+          <div className="space-y-1 text-sm text-blue-700">
+            <p>• Clique em qualquer botão de compra (CartPanda/PayBlueDrops)</p>
+            <p>• Abra o Facebook Pixel Helper (extensão Chrome)</p>
+            <p>• Verifique se aparece "InitiateCheckout" nos eventos</p>
+            <p>• O evento deve ser disparado ANTES do redirecionamento</p>
+            <p>• Parâmetros UTM e CID são preservados automaticamente</p>
+          </div>
         </div>
       </div>
 

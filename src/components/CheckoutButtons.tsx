@@ -1,6 +1,7 @@
 // 🔁 Geração automática com suporte a RedTrack CID
 
 import React, { useState, useEffect } from 'react';
+import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 
 interface CheckoutButtonsProps {
   page: 'main' | 'upsell' | 'downsell';
@@ -139,6 +140,9 @@ export const CheckoutButtons: React.FC<CheckoutButtonsProps> = ({
 
   // Handler para clique nos botões
   const handleButtonClick = (buttonConfig: ButtonConfig) => {
+    // ✅ NEW: Track Facebook Pixel InitiateCheckout before redirect
+    trackInitiateCheckout(buttonConfig.url);
+    
     const urlWithCid = addCidToUrl(buttonConfig.url);
     
     // Log para debug
@@ -152,8 +156,10 @@ export const CheckoutButtons: React.FC<CheckoutButtonsProps> = ({
       onButtonClick(urlWithCid, buttonConfig.action);
     }
     
-    // Redirecionar
-    window.location.href = urlWithCid;
+    // ✅ NEW: Small delay to ensure Facebook Pixel event is sent
+    setTimeout(() => {
+      window.location.href = urlWithCid;
+    }, 150);
   };
 
   const buttonConfigs = getButtonConfigs();

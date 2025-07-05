@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAnalytics } from './hooks/useAnalytics';
 import { initializeRedTrack } from './utils/redtrackIntegration';
+import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
 
 // Import all components
 import { Header } from './components/Header';
@@ -169,6 +170,9 @@ function App() {
 
     // ✅ NEW: Initialize RedTrack integration
     initializeRedTrack();
+    
+    // ✅ NEW: Initialize Facebook Pixel CartPanda tracking
+    initializeFacebookPixelTracking();
     
     // Inject VTurb script with proper error handling and optimization
     const injectVTurbScript = () => {

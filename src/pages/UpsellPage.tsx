@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X } from 'lucide-react';
+import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 
 interface UpsellPageProps {
   variant: '1-bottle' | '3-bottle' | '6-bottle';
@@ -128,6 +129,9 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const content = getUpsellContent(variant);
 
   const handleAccept = () => {
+    // ✅ NEW: Track Facebook Pixel InitiateCheckout before redirect
+    trackInitiateCheckout(content.acceptUrl);
+    
     trackOfferClick(`upsell-${variant}-accept`);
     
     // ✅ NEW: Add CID parameter if present
@@ -138,10 +142,16 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    window.location.href = url;
+    // ✅ NEW: Small delay to ensure Facebook Pixel event is sent
+    setTimeout(() => {
+      window.location.href = url;
+    }, 150);
   };
 
   const handleReject = () => {
+    // ✅ NEW: Track Facebook Pixel InitiateCheckout for reject (still a checkout action)
+    trackInitiateCheckout(content.rejectUrl);
+    
     trackOfferClick(`upsell-${variant}-reject`);
     
     // ✅ NEW: Add CID parameter if present
@@ -152,7 +162,10 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    window.location.href = url;
+    // ✅ NEW: Small delay to ensure Facebook Pixel event is sent
+    setTimeout(() => {
+      window.location.href = url;
+    }, 150);
   };
 
   return (

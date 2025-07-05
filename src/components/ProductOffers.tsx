@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Star, Shield, Truck, CreditCard } from 'lucide-react';
 import { buildUrlWithParams, trackPurchase } from '../utils/urlUtils';
+import { trackInitiateCheckout, buildRedirectUrl } from '../utils/facebookPixelTracking';
 
 interface ProductOffersProps {
   showPurchaseButton: boolean;
@@ -28,14 +29,19 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   };
 
   const handlePurchaseClick = (packageType: '1-bottle' | '3-bottle' | '6-bottle') => {
+    const targetUrl = purchaseUrls[packageType];
+    
+    // ✅ NEW: Track Facebook Pixel InitiateCheckout BEFORE redirect
+    trackInitiateCheckout(targetUrl);
+    
     // Track the purchase intent
     trackPurchase(purchaseValues[packageType], 'BRL', packageType);
     
     // Call the original onPurchase handler
     onPurchase(packageType);
     
-    // ✅ NEW: Build URL with tracking parameters + CID if present
-    let urlWithParams = buildUrlWithParams(purchaseUrls[packageType]);
+    // ✅ UPDATED: Build URL with tracking parameters + CID if present
+    let urlWithParams = buildUrlWithParams(targetUrl);
     
     // Add CID parameter if present in current URL
     const urlParams = new URLSearchParams(window.location.search);
@@ -44,11 +50,18 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
       urlWithParams += (urlWithParams.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    // ✅ FIXED: Use window.location.href instead of window.open for better tracking
-    window.location.href = urlWithParams;
+    // ✅ UPDATED: Small delay to ensure Facebook Pixel event is sent
+    setTimeout(() => {
+      window.location.href = urlWithParams;
+    }, 150); // 150ms delay to ensure pixel tracking
   };
 
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
+    const targetUrl = purchaseUrls[packageType];
+    
+    // ✅ NEW: Track Facebook Pixel InitiateCheckout for secondary clicks
+    trackInitiateCheckout(targetUrl);
+    
     // Track the secondary package click
     trackPurchase(purchaseValues[packageType], 'BRL', `${packageType}-secondary`);
     
