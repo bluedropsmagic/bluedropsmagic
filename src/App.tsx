@@ -626,11 +626,13 @@ function App() {
   };
 
   const handleSecondaryPackageClick = (packageType: '1-bottle' | '3-bottle') => {
+    console.log('🎯 Secondary package clicked:', packageType, '- Opening upsell popup');
     setSelectedPackage(packageType);
     setShowUpsellPopup(true);
   };
 
   const closeUpsellPopup = () => {
+    console.log('🔄 Closing upsell popup');
     setShowUpsellPopup(false);
     setSelectedPackage('');
   };
@@ -659,11 +661,13 @@ function App() {
   };
 
   const handleUpsellAccept = () => {
+    console.log('✅ Upsell accepted - redirecting to 6-bottle package');
     handlePurchase('6-bottle');
     closeUpsellPopup();
   };
 
   const handleUpsellRefuse = () => {
+    console.log('❌ Upsell refused - redirecting to original selection:', selectedPackage);
     if (selectedPackage) {
       handlePurchase(selectedPackage as '1-bottle' | '3-bottle' | '6-bottle');
     }
