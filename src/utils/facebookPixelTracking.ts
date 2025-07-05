@@ -73,12 +73,12 @@ export const trackInitiateCheckout = (url?: string): void => {
   }
   
   try {
-    // ✅ ONLY standard InitiateCheckout event - NO custom events
+    // ✅ ONLY standard InitiateCheckout event - NO custom events like "Comprar"
     (window as any).fbq('track', 'InitiateCheckout');
     
     console.log('✅ Facebook Pixel: InitiateCheckout event tracked successfully');
     
-    // ✅ REMOVED: No custom events or additional tracking
+    // ✅ CRITICAL: NO custom events like "Comprar" - ONLY standard events
     if (url) {
       console.log('🔗 InitiateCheckout for URL:', url);
     }
@@ -87,6 +87,18 @@ export const trackInitiateCheckout = (url?: string): void => {
     console.error('❌ Error tracking InitiateCheckout:', error);
   }
 };
+
+/**
+ * ✅ REMOVED: trackComprar function - NO custom events allowed
+ * Only standard Facebook Pixel events are permitted:
+ * - PageView
+ * - InitiateCheckout  
+ * - Purchase
+ * - Lead
+ * - CompleteRegistration
+ * - AddToCart
+ * - ViewContent
+ */
 
 /**
  * Handle click on CartPanda links/buttons

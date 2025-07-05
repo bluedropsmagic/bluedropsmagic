@@ -17,14 +17,14 @@ import { Footer } from './components/Footer';
 import { Modals } from './components/Modals';
 
 function App() {
-  const [showPurchaseButton, setShowPurchaseButton] = useState(true); // ✅ FIXED: Always show immediately
+  const [showPurchaseButton, setShowPurchaseButton] = useState(false); // ✅ CHANGED: Start hidden
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [showPopup, setShowPopup] = useState(false); // ✅ DISABLED: Popup removido
   const [showUpsellPopup, setShowUpsellPopup] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState('');
-  const [contentDelay, setContentDelay] = useState(0); // ✅ FIXED: No delay
+  const [showRestOfContent, setShowRestOfContent] = useState(false); // ✅ NEW: Control rest of content
   const [isAdmin, setIsAdmin] = useState(false);
-  const [adminDelayOverride, setAdminDelayOverride] = useState(true); // ✅ FIXED: Always override delay
+  const [adminDelayOverride, setAdminDelayOverride] = useState(false); // ✅ CHANGED: Default false
 
   // ✅ NEW: Prevent white page after errors
   useEffect(() => {
@@ -87,7 +87,12 @@ function App() {
     };
   }, []);
 
-  // ✅ REMOVED: No more delay system
+  // ✅ NEW: Function to show rest of content after 35:55
+  const showRestOfContentAfterDelay = () => {
+    console.log('🕐 35:55 reached - showing rest of content');
+    setShowRestOfContent(true);
+    setShowPurchaseButton(true);
+  };
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -129,7 +134,14 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ REMOVED: No more delay logic - content shows immediately
+  // ✅ NEW: Check for admin override or time-based content reveal
+  useEffect(() => {
+    if (isAdmin && adminDelayOverride) {
+      console.log('👨‍💼 Admin override - showing all content immediately');
+      setShowRestOfContent(true);
+      setShowPurchaseButton(true);
+    }
+  }, [isAdmin, adminDelayOverride]);
 
   useEffect(() => {
     // Initialize URL tracking parameters
@@ -653,11 +665,23 @@ function App() {
     closeUpsellPopup();
   };
 
-  // ✅ REMOVED: Admin delay override function - no longer needed
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50 overflow-x-hidden">
-      {/* ✅ REMOVED: Admin DTC Button - No longer needed */}
+      {/* ✅ NEW: Admin DTC Button - For content override */}
+      {isAdmin && (
+        <div className="fixed top-4 right-4 z-50">
+          <button
+            onClick={() => setAdminDelayOverride(!adminDelayOverride)}
+            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all duration-300 shadow-lg ${
+              adminDelayOverride
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-green-500 hover:bg-green-600 text-white'
+            }`}
+          >
+            {adminDelayOverride ? '🔓 ADMIN: All Content Visible' : '🔒 ADMIN: Show All Content'}
+          </button>
+        </div>
+      )}
 
       {/* Main container - Always visible */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-6 sm:py-8 max-w-full">
@@ -674,27 +698,38 @@ function App() {
           {/* Video Section */}
           <VideoSection />
 
-          {/* Product Offers - Always show immediately */}
+          {/* Product Offers - Only show after 35:55 or admin override */}
+          {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
             <ProductOffers 
               showPurchaseButton={showPurchaseButton}
               onPurchase={handlePurchase}
               onSecondaryPackageClick={handleSecondaryPackageClick}
             />
+          )}
         </div>
 
-        {/* Testimonials Section - Always show immediately */}
+        {/* Testimonials Section - Only show after 35:55 or admin override */}
+        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
         <TestimonialsSection />
+        )}
 
-        {/* Doctors Section - Always show immediately */}
+        {/* Doctors Section - Only show after 35:55 or admin override */}
+        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
         <DoctorsSection />
+        )}
 
-        {/* News Section - Always show immediately */}
+        {/* News Section - Only show after 35:55 or admin override */}
+        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
         <NewsSection />
+        )}
 
-        {/* Guarantee Section - Always show immediately */}
+        {/* Guarantee Section - Only show after 35:55 or admin override */}
+        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
         <GuaranteeSection />
+        )}
 
-        {/* Better organized final section with proper spacing and alignment - Always show immediately */}
+        {/* Final purchase section - Only show after 35:55 or admin override */}
+        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
           <section 
             id="final-purchase-section"
             data-purchase-section="true"
@@ -740,6 +775,7 @@ function App() {
               </div>
             </div>
           </section>
+        )}
 
         {/* Footer */}
         <Footer />

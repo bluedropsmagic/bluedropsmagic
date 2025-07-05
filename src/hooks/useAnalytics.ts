@@ -541,7 +541,7 @@ export const useAnalytics = () => {
   const trackVideoProgress = (currentTime: number, duration: number) => {
     if (isBrazilianIP.current) return; // ✅ SKIP if Brazilian
     
-    // ✅ NEW: Track when user reaches the pitch moment (35:55 = 2155 seconds) AND scroll to purchase
+    // ✅ UPDATED: Track when user reaches the pitch moment (35:55 = 2155 seconds) AND trigger content reveal
     // ✅ UPDATED: Now "video progress" means total time on page, not video time
     const totalTimeOnPage = Math.floor((Date.now() - pageStartTime.current) / 1000);
     
@@ -557,10 +557,10 @@ export const useAnalytics = () => {
       });
       console.log('🎯 User has been on page for 35:55 (2155 seconds) - pitch moment reached');
       
-      // ✅ NEW: Auto scroll to purchase button when pitch is reached
-      setTimeout(() => {
-        scrollToPurchaseButton();
-      }, 1000); // Wait 1 second after pitch moment
+      // ✅ NEW: Trigger content reveal instead of just scrolling
+      if (typeof window !== 'undefined' && (window as any).showRestOfContentAfterDelay) {
+        (window as any).showRestOfContentAfterDelay();
+      }
     }
     
     const progressPercent = (currentTime / duration) * 100;

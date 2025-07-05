@@ -134,9 +134,9 @@ export const initializeTracking = (): void => {
  * Track conversion events
  */
 export const trackConversion = (eventName: string, value?: number, currency?: string): void => {
-  // ✅ ONLY standard Facebook Pixel events - NO custom events
+  // ✅ CRITICAL: ONLY standard Facebook Pixel events - NO custom events like "Comprar"
   if (typeof window !== 'undefined' && (window as any).fbq && (window as any).fbqInitialized) {
-    // ✅ ONLY track standard events: Purchase, Lead, CompleteRegistration, etc.
+    // ✅ WHITELIST: Only these standard events are allowed
     const standardEvents = ['Purchase', 'Lead', 'CompleteRegistration', 'AddToCart', 'InitiateCheckout', 'ViewContent'];
     
     if (standardEvents.includes(eventName)) {
@@ -147,7 +147,7 @@ export const trackConversion = (eventName: string, value?: number, currency?: st
       console.log('📊 Tracking standard Meta Pixel event:', eventName, eventData);
       (window as any).fbq('track', eventName, eventData);
     } else {
-      console.log('⚠️ Skipping custom event (not allowed):', eventName);
+      console.log('❌ BLOCKED custom event (not allowed):', eventName, '- Only standard events permitted');
     }
   } else if (typeof window !== 'undefined' && (window as any).fbq) {
     console.warn('⚠️ Meta Pixel exists but not properly initialized, skipping conversion tracking');
@@ -168,10 +168,12 @@ export const trackConversion = (eventName: string, value?: number, currency?: st
  * Track purchase events
  */
 export const trackPurchase = (value: number, currency: string = 'BRL', productType?: string): void => {
-  trackConversion('Purchase', value, currency);
+  // ✅ ONLY track standard Purchase event - NO custom "Comprar" event
+  trackConversion('Purchase', value, currency); // Standard event only
   
   // Additional tracking for specific product types
   if (productType) {
-    trackConversion(`Purchase_${productType}`, value, currency);
+    // ✅ REMOVED: No custom events like Purchase_1-bottle - only standard Purchase
+    console.log('📊 Purchase tracked for product type:', productType, 'Value:', value, currency);
   }
 };
