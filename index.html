@@ -26,6 +26,32 @@
       a.setAttribute("defer", "");
       a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
       document.head.appendChild(a);
+      
+      // ✅ Enhanced Utmify integration with fallback
+      window.addEventListener('utmify-track', function(event) {
+        console.log('📊 Utmify fallback event received:', event.detail);
+        
+        // Try to send via Utmify if available
+        if (typeof window.utmify === 'function') {
+          window.utmify('track', event.detail.event, event.detail);
+        } else {
+          // Store for later when Utmify loads
+          window.utmifyQueue = window.utmifyQueue || [];
+          window.utmifyQueue.push(event.detail);
+        }
+      });
+      
+      // Process queued events when Utmify loads
+      var checkUtmify = setInterval(function() {
+        if (typeof window.utmify === 'function' && window.utmifyQueue) {
+          console.log('📊 Processing queued Utmify events:', window.utmifyQueue.length);
+          window.utmifyQueue.forEach(function(eventData) {
+            window.utmify('track', eventData.event, eventData);
+          });
+          window.utmifyQueue = [];
+          clearInterval(checkUtmify);
+        }
+      }, 1000);
     </script>
 
     <!-- ✅ CORRECT: Meta Pixel Code -->

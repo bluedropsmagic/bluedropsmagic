@@ -160,7 +160,14 @@ export const trackConversion = (eventName: string, value?: number, currency?: st
     if (currency) eventData.currency = currency;
     
     console.log('📊 Tracking conversion via Utmify:', eventName, eventData);
-    (window as any).utmify('track', 'Conversion', eventData);
+    (window as any).utmify('track', eventName, eventData);
+  } else if (typeof window !== 'undefined' && window.pixelId) {
+    // Fallback for Utmify
+    console.log('📊 Utmify fallback: Tracking conversion', eventName);
+    const utmifyEvent = new CustomEvent('utmify-track', {
+      detail: { event: eventName, pixelId: window.pixelId, value, currency }
+    });
+    window.dispatchEvent(utmifyEvent);
   }
 };
 

@@ -56,6 +56,22 @@ export const trackInitiateCheckout = (url?: string): void => {
     
     console.log('✅ Meta Pixel: InitiateCheckout tracked successfully');
     
+    // ✅ NEW: Send InitiateCheckout to Utmify
+    if (typeof window !== 'undefined' && (window as any).utmify) {
+      (window as any).utmify('track', 'InitiateCheckout');
+      console.log('✅ Utmify: InitiateCheckout tracked successfully');
+    } else if (typeof window !== 'undefined' && window.pixelId) {
+      // Fallback: Try to trigger Utmify manually if function not available
+      console.log('📊 Utmify: Attempting manual InitiateCheckout trigger');
+      
+      // Create a custom event for Utmify
+      const utmifyEvent = new CustomEvent('utmify-track', {
+        detail: { event: 'InitiateCheckout', pixelId: window.pixelId }
+      });
+      window.dispatchEvent(utmifyEvent);
+    } else {
+      console.warn('⚠️ Utmify not ready for InitiateCheckout tracking');
+    }
     if (url) {
       console.log('🔗 Target URL:', url);
     }
