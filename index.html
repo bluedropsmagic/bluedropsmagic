@@ -51,13 +51,13 @@
       
       // ✅ Initialize only once
       fbq('init', '1205864517252800');
-      fbq('track', 'PageView');
+      fbq('track', 'PageView'); // ✅ ONLY standard PageView event
       
       // ✅ Mark as fully loaded
       window.fbqInitialized = true;
       window.fbqInitializing = false;
       
-      console.log('✅ Meta Pixel initialized successfully - ID: 1205864517252800');
+      console.log('✅ Meta Pixel initialized - ONLY standard events allowed');
     })();
     </script>
 

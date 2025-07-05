@@ -134,14 +134,21 @@ export const initializeTracking = (): void => {
  * Track conversion events
  */
 export const trackConversion = (eventName: string, value?: number, currency?: string): void => {
-  // ✅ ENHANCED: Facebook Pixel conversion tracking with duplication check
+  // ✅ ONLY standard Facebook Pixel events - NO custom events
   if (typeof window !== 'undefined' && (window as any).fbq && (window as any).fbqInitialized) {
-    const eventData: any = {};
-    if (value !== undefined) eventData.value = value;
-    if (currency) eventData.currency = currency;
+    // ✅ ONLY track standard events: Purchase, Lead, CompleteRegistration, etc.
+    const standardEvents = ['Purchase', 'Lead', 'CompleteRegistration', 'AddToCart', 'InitiateCheckout', 'ViewContent'];
     
-    console.log('📊 Tracking conversion via Meta Pixel:', eventName, eventData);
-    (window as any).fbq('track', eventName, eventData);
+    if (standardEvents.includes(eventName)) {
+      const eventData: any = {};
+      if (value !== undefined) eventData.value = value;
+      if (currency) eventData.currency = currency;
+      
+      console.log('📊 Tracking standard Meta Pixel event:', eventName, eventData);
+      (window as any).fbq('track', eventName, eventData);
+    } else {
+      console.log('⚠️ Skipping custom event (not allowed):', eventName);
+    }
   } else if (typeof window !== 'undefined' && (window as any).fbq) {
     console.warn('⚠️ Meta Pixel exists but not properly initialized, skipping conversion tracking');
   }

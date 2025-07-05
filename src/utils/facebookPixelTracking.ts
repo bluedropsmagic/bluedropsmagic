@@ -73,12 +73,12 @@ export const trackInitiateCheckout = (url?: string): void => {
   }
   
   try {
-    // Track the standard InitiateCheckout event
+    // ✅ ONLY standard InitiateCheckout event - NO custom events
     (window as any).fbq('track', 'InitiateCheckout');
     
     console.log('✅ Facebook Pixel: InitiateCheckout event tracked successfully');
     
-    // Optional: Track additional context if URL is provided
+    // ✅ REMOVED: No custom events or additional tracking
     if (url) {
       console.log('🔗 InitiateCheckout for URL:', url);
     }
