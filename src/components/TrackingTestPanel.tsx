@@ -106,17 +106,19 @@ export const TrackingTestPanel: React.FC = () => {
       const fbq = (window as any).fbq;
       const fbqInitialized = (window as any).fbqInitialized;
       const fbqInitializing = (window as any).fbqInitializing;
+      const fbqLoaded = (window as any).fbqLoaded;
       
       if (typeof fbq === 'function') {
-        // Check for duplication
-        const isDuplicated = document.querySelectorAll('script[src*="fbevents.js"]').length > 1;
+        // ✅ CRITICAL: Check for duplicate scripts
+        const fbScripts = document.querySelectorAll('script[src*="fbevents.js"]');
+        const isDuplicated = fbScripts.length > 1;
         const isReady = isFacebookPixelReady();
         
         if (isDuplicated) {
           updateStatus(index, { 
             status: 'error', 
-            message: 'Meta Pixel DUPLICADO detectado!',
-            details: `${document.querySelectorAll('script[src*="fbevents.js"]').length} scripts fbevents.js encontrados`
+            message: `🚨 DUPLICATE Meta Pixel detected! (${fbScripts.length} scripts)`,
+            details: 'Multiple fbevents.js scripts found - this causes conflicts and duplicate events'
           });
         } else if (isReady) {
           // ✅ ONLY test standard InitiateCheckout event
@@ -124,8 +126,8 @@ export const TrackingTestPanel: React.FC = () => {
             trackInitiateCheckout('https://test.cartpanda.com/test');
             updateStatus(index, { 
               status: 'success', 
-              message: 'Meta Pixel funcionando - APENAS eventos padrão',
-              details: 'InitiateCheckout (evento padrão) testado com sucesso'
+              message: 'Meta Pixel working perfectly - STANDARD events only',
+              details: 'InitiateCheckout (standard event) tested successfully'
             });
           } catch (error) {
             updateStatus(index, { 
@@ -137,20 +139,20 @@ export const TrackingTestPanel: React.FC = () => {
         } else if (fbqInitialized && !fbqInitializing) {
         updateStatus(index, { 
           status: 'success', 
-          message: 'Meta Pixel carregado - SEM eventos personalizados',
-          details: 'Apenas eventos padrão do Facebook são permitidos'
+          message: 'Meta Pixel loaded - NO custom events',
+          details: 'Only standard Facebook events are allowed'
         });
         } else if (fbqInitializing) {
           updateStatus(index, { 
             status: 'warning', 
-            message: 'Meta Pixel inicializando...',
-            details: 'Aguarde a inicialização completa'
+            message: 'Meta Pixel initializing...',
+            details: 'Please wait for complete initialization'
           });
         } else {
           updateStatus(index, { 
             status: 'warning', 
-            message: 'Meta Pixel carregado mas não inicializado',
-            details: 'Função fbq existe mas inicialização não confirmada'
+            message: 'Meta Pixel loaded but not initialized',
+            details: 'fbq function exists but initialization not confirmed'
           });
         }
       } else {
@@ -613,10 +615,23 @@ export const TrackingTestPanel: React.FC = () => {
           
           <div className="space-y-2">
             <h4 className="font-medium text-gray-900">Meta Pixel</h4>
-            <p className="text-sm text-gray-600">Pixel ID: <code className="bg-gray-100 px-1 rounded">{FACEBOOK_PIXEL_CONFIG.pixelId}</code></p>
-            <p className="text-sm text-gray-600">Status: <span id="pixel-status" className="font-bold text-green-600">APENAS eventos padrão</span></p>
-            <p className="text-sm text-gray-600">Scripts: <span id="pixel-scripts-count" className="font-mono">Verificando...</span></p>
-            <p className="text-sm text-gray-600">Eventos: <span className="font-bold text-red-600">SEM eventos personalizados</span></p>
+            <p className="text-sm text-gray-600">
+              Pixel ID: <code className="bg-gray-100 px-1 rounded">{FACEBOOK_PIXEL_CONFIG.pixelId}</code>
+            </p>
+            <p className="text-sm text-gray-600">
+              Scripts: <span className="font-mono text-blue-600">
+                {typeof window !== 'undefined' ? document.querySelectorAll('script[src*="fbevents.js"]').length : 0}
+              </span>
+              {typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 && (
+                <span className="text-red-600 font-bold ml-2">⚠️ DUPLICATED!</span>
+              )}
+            </p>
+            <p className="text-sm text-gray-600">
+              Events: <span className="font-bold text-green-600">STANDARD ONLY</span>
+            </p>
+            <p className="text-sm text-gray-600">
+              Custom Events: <span className="font-bold text-red-600">BLOCKED</span>
+            </p>
           </div>
           
           <div className="space-y-2">
@@ -627,19 +642,51 @@ export const TrackingTestPanel: React.FC = () => {
         </div>
         
         {/* ✅ NEW: Real-time pixel monitoring */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-medium text-gray-700 mb-2">🔍 Monitoramento em Tempo Real:</h4>
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="font-medium text-blue-800 mb-3">🔍 Real-time Meta Pixel Monitoring:</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <strong>Scripts fbevents.js:</strong> <span id="live-scripts-count" className="font-mono text-blue-600">0</span>
+              <strong>fbevents.js Scripts:</strong> 
+              <span className={`font-mono ml-2 ${
+                typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 
+                  ? 'text-red-600 font-bold' 
+                  : 'text-green-600'
+              }`}>
+                {typeof window !== 'undefined' ? document.querySelectorAll('script[src*="fbevents.js"]').length : 0}
+                {typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 && ' ⚠️'}
+              </span>
             </div>
             <div>
-              <strong>Status fbq:</strong> <span id="live-fbq-status" className="font-mono text-green-600">Verificando...</span>
+              <strong>fbq Status:</strong> 
+              <span className={`font-mono ml-2 ${
+                typeof window !== 'undefined' && (window as any).fbqInitialized 
+                  ? 'text-green-600' 
+                  : 'text-yellow-600'
+              }`}>
+                {typeof window !== 'undefined' && (window as any).fbqInitialized ? 'Ready' : 'Loading...'}
+              </span>
             </div>
             <div>
-              <strong>InitiateCheckout:</strong> <span className="font-mono text-blue-600">Ready</span>
+              <strong>InitiateCheckout:</strong> 
+              <span className="font-mono text-blue-600 ml-2">Ready</span>
+            </div>
+            <div>
+              <strong>Purchase Events:</strong> 
+              <span className="font-mono text-red-600 ml-2">Thank You Pages Only</span>
             </div>
           </div>
+          
+          {/* ✅ Duplicate Warning */}
+          {typeof window !== 'undefined' && document.querySelectorAll('script[src*="fbevents.js"]').length > 1 && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 font-bold text-sm">
+                🚨 CRITICAL: Multiple Meta Pixel scripts detected!
+              </p>
+              <p className="text-red-600 text-xs mt-1">
+                This causes duplicate events and tracking conflicts. Please refresh the page.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -656,15 +703,16 @@ export const TrackingTestPanel: React.FC = () => {
         
         {/* ✅ UPDATED: Facebook Pixel Standard Events Only */}
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="font-semibold text-blue-800 mb-2">🛒 APENAS Eventos Padrão do Facebook:</h4>
+          <h4 className="font-semibold text-blue-800 mb-2">🛒 ONLY Standard Facebook Events:</h4>
           <div className="space-y-1 text-sm text-blue-700">
-            <p>• ✅ <strong>InitiateCheckout:</strong> Disparado nos botões de compra</p>
-            <p>• ✅ <strong>PageView:</strong> Disparado no carregamento da página</p>
-            <p>• ✅ <strong>Purchase:</strong> APENAS na página de obrigado (thank you page)</p>
-            <p>• ❌ <strong>Eventos personalizados:</strong> REMOVIDOS completamente</p>
-            <p>• ❌ <strong>trackCustom:</strong> NÃO é mais usado</p>
-            <p>• ❌ <strong>Purchase nos botões:</strong> REMOVIDO - apenas InitiateCheckout</p>
-            <p>• 🔍 <strong>Verificação:</strong> Use Facebook Pixel Helper (Chrome)</p>
+            <p>• ✅ <strong>InitiateCheckout:</strong> Triggered on purchase buttons</p>
+            <p>• ✅ <strong>PageView:</strong> Triggered on page load</p>
+            <p>• ✅ <strong>Purchase:</strong> ONLY on thank you pages</p>
+            <p>• ❌ <strong>Custom events:</strong> COMPLETELY REMOVED</p>
+            <p>• ❌ <strong>trackCustom:</strong> NO longer used</p>
+            <p>• ❌ <strong>Purchase on buttons:</strong> REMOVED - only InitiateCheckout</p>
+            <p>• 🔍 <strong>Verification:</strong> Use Facebook Pixel Helper (Chrome extension)</p>
+            <p>• 🚨 <strong>Duplicates:</strong> Automatically detected and removed</p>
           </div>
         </div>
       </div>

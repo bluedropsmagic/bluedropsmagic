@@ -28,18 +28,24 @@
       document.head.appendChild(a);
     </script>
 
-    <!-- Meta Pixel Code - ✅ FIXED: Prevent duplicate initialization -->
+    <!-- ✅ FIXED: Single Meta Pixel Implementation - NO DUPLICATES -->
     <script>
     (function() {
-      // ✅ CRITICAL: Prevent multiple Meta Pixel initializations and duplicate events
-      if (window.fbq && window.fbq.loaded) {
-        console.log('🛡️ Meta Pixel already loaded, skipping duplicate initialization');
+      'use strict';
+      
+      // ✅ CRITICAL: Prevent ANY duplicate initialization
+      if (window.fbqLoaded || window.fbq || document.querySelector('script[src*="fbevents.js"]')) {
+        console.warn('🛡️ Meta Pixel already exists, preventing duplicate initialization');
         return;
       }
       
-      // ✅ FIXED: Mark as initializing to prevent race conditions
+      // ✅ Mark as loading immediately
+      window.fbqLoaded = true;
       window.fbqInitializing = true;
       
+      console.log('🚀 Initializing Meta Pixel (single instance)...');
+      
+      // ✅ Standard Facebook Pixel code (single execution)
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -49,34 +55,71 @@
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
       
-      // ✅ CRITICAL: Initialize only once with ONLY PageView
+      // ✅ Initialize pixel with ID
       fbq('init', '1205864517252800');
-      fbq('track', 'PageView'); // ✅ ONLY PageView on page load
+      fbq('track', 'PageView');
       
-      // ✅ FIXED: Mark as fully loaded and prevent duplicate events
+      // ✅ Mark as fully initialized
       window.fbqInitialized = true;
       window.fbqInitializing = false;
       
-      console.log('✅ Meta Pixel initialized - PageView tracked, InitiateCheckout ready for buttons');
+      console.log('✅ Meta Pixel initialized successfully - ID: 1205864517252800');
       
-      // ✅ CRITICAL: Override fbq to prevent duplicate Purchase events on button clicks
+      // ✅ CRITICAL: Override fbq to prevent Purchase events on button clicks
       const originalFbq = window.fbq;
       window.fbq = function(action, event, data) {
-        // ✅ BLOCK Purchase events that are not from thank you pages
-        if (action === 'track' && event === 'Purchase' && !window.location.pathname.includes('thank')) {
-          console.warn('🚫 BLOCKED Purchase event on non-thank-you page:', window.location.pathname);
-          console.log('💡 Use InitiateCheckout for button clicks, Purchase only for completed orders');
+        // ✅ Block Purchase events that are not from thank you pages
+        if (action === 'track' && event === 'Purchase') {
+          const isThankYouPage = window.location.pathname.includes('thank') || 
+                                window.location.pathname.includes('success') ||
+                                window.location.pathname.includes('complete') ||
+                                window.location.search.includes('thank') ||
+                                window.location.search.includes('success');
+          
+          if (!isThankYouPage) {
+            console.warn('🚫 BLOCKED Purchase event on non-thank-you page:', window.location.href);
+            console.log('💡 Use InitiateCheckout for button clicks, Purchase only for completed orders');
+            return;
+          }
+        }
+        
+        // ✅ Block custom events (only allow standard events)
+        if (action === 'trackCustom') {
+          console.warn('🚫 BLOCKED custom event:', event, '- Only standard Facebook events allowed');
           return;
         }
         
-        // ✅ Allow all other standard events
+        // ✅ Allow all standard events
         return originalFbq.apply(this, arguments);
       };
       
       // ✅ Copy properties from original fbq
       Object.keys(originalFbq).forEach(key => {
-        window.fbq[key] = originalFbq[key];
+        if (typeof originalFbq[key] !== 'function') {
+          window.fbq[key] = originalFbq[key];
+        }
       });
+      
+      // ✅ Monitor for duplicate scripts
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1 && node.tagName === 'SCRIPT') {
+              const script = node as HTMLScriptElement;
+              if (script.src && script.src.includes('fbevents.js')) {
+                const existingScripts = document.querySelectorAll('script[src*="fbevents.js"]');
+                if (existingScripts.length > 1) {
+                  console.error('🚨 DUPLICATE Meta Pixel script detected and REMOVED:', script.src);
+                  script.remove();
+                }
+              }
+            }
+          });
+        });
+      });
+      
+      observer.observe(document.head, { childList: true, subtree: true });
+      observer.observe(document.body, { childList: true, subtree: true });
       
     })();
     </script>

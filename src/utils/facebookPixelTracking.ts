@@ -15,10 +15,22 @@ export const FACEBOOK_PIXEL_CONFIG: FacebookPixelConfig = {
  * Check if Facebook Pixel is properly loaded and initialized
  */
 export const isFacebookPixelReady = (): boolean => {
-  return typeof window !== 'undefined' && 
-         typeof (window as any).fbq === 'function' && 
-         (window as any).fbqInitialized === true &&
-         !(window as any).fbqInitializing;
+  if (typeof window === 'undefined') return false;
+  
+  const fbq = (window as any).fbq;
+  const fbqInitialized = (window as any).fbqInitialized;
+  const fbqInitializing = (window as any).fbqInitializing;
+  
+  // ✅ Check for duplicate scripts
+  const fbScripts = document.querySelectorAll('script[src*="fbevents.js"]');
+  if (fbScripts.length > 1) {
+    console.error('🚨 MULTIPLE Meta Pixel scripts detected:', fbScripts.length);
+    return false;
+  }
+  
+  return typeof fbq === 'function' && 
+         fbqInitialized === true &&
+         !fbqInitializing;
 };
 
 /**
@@ -62,6 +74,14 @@ export const buildRedirectUrl = (originalUrl: string): string => {
  * Track InitiateCheckout event with Facebook Pixel
  */
 export const trackInitiateCheckout = (url?: string): void => {
+  // ✅ Check for duplicate pixels first
+  const fbScripts = document.querySelectorAll('script[src*="fbevents.js"]');
+  if (fbScripts.length > 1) {
+    console.error('🚨 CANNOT track - Multiple Meta Pixel scripts detected:', fbScripts.length);
+    console.log('🔧 Please refresh the page to fix duplicate pixels');
+    return;
+  }
+  
   if (!FACEBOOK_PIXEL_CONFIG.enabled) {
     console.log('📊 Facebook Pixel tracking disabled');
     return;
@@ -74,12 +94,13 @@ export const trackInitiateCheckout = (url?: string): void => {
   
   try {
     // ✅ CRITICAL: ONLY InitiateCheckout event - NO Purchase event here
-    (window as any).fbq('track', 'InitiateCheckout');
+    const fbq = (window as any).fbq;
+    fbq('track', 'InitiateCheckout');
     
-    console.log('✅ Facebook Pixel: InitiateCheckout event tracked successfully');
+    console.log('✅ Meta Pixel: InitiateCheckout tracked successfully');
     
     if (url) {
-      console.log('🔗 InitiateCheckout for URL:', url);
+      console.log('🔗 Target URL:', url);
     }
     
   } catch (error) {
@@ -91,6 +112,13 @@ export const trackInitiateCheckout = (url?: string): void => {
  * Track Purchase event with Facebook Pixel (ONLY for actual purchases)
  */
 export const trackPurchase = (value: number, currency: string = 'BRL'): void => {
+  // ✅ Check for duplicate pixels first
+  const fbScripts = document.querySelectorAll('script[src*="fbevents.js"]');
+  if (fbScripts.length > 1) {
+    console.error('🚨 CANNOT track - Multiple Meta Pixel scripts detected:', fbScripts.length);
+    return;
+  }
+  
   if (!FACEBOOK_PIXEL_CONFIG.enabled) {
     console.log('📊 Facebook Pixel tracking disabled');
     return;
@@ -103,12 +131,13 @@ export const trackPurchase = (value: number, currency: string = 'BRL'): void => 
   
   try {
     // ✅ ONLY track Purchase for actual completed purchases
-    (window as any).fbq('track', 'Purchase', {
+    const fbq = (window as any).fbq;
+    fbq('track', 'Purchase', {
       value: value,
       currency: currency
     });
     
-    console.log('✅ Facebook Pixel: Purchase event tracked successfully', { value, currency });
+    console.log('✅ Meta Pixel: Purchase tracked successfully', { value, currency });
     
   } catch (error) {
     console.error('❌ Error tracking Purchase:', error);
@@ -173,12 +202,36 @@ export const handleCartPandaClick = (
 };
 
 /**
+ * Check for and remove duplicate Meta Pixel scripts
+ */
+export const checkAndFixDuplicatePixels = (): void => {
+  const fbScripts = document.querySelectorAll('script[src*="fbevents.js"]');
+  
+  if (fbScripts.length > 1) {
+    console.error('🚨 DUPLICATE Meta Pixel scripts detected:', fbScripts.length);
+    
+    // Remove all but the first script
+    for (let i = 1; i < fbScripts.length; i++) {
+      console.log('🗑️ Removing duplicate Meta Pixel script:', i + 1);
+      fbScripts[i].remove();
+    }
+    
+    console.log('✅ Duplicate Meta Pixel scripts removed');
+  } else {
+    console.log('✅ No duplicate Meta Pixel scripts found');
+  }
+};
+
+/**
  * Setup global click tracking for CartPanda URLs
  */
 export const setupCartPandaTracking = (): void => {
   if (typeof window === 'undefined') return;
   
   console.log('🚀 Setting up CartPanda click tracking...');
+  
+  // ✅ Check for duplicates first
+  checkAndFixDuplicatePixels();
   
   // Track all existing elements
   const trackExistingElements = () => {
@@ -270,6 +323,11 @@ export const setupCartPandaTracking = (): void => {
 export const initializeFacebookPixelTracking = (): void => {
   if (typeof window === 'undefined') return;
   
+  // ✅ Check for duplicates immediately
+  setTimeout(() => {
+    checkAndFixDuplicatePixels();
+  }, 1000);
+  
   // Wait for Facebook Pixel to be ready
   const checkPixelReady = () => {
     if (isFacebookPixelReady()) {
@@ -287,9 +345,15 @@ export const initializeFacebookPixelTracking = (): void => {
   // Also setup on DOM ready as fallback
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(checkPixelReady, 1000);
+      setTimeout(() => {
+        checkAndFixDuplicatePixels();
+        checkPixelReady();
+      }, 1000);
     });
   } else {
-    setTimeout(checkPixelReady, 1000);
+    setTimeout(() => {
+      checkAndFixDuplicatePixels();
+      checkPixelReady();
+    }, 1000);
   }
 };
