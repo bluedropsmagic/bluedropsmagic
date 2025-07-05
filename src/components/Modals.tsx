@@ -155,7 +155,7 @@ export const Modals: React.FC<ModalsProps> = ({
             </div>
           </div>
         </div>
-                className="w-full bg-transparent border border-white/20 text-white/60 hover:text-white/80 hover:border-white/30 font-medium py-2.5 px-6 rounded-xl transition-all duration-300 text-sm checkout-button"
+      )}
 
       {/* Upsell Popup Modal */}
       {showUpsellPopup && (
@@ -230,8 +230,6 @@ export const Modals: React.FC<ModalsProps> = ({
           </div>
         </div>
       )}
-    )
-    }
     </>
   );
 };
