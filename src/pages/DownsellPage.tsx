@@ -154,25 +154,25 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
     
     // ✅ NEW: Add CID parameter if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const cid = urlParams.get('cid');
+    
     // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
     if (url.includes('cartpanda.com')) {
       if (window.utmify && typeof window.utmify === 'function') {
         window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
         console.log('🎯 InitiateCheckout disparado para downsell accept:', variant);
       }
+    }
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
+    // ✅ NEW: Preservar parâmetros UTM
     url = url + window.location.search;
-    // ✅ NEW: Disparar InitiateCheckout se for URL CartPanda
-    if (url.includes('cartpanda.com')) {
-      if (window.utmify && typeof window.utmify === 'function') {
-        window.utmify("track", "InitiateCheckout", {}, "681eb087803be4de5c3bd68b");
-        console.log('🎯 InitiateCheckout disparado para downsell reject:', variant);
-      }
-    }
+    window.location.href = url;
+  };
+
   const handleReject = () => {
     trackOfferClick(`downsell-${variant}-reject`);
     
