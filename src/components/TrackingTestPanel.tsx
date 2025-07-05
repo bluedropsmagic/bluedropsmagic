@@ -273,11 +273,17 @@ export const TrackingTestPanel: React.FC = () => {
       if (!videoContainer) {
         updateStatus(index, { 
           status: 'error', 
-          message: 'Container de vídeo não encontrado',
-          details: 'Elemento vid_683ba3d1b87ae17c6e07e7db não existe'
+          message: 'CRITICAL: Video container missing!',
+          details: 'Element vid_683ba3d1b87ae17c6e07e7db does not exist in DOM'
         });
+        
+        // ✅ NEW: Show available containers for debugging
+        const availableContainers = Array.from(document.querySelectorAll('[id*="vid"]')).map(el => el.id);
+        console.error('❌ Video container missing. Available containers:', availableContainers);
         return;
       }
+      
+      console.log('✅ Video container found:', videoContainer);
 
       // Check if VTurb script is loaded
       if (!window.vslVideoLoaded) {
@@ -292,18 +298,19 @@ export const TrackingTestPanel: React.FC = () => {
       // Check for video elements
       const videos = videoContainer.querySelectorAll('video');
       const iframes = videoContainer.querySelectorAll('iframe');
+      const vTurbElements = videoContainer.querySelectorAll('[data-vturb], [class*="vturb"]');
       
-      if (videos.length > 0 || iframes.length > 0) {
+      if (videos.length > 0 || iframes.length > 0 || vTurbElements.length > 0) {
         updateStatus(index, { 
           status: 'success', 
-          message: 'Elementos de vídeo encontrados',
-          details: `${videos.length} vídeos, ${iframes.length} iframes detectados`
+          message: 'Video elements found successfully',
+          details: `${videos.length} videos, ${iframes.length} iframes, ${vTurbElements.length} VTurb elements`
         });
       } else {
         updateStatus(index, { 
           status: 'warning', 
-          message: 'Nenhum elemento de vídeo detectado',
-          details: 'Container existe mas não há vídeos ou iframes'
+          message: 'Container exists but no video elements',
+          details: 'Container found but no videos, iframes, or VTurb elements detected'
         });
       }
 
@@ -312,8 +319,8 @@ export const TrackingTestPanel: React.FC = () => {
         (window as any).trackVideoPlay();
         updateStatus(index, { 
           status: 'success', 
-          message: 'Tracking de vídeo funcionando',
-          details: 'Evento de video_play enviado com sucesso'
+          message: 'Video tracking working perfectly',
+          details: 'video_play event sent successfully via manual trigger'
         });
       }
       

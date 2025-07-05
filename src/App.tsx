@@ -172,16 +172,21 @@ function App() {
     
     // Inject VTurb script with proper error handling and optimization
     const injectVTurbScript = () => {
-      // ✅ CRITICAL: Prevent multiple VTurb custom element registrations
-      if (window.vslVideoLoaded && document.getElementById('vid_683ba3d1b87ae17c6e07e7db')?.querySelector('video')) {
-        console.log('🛡️ VTurb script already loaded, skipping injection');
+      // ✅ FIXED: Check if container exists first
+      const mainContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+      if (!mainContainer) {
+        console.error('❌ Main video container not found! Cannot inject VTurb script.');
+        console.log('🔍 Available containers:', document.querySelectorAll('[id*="vid"]'));
         return;
       }
+      
+      console.log('✅ Main video container found:', mainContainer);
 
       // Remove any existing script first
       const existingScript = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
       if (existingScript) {
         existingScript.remove();
+        console.log('🗑️ Removed existing VTurb script');
       }
 
       const script = document.createElement('script');
@@ -194,7 +199,7 @@ function App() {
       script.innerHTML = `
         (function() {
           try {
-            // ✅ CRITICAL: Check if custom elements are already defined
+            // ✅ FIXED: Check if custom elements are already defined
             // Removed custom element check to allow video to load properly
             
             // ✅ CRITICAL: Initialize main video container isolation
@@ -202,10 +207,17 @@ function App() {
             window.smartplayer = window.smartplayer || { instances: {} };
             console.log('🎬 Initializing MAIN video player: 683ba3d1b87ae17c6e07e7db');
 
-            // ✅ FIXED: Prevent multiple script injections
+            // ✅ FIXED: Check for existing scripts
             if (document.querySelector('script[src*="683ba3d1b87ae17c6e07e7db/player.js"]')) {
               console.log('🛡️ VTurb script already in DOM, skipping duplicate injection');
               window.vslVideoLoaded = true;
+              return;
+            }
+            
+            // ✅ FIXED: Ensure target container exists
+            var targetContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+            if (!targetContainer) {
+              console.error('❌ Target container not found during script injection');
               return;
             }
             
@@ -216,6 +228,11 @@ function App() {
               console.log('VTurb player script loaded successfully');
               window.vslVideoLoaded = true;
               
+              // ✅ FIXED: Verify container still exists after load
+              var container = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+              if (!container) {
+                console.error('❌ Container disappeared after VTurb load!');
+              }
               // ✅ AUTO-PLAY: Tentar dar play automaticamente no vídeo principal
               setTimeout(function() {
                 try {
@@ -258,6 +275,7 @@ function App() {
                   console.log('✅ Main video container secured');
                   // Mark main video as protected
                   mainContainer.setAttribute('data-main-video', 'true');
+                  mainContainer.setAttribute('data-video-id', '683ba3d1b87ae17c6e07e7db');
                 }
               }, 2000);
             };
@@ -272,6 +290,7 @@ function App() {
       `;
       
       document.head.appendChild(script);
+      console.log('✅ VTurb script injected successfully');
     };
 
     // Delay script injection to improve initial page load
@@ -281,7 +300,7 @@ function App() {
       // ✅ FIXED: Check if video actually loaded
       const checkVideoLoaded = () => {
         const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
-        if (videoContainer && (videoContainer.querySelector('video') || window.vslVideoLoaded)) {
+        if (videoContainer && (videoContainer.querySelector('video') || videoContainer.querySelector('iframe') || window.vslVideoLoaded)) {
           setIsVideoLoaded(true);
           console.log('✅ Video container has video element, marking as loaded');
         } else {
@@ -348,23 +367,26 @@ function App() {
     const checkForPlayer = () => {
       try {
         trackingAttempts++;
-        console.log(`🔍 Tentativa ${trackingAttempts}/${maxAttempts} - Procurando player de vídeo PRINCIPAL...`);
+        console.log(`🔍 Attempt ${trackingAttempts}/${maxAttempts} - Looking for MAIN video player...`);
         
         // Multiple ways to detect VTurb player
         const playerContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
         
         if (!playerContainer) {
-          console.log('❌ Container do vídeo PRINCIPAL não encontrado (vid_683ba3d1b87ae17c6e07e7db)');
+          console.error('❌ MAIN video container not found (vid_683ba3d1b87ae17c6e07e7db)');
+          console.log('🔍 Available elements with "vid" in ID:', 
+            Array.from(document.querySelectorAll('[id*="vid"]')).map(el => el.id)
+          );
           return;
         }
         
-        console.log('✅ Container do vídeo PRINCIPAL encontrado:', playerContainer);
+        console.log('✅ MAIN video container found:', playerContainer);
 
         // ✅ FIXED: Force tracking if video is loaded
         if (window.vslVideoLoaded && !hasTrackedPlay) {
           hasTrackedPlay = true;
           trackVideoPlay();
-          console.log('🎬 Video play tracked via vslVideoLoaded flag');
+          console.log('🎬 Video play tracked via global flag');
           clearInterval(trackingInterval);
           return;
         }
@@ -373,14 +395,14 @@ function App() {
         if (window.smartplayer && window.smartplayer.instances) {
           const playerInstance = window.smartplayer.instances['683ba3d1b87ae17c6e07e7db'];
           if (playerInstance) {
-            console.log('✅ VTurb player instance encontrada');
+            console.log('✅ VTurb player instance found');
             
             // Track video play
             playerInstance.on('play', () => {
               if (!hasTrackedPlay) {
                 hasTrackedPlay = true;
                 trackVideoPlay();
-                console.log('🎬 Video play tracked via smartplayer instance');
+                console.log('🎬 Video play tracked via smartplayer');
               }
             });
 
@@ -395,7 +417,7 @@ function App() {
             });
 
             clearInterval(trackingInterval);
-            console.log('🎯 Tracking configurado via smartplayer instance');
+            console.log('🎯 Tracking configured via smartplayer');
             return;
           }
         }
@@ -403,8 +425,10 @@ function App() {
         // Method 2: Check for video elements in container
         if (playerContainer) {
           const videos = playerContainer.querySelectorAll('video');
-          if (videos.length > 0) {
-            console.log(`✅ ${videos.length} elemento(s) de vídeo encontrado(s) no container`);
+          const iframes = playerContainer.querySelectorAll('iframe');
+          
+          if (videos.length > 0 || iframes.length > 0) {
+            console.log(`✅ Found ${videos.length} videos and ${iframes.length} iframes in container`);
             
             videos.forEach(video => {
               // Remove existing listeners to avoid duplicates
@@ -415,11 +439,22 @@ function App() {
               video.addEventListener('play', handleVideoPlay);
               video.addEventListener('timeupdate', handleTimeUpdate);
               
-              console.log('🎯 Event listeners adicionados ao elemento de vídeo');
+              console.log('🎯 Event listeners added to video element');
+            });
+            
+            // Also handle iframes
+            iframes.forEach(iframe => {
+              iframe.addEventListener('load', () => {
+                console.log('🎬 Iframe loaded, tracking video play');
+                if (!hasTrackedPlay) {
+                  hasTrackedPlay = true;
+                  trackVideoPlay();
+                }
+              });
             });
 
             clearInterval(trackingInterval);
-            console.log('🎯 Tracking configurado via elementos de vídeo');
+            console.log('🎯 Tracking configured via video elements');
             return;
           }
 
@@ -427,7 +462,7 @@ function App() {
           if (!hasTrackedPlay) {
             playerContainer.removeEventListener('click', handleContainerClick);
             playerContainer.addEventListener('click', handleContainerClick);
-            console.log('🎯 Click listener adicionado ao container como fallback');
+            console.log('🎯 Click listener added to container as fallback');
           }
         }
 
@@ -482,7 +517,7 @@ function App() {
       
       // ✅ Stop after max attempts
       if (trackingAttempts >= maxAttempts) {
-        console.log(`⏰ Máximo de tentativas atingido (${maxAttempts}). Parando busca por player PRINCIPAL.`);
+        console.log(`⏰ Maximum attempts reached (${maxAttempts}). Stopping search for MAIN player.`);
         clearInterval(trackingInterval);
       }
     };
@@ -491,7 +526,7 @@ function App() {
       if (!hasTrackedPlay) {
         hasTrackedPlay = true;
         trackVideoPlay();
-        console.log('🎬 Video play tracked via video element');
+        console.log('🎬 Video play tracked via video element event');
       }
     };
 
@@ -506,7 +541,7 @@ function App() {
       if (!hasTrackedPlay) {
         hasTrackedPlay = true;
         trackVideoPlay();
-        console.log('🎬 Video play tracked via container click');
+        console.log('🎬 Video play tracked via container click fallback');
       }
     };
 
@@ -536,7 +571,7 @@ function App() {
     };
 
     // Start checking for player immediately and then periodically
-    console.log('🚀 Iniciando setup de tracking de vídeo PRINCIPAL...');
+    console.log('🚀 Starting MAIN video tracking setup...');
     checkForPlayer();
     
     // ✅ FIXED: Use safer setInterval with try/catch
@@ -557,7 +592,7 @@ function App() {
       try {
         if (trackingInterval) {
           clearInterval(trackingInterval);
-          console.log('⏰ Timeout de tracking PRINCIPAL atingido - parando verificações');
+          console.log('⏰ MAIN tracking timeout reached - stopping checks');
         }
       } catch (error) {
         console.error('Error clearing tracking interval:', error);
