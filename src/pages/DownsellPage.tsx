@@ -283,7 +283,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               {/* Accept Button */}
               <button
                 onClick={handleAccept}
-                className="w-full bg-orange-400 hover:bg-orange-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors mb-4 border-2 border-gray-400"
+                className="w-full bg-orange-400 hover:bg-orange-500 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors border-2 border-gray-400 checkout-button"
               >
                 SIM, EU ACEITO ESTA OFERTA FINAL
               </button>
@@ -342,14 +342,14 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         <div className="mt-8 max-w-2xl mx-auto space-y-4">
           <button
             onClick={handleAccept}
-            className="w-full bg-orange-400 hover:bg-orange-500 text-white font-bold py-4 px-6 rounded-xl text-lg transition-colors border-2 border-gray-400"
+            className="w-full bg-orange-400 hover:bg-orange-500 text-white font-bold py-4 px-6 rounded-xl text-lg transition-colors border-2 border-gray-400 checkout-button"
           >
             🟨 YES — I ACCEPT THIS FINAL OFFER
           </button>
           
           <button
             onClick={handleReject}
-            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-colors border border-gray-300"
+            className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-colors border border-gray-300 checkout-button"
           >
             ❌ No thanks — I'll pass on this opportunity
           </button>

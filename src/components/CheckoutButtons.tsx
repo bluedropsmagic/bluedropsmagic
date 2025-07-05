@@ -194,7 +194,7 @@ export const CheckoutButtons: React.FC<CheckoutButtonsProps> = ({
         <button
           key={index}
           onClick={() => handleButtonClick(buttonConfig)}
-          className={buttonConfig.className}
+          className={`${buttonConfig.className} checkout-button`}
           style={{ touchAction: 'manipulation' }}
         >
           {buttonConfig.text}

@@ -528,41 +528,60 @@ export const TrackingTestPanel: React.FC = () => {
         <div className="mb-6 text-center">
           <button
             onClick={() => {
-              // ✅ LAUNCH 20 InitiateCheckout events for Utmify
-              console.log('🚀 Launching 20 InitiateCheckout events for Utmify...');
+              // ✅ LAUNCH 20 InitiateCheckout events for Utmify via checkout buttons
+              console.log('🚀 Launching 20 InitiateCheckout events for Utmify via checkout buttons...');
               
-              for (let i = 1; i <= 20; i++) {
-                setTimeout(() => {
-                  if (typeof window !== 'undefined' && (window as any).utmify) {
-                    (window as any).utmify('track', 'InitiateCheckout');
-                    console.log(`✅ Utmify InitiateCheckout ${i}/20 sent`);
-                  } else if (window.pixelId) {
-                    const utmifyEvent = new CustomEvent('utmify-track', {
-                      detail: { 
-                        event: 'InitiateCheckout', 
-                        pixelId: window.pixelId,
-                        testBatch: i,
-                        timestamp: Date.now()
-                      }
-                    });
-                    window.dispatchEvent(utmifyEvent);
-                    console.log(`✅ Utmify InitiateCheckout ${i}/20 sent via fallback`);
-                  }
-                }, i * 500); // 500ms delay between each event
+              // Find all checkout buttons and simulate clicks
+              const checkoutButtons = document.querySelectorAll('.checkout-button');
+              console.log(`🔍 Found ${checkoutButtons.length} checkout buttons`);
+              
+              if (checkoutButtons.length === 0) {
+                console.error('❌ No checkout buttons found! Make sure you are on a page with checkout buttons.');
+                alert('❌ Nenhum botão de checkout encontrado! Certifique-se de estar em uma página com botões de compra.');
+                return;
               }
               
-              // Final confirmation
-              setTimeout(() => {
-                console.log('🎯 All 20 InitiateCheckout events sent to Utmify!');
-                alert('✅ 20 InitiateCheckout events enviados para Utmify!');
-              }, 20 * 500 + 1000);
+              // Simulate 20 clicks across available buttons
+              let clickCount = 0;
+              const totalClicks = 20;
+              
+              const clickInterval = setInterval(() => {
+                if (clickCount >= totalClicks) {
+                  clearInterval(clickInterval);
+                  console.log('🎯 All 20 InitiateCheckout events sent via button simulation!');
+                  alert('✅ 20 InitiateCheckout events enviados via simulação de botões!');
+                  return;
+                }
+                
+                // Get random button or cycle through them
+                const buttonIndex = clickCount % checkoutButtons.length;
+                const button = checkoutButtons[buttonIndex] as HTMLButtonElement;
+                
+                // Simulate click event without actually navigating
+                const clickEvent = new MouseEvent('click', {
+                  bubbles: true,
+                  cancelable: true,
+                  view: window
+                });
+                
+                // Prevent actual navigation by stopping propagation
+                button.addEventListener('click', (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }, { once: true, capture: true });
+                
+                button.dispatchEvent(clickEvent);
+                
+                clickCount++;
+                console.log(`✅ Simulated click ${clickCount}/20 on button: ${button.textContent?.substring(0, 30)}...`);
+              }, 500); // 500ms delay between each click
             }}
             className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
-            🚀 LANÇAR 20 InitiateCheckout para Utmify
+            🚀 LANÇAR 20 InitiateCheckout via Botões
           </button>
           <p className="text-sm text-gray-600 mt-2">
-            Envia 20 eventos InitiateCheckout para a Utmify com intervalo de 500ms
+            Simula 20 cliques nos botões de checkout com intervalo de 500ms
           </p>
         </div>
         

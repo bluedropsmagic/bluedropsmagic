@@ -381,7 +381,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 rounded-xl blur opacity-75 animate-pulse"></div>
                   <button 
                     onClick={handleAccept}
-                    className="relative w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden"
+                    className="relative w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
                   >
                     <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
                     <span className="relative z-10">{content.acceptButtonText}</span>
@@ -429,7 +429,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           <div className="mb-6 animate-fadeInUp animation-delay-1600">
             <button 
               onClick={handleReject}
-              className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300"
+              className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
             >
               <span className="text-xs sm:text-sm font-medium">❌ {content.rejectButtonText}</span>
             </button>
