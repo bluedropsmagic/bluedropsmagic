@@ -18,7 +18,7 @@
         })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
     </script>
 
-    <!-- Utmify Tracking Code -->
+    <!-- ✅ CORRECT: Utmify Tracking Code -->
     <script>
       window.pixelId = "681eb087803be4de5c3bd68b";
       var a = document.createElement("script");
@@ -28,125 +28,25 @@
       document.head.appendChild(a);
     </script>
 
-    <!-- ✅ FIXED: Single Meta Pixel Implementation - NO DUPLICATES -->
+    <!-- ✅ CORRECT: Meta Pixel Code -->
     <script>
-    (function() {
-      'use strict';
-      
-      // ✅ CRITICAL: Prevent ANY duplicate initialization
-      if (window.fbqLoaded || window.fbq || document.querySelector('script[src*="fbevents.js"]')) {
-        console.warn('🛡️ Meta Pixel already exists, preventing duplicate initialization');
-        return;
-      }
-      
-      // ✅ Mark as loading immediately
-      window.fbqLoaded = true;
-      window.fbqInitializing = true;
-      
-      console.log('🚀 Initializing Meta Pixel (single instance)...');
-      
-      // ✅ Standard Facebook Pixel code (single execution)
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      
-      // ✅ Initialize pixel with ID
-      fbq('init', '1205864517252800');
-      fbq('track', 'PageView');
-      
-      // ✅ Mark as fully initialized
-      window.fbqInitialized = true;
-      window.fbqInitializing = false;
-      
-      console.log('✅ Meta Pixel initialized successfully - ID: 1205864517252800');
-      
-      // ✅ CRITICAL: Override fbq to prevent Purchase events on button clicks
-      const originalFbq = window.fbq;
-      window.fbq = function(action, event, data) {
-        // ✅ Block Purchase events that are not from thank you pages
-        if (action === 'track' && event === 'Purchase') {
-          const isThankYouPage = window.location.pathname.includes('thank') || 
-                                window.location.pathname.includes('success') ||
-                                window.location.pathname.includes('complete') ||
-                                window.location.search.includes('thank') ||
-                                window.location.search.includes('success');
-          
-          if (!isThankYouPage) {
-            console.warn('🚫 BLOCKED Purchase event on non-thank-you page:', window.location.href);
-            console.log('💡 Use InitiateCheckout for button clicks, Purchase only for completed orders');
-            return;
-          }
-        }
-        
-        // ✅ Block custom events (only allow standard events)
-        if (action === 'trackCustom') {
-          console.warn('🚫 BLOCKED custom event:', event, '- Only standard Facebook events allowed');
-          return;
-        }
-        
-        // ✅ Allow all standard events
-        return originalFbq.apply(this, arguments);
-      };
-      
-      // ✅ Copy properties from original fbq
-      Object.keys(originalFbq).forEach(key => {
-        if (typeof originalFbq[key] !== 'function') {
-          window.fbq[key] = originalFbq[key];
-        }
-      });
-      
-      // ✅ Monitor for duplicate scripts
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === 1 && node.tagName === 'SCRIPT') {
-              const script = node as HTMLScriptElement;
-              if (script.src && script.src.includes('fbevents.js')) {
-                const existingScripts = document.querySelectorAll('script[src*="fbevents.js"]');
-                if (existingScripts.length > 1) {
-                  console.error('🚨 DUPLICATE Meta Pixel script detected and REMOVED:', script.src);
-                  script.remove();
-                }
-              }
-            }
-          });
-        });
-      });
-      
-      observer.observe(document.head, { childList: true, subtree: true });
-      observer.observe(document.body, { childList: true, subtree: true });
-      
-    })();
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1205864517252800');
+    fbq('track', 'PageView');
     </script>
 
-    <!-- ✅ RedTrack Universal Script - Load after Meta Pixel -->
-    <script>
-      // ✅ Load RedTrack after Meta Pixel to prevent conflicts
-      (function() {
-        var script = document.createElement('script');
-        script.src = 'https://rdt.obluemagicdrops.com/uniclick.js?attribution=lastpaid&cookiedomain=elaborate-smakager-4592e9.netlify.app&cookieduration=90&defaultcampaignid=68685bcb51f1690d1f917171&regviewonce=false';
-        script.async = true;
-        script.defer = true;
-        
-        script.onload = function() {
-          console.log('✅ RedTrack script loaded successfully');
-        };
-        
-        script.onerror = function() {
-          console.warn('⚠️ RedTrack script failed to load');
-        };
-        
-        document.head.appendChild(script);
-      })();
-    </script>
+    <!-- ✅ RedTrack Universal Script -->
+    <script src="https://rdt.obluemagicdrops.com/uniclick.js?attribution=lastpaid&cookiedomain=elaborate-smakager-4592e9.netlify.app&cookieduration=90&defaultcampaignid=68685bcb51f1690d1f917171&regviewonce=false"></script>
   </head>
   <body>
-    <!-- Meta Pixel noscript - moved to body -->
+    <!-- ✅ CORRECT: Meta Pixel noscript -->
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1205864517252800&ev=PageView&noscript=1"
     /></noscript>

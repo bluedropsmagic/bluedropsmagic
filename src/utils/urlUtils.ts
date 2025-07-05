@@ -168,13 +168,18 @@ export const trackConversion = (eventName: string, value?: number, currency?: st
  * Track purchase events
  */
 export const trackPurchase = (value: number, currency: string = 'BRL', productType?: string): void => {
-  // ✅ CRITICAL: This function should ONLY be used on thank you pages
-  // NOT on button clicks - button clicks should use InitiateCheckout
-  console.warn('⚠️ trackPurchase called - this should ONLY be used on thank you pages, not button clicks');
+  // ✅ REMOVED: No Facebook Pixel Purchase tracking here
+  // Purchase tracking is handled separately in facebookPixelTracking.ts
   
-  // ✅ REMOVED: Actual Purchase tracking - should be done via facebookPixelTracking.ts
-  // trackConversion('Purchase', value, currency);
+  // Only track with Utmify
+  if (typeof window !== 'undefined' && (window as any).utmify) {
+    const eventData: any = { event: 'Purchase' };
+    if (value !== undefined) eventData.value = value;
+    if (currency) eventData.currency = currency;
+    
+    console.log('📊 Tracking purchase via Utmify:', eventData);
+    (window as any).utmify('track', 'Conversion', eventData);
+  }
   
-  console.log('📊 Purchase intent logged for product type:', productType, 'Value:', value, currency);
-  console.log('💡 Use trackInitiateCheckout() for button clicks, trackPurchase() only for completed purchases');
+  console.log('📊 Purchase logged for product type:', productType, 'Value:', value, currency);
 };

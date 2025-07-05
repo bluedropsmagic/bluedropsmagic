@@ -104,30 +104,18 @@ export const TrackingTestPanel: React.FC = () => {
     try {
       // ✅ ENHANCED: Check for duplicate initialization
       const fbq = (window as any).fbq;
-      const fbqInitialized = (window as any).fbqInitialized;
-      const fbqInitializing = (window as any).fbqInitializing;
-      const fbqLoaded = (window as any).fbqLoaded;
       
       if (typeof fbq === 'function') {
-        // ✅ CRITICAL: Check for duplicate scripts
-        const fbScripts = document.querySelectorAll('script[src*="fbevents.js"]');
-        const isDuplicated = fbScripts.length > 1;
         const isReady = isFacebookPixelReady();
         
-        if (isDuplicated) {
-          updateStatus(index, { 
-            status: 'error', 
-            message: `🚨 DUPLICATE Meta Pixel detected! (${fbScripts.length} scripts)`,
-            details: 'Multiple fbevents.js scripts found - this causes conflicts and duplicate events'
-          });
-        } else if (isReady) {
+        if (isReady) {
           // ✅ ONLY test standard InitiateCheckout event
           try {
             trackInitiateCheckout('https://test.cartpanda.com/test');
             updateStatus(index, { 
               status: 'success', 
-              message: 'Meta Pixel working perfectly - STANDARD events only',
-              details: 'InitiateCheckout (standard event) tested successfully'
+              message: 'Meta Pixel carregado e funcionando',
+              details: 'Pixel ativo, eventos padrão sendo enviados'
             });
           } catch (error) {
             updateStatus(index, { 
@@ -136,24 +124,12 @@ export const TrackingTestPanel: React.FC = () => {
               details: `Erro ao testar InitiateCheckout: ${error}`
             });
           }
-        } else if (fbqInitialized && !fbqInitializing) {
-        updateStatus(index, { 
-          status: 'success', 
-          message: 'Meta Pixel loaded - NO custom events',
-          details: 'Only standard Facebook events are allowed'
-        });
-        } else if (fbqInitializing) {
-          updateStatus(index, { 
-            status: 'warning', 
-            message: 'Meta Pixel initializing...',
-            details: 'Please wait for complete initialization'
-          });
         } else {
-          updateStatus(index, { 
-            status: 'warning', 
-            message: 'Meta Pixel loaded but not initialized',
-            details: 'fbq function exists but initialization not confirmed'
-          });
+        updateStatus(index, { 
+          status: 'warning', 
+          message: 'Meta Pixel carregando...',
+          details: 'Aguarde a inicialização completa'
+        });
         }
       } else {
         updateStatus(index, { 
