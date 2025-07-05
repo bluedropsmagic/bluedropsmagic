@@ -478,42 +478,6 @@ export const TrackingTestPanel: React.FC = () => {
                 Testar
               </button>
               
-              <button
-                onClick={() => {
-                  // ✅ LAUNCH 20 InitiateCheckout events for Utmify
-                  console.log('🚀 Launching 20 InitiateCheckout events for Utmify...');
-                  
-                  for (let i = 1; i <= 20; i++) {
-                    setTimeout(() => {
-                      if (typeof window !== 'undefined' && (window as any).utmify) {
-                        (window as any).utmify('track', 'InitiateCheckout');
-                        console.log(`✅ Utmify InitiateCheckout ${i}/20 sent`);
-                      } else if (window.pixelId) {
-                        const utmifyEvent = new CustomEvent('utmify-track', {
-                          detail: { 
-                            event: 'InitiateCheckout', 
-                            pixelId: window.pixelId,
-                            testBatch: i,
-                            timestamp: Date.now()
-                          }
-                        });
-                        window.dispatchEvent(utmifyEvent);
-                        console.log(`✅ Utmify InitiateCheckout ${i}/20 sent via fallback`);
-                      }
-                    }, i * 500); // 500ms delay between each event
-                  }
-                  
-                  // Final confirmation
-                  setTimeout(() => {
-                    console.log('🎯 All 20 InitiateCheckout events sent to Utmify!');
-                    alert('✅ 20 InitiateCheckout events enviados para Utmify!');
-                  }, 20 * 500 + 1000);
-                }}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm transition-colors font-bold"
-              >
-                🚀 LANÇAR 20 InitiateCheckout para Utmify
-              </button>
-              
               {/* External links for some services */}
               {tracking.name === 'Hotjar' && (
                 <a
@@ -560,6 +524,48 @@ export const TrackingTestPanel: React.FC = () => {
 
       {/* Test URLs */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        {/* ✅ SINGLE Utmify Button - Centralized */}
+        <div className="mb-6 text-center">
+          <button
+            onClick={() => {
+              // ✅ LAUNCH 20 InitiateCheckout events for Utmify
+              console.log('🚀 Launching 20 InitiateCheckout events for Utmify...');
+              
+              for (let i = 1; i <= 20; i++) {
+                setTimeout(() => {
+                  if (typeof window !== 'undefined' && (window as any).utmify) {
+                    (window as any).utmify('track', 'InitiateCheckout');
+                    console.log(`✅ Utmify InitiateCheckout ${i}/20 sent`);
+                  } else if (window.pixelId) {
+                    const utmifyEvent = new CustomEvent('utmify-track', {
+                      detail: { 
+                        event: 'InitiateCheckout', 
+                        pixelId: window.pixelId,
+                        testBatch: i,
+                        timestamp: Date.now()
+                      }
+                    });
+                    window.dispatchEvent(utmifyEvent);
+                    console.log(`✅ Utmify InitiateCheckout ${i}/20 sent via fallback`);
+                  }
+                }, i * 500); // 500ms delay between each event
+              }
+              
+              // Final confirmation
+              setTimeout(() => {
+                console.log('🎯 All 20 InitiateCheckout events sent to Utmify!');
+                alert('✅ 20 InitiateCheckout events enviados para Utmify!');
+              }, 20 * 500 + 1000);
+            }}
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            🚀 LANÇAR 20 InitiateCheckout para Utmify
+          </button>
+          <p className="text-sm text-gray-600 mt-2">
+            Envia 20 eventos InitiateCheckout para a Utmify com intervalo de 500ms
+          </p>
+        </div>
+        
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Eye className="w-5 h-5" />
           URLs de Teste + Debugging de Vídeo
