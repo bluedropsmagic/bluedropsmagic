@@ -92,6 +92,11 @@ function App() {
     console.log('🕐 35:55 reached - showing rest of content');
     setShowRestOfContent(true);
     setShowPurchaseButton(true);
+    
+    // ✅ NEW: Auto-scroll to 6-bottle purchase button after content loads
+    setTimeout(() => {
+      scrollToSixBottleButton();
+    }, 1000); // Wait 1 second for content to render
   };
 
   const navigate = useNavigate();
@@ -142,6 +147,44 @@ function App() {
       setShowPurchaseButton(true);
     }
   }, [isAdmin, adminDelayOverride]);
+
+  // ✅ NEW: Function to scroll to 6-bottle purchase button
+  const scrollToSixBottleButton = () => {
+    try {
+      // Look for the 6-bottle package specifically
+      const sixBottlePackage = document.getElementById('six-bottle-package') || 
+                              document.querySelector('[data-purchase-section="true"]') ||
+                              document.querySelector('.purchase-button-main') ||
+                              document.querySelector('button[class*="yellow"]');
+      
+      if (sixBottlePackage) {
+        console.log('📍 Auto-scrolling to 6-bottle purchase button after pitch moment');
+        
+        // Smooth scroll to the 6-bottle package
+        sixBottlePackage.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+        
+        // Add a subtle highlight effect to draw attention
+        sixBottlePackage.style.transition = 'all 0.8s ease';
+        sixBottlePackage.style.transform = 'scale(1.02)';
+        sixBottlePackage.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+        
+        // Remove highlight after 4 seconds
+        setTimeout(() => {
+          sixBottlePackage.style.transform = 'scale(1)';
+          sixBottlePackage.style.boxShadow = '';
+        }, 4000);
+        
+      } else {
+        console.log('⚠️ 6-bottle purchase button not found for auto-scroll');
+      }
+    } catch (error) {
+      console.error('Error scrolling to 6-bottle purchase button:', error);
+    }
+  };
 
   useEffect(() => {
     // Initialize URL tracking parameters

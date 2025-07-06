@@ -606,44 +606,6 @@ export const useAnalytics = () => {
     }
   };
 
-  // ✅ NEW: Function to scroll to purchase button
-  const scrollToPurchaseButton = () => {
-    try {
-      // Look for the purchase button container
-      const purchaseSection = document.getElementById('six-bottle-package') || 
-                             document.querySelector('[data-purchase-section]') ||
-                             document.querySelector('.product-offers') ||
-                             document.querySelector('button[class*="yellow"]');
-      
-      if (purchaseSection) {
-        console.log('📍 Scrolling to purchase button after pitch moment');
-        
-        // Smooth scroll to the purchase section
-        purchaseSection.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center',
-          inline: 'nearest'
-        });
-        
-        // Optional: Add a subtle highlight effect
-        purchaseSection.style.transition = 'all 0.5s ease';
-        purchaseSection.style.transform = 'scale(1.02)';
-        purchaseSection.style.boxShadow = '0 0 30px rgba(59, 130, 246, 0.3)';
-        
-        // Remove highlight after 3 seconds
-        setTimeout(() => {
-          purchaseSection.style.transform = 'scale(1)';
-          purchaseSection.style.boxShadow = '';
-        }, 3000);
-        
-      } else {
-        console.log('⚠️ Purchase button not found for auto-scroll');
-      }
-    } catch (error) {
-      console.error('Error scrolling to purchase button:', error);
-    }
-  };
-
   const trackOfferClick = (offerType: '1-bottle' | '3-bottle' | '6-bottle' | string) => {
     if (isBrazilianIP.current) return; // ✅ SKIP if Brazilian
     
