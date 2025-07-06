@@ -89,7 +89,7 @@ function App() {
 
   // ✅ NEW: Function to show rest of content after 35:55
   const showRestOfContentAfterDelay = () => {
-    console.log('🕐 35:55 reached - showing rest of content');
+    console.log('🕐 30 seconds reached - showing rest of content');
     setShowRestOfContent(true);
     setShowPurchaseButton(true);
     
@@ -148,6 +148,20 @@ function App() {
     }
   }, [isAdmin, adminDelayOverride]);
 
+  // ✅ NEW: Auto-trigger content reveal after 30 seconds
+  useEffect(() => {
+    console.log('🕐 Setting up 30-second timer for content reveal');
+    
+    const timer = setTimeout(() => {
+      console.log('🎯 30 seconds elapsed - triggering content reveal');
+      showRestOfContentAfterDelay();
+    }, 30000); // 30 seconds
+    
+    return () => {
+      console.log('🧹 Cleaning up 30-second timer');
+      clearTimeout(timer);
+    };
+  }, []); // Run only once on mount
   // ✅ NEW: Function to scroll to 6-bottle purchase button
   const scrollToSixBottleButton = () => {
     try {
