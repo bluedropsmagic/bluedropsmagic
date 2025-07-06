@@ -89,7 +89,7 @@ function App() {
 
   // ✅ NEW: Function to show rest of content after 35:55
   const showRestOfContentAfterDelay = () => {
-    console.log('🕐 30 seconds reached - showing rest of content');
+    console.log('🕐 35:55 reached - showing rest of content');
     setShowRestOfContent(true);
     setShowPurchaseButton(true);
     
@@ -150,15 +150,15 @@ function App() {
 
   // ✅ NEW: Auto-trigger content reveal after 30 seconds
   useEffect(() => {
-    console.log('🕐 Setting up 30-second timer for content reveal');
+    console.log('🕐 Setting up 35:55 timer for content reveal');
     
     const timer = setTimeout(() => {
-      console.log('🎯 30 seconds elapsed - triggering content reveal');
+      console.log('🎯 35:55 elapsed - triggering content reveal');
       showRestOfContentAfterDelay();
-    }, 30000); // 30 seconds
+    }, 2155000); // 35:55 = 2155 seconds = 2,155,000 milliseconds
     
     return () => {
-      console.log('🧹 Cleaning up 30-second timer');
+      console.log('🧹 Cleaning up 35:55 timer');
       clearTimeout(timer);
     };
   }, []); // Run only once on mount

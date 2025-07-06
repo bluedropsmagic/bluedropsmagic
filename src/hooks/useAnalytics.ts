@@ -541,21 +541,21 @@ export const useAnalytics = () => {
   const trackVideoProgress = (currentTime: number, duration: number) => {
     if (isBrazilianIP.current) return; // ✅ SKIP if Brazilian
     
-    // ✅ UPDATED: Track when user reaches the pitch moment (30 seconds) AND trigger content reveal
+    // ✅ UPDATED: Track when user reaches the pitch moment (35:55 = 2155 seconds) AND trigger content reveal
     // ✅ UPDATED: Now "video progress" means total time on page, not video time
     const totalTimeOnPage = Math.floor((Date.now() - pageStartTime.current) / 1000);
     
-    // Check if user has been on page for 30 seconds
-    if (totalTimeOnPage >= 30 && !hasTrackedPitchReached.current) {
+    // Check if user has been on page for 35min55s (2155 seconds)
+    if (totalTimeOnPage >= 2155 && !hasTrackedPitchReached.current) {
       hasTrackedPitchReached.current = true;
       trackEvent('pitch_reached', { 
-        milestone: 'pitch_reached_30s',
+        milestone: 'pitch_reached_35_55',
         time_reached: totalTimeOnPage,
         total_time_on_page: totalTimeOnPage,
         actual_video_time: currentTime, // Keep original video time for reference
         country: geolocationData.current?.country_name || 'Unknown'
       });
-      console.log('🎯 User has been on page for 30 seconds - pitch moment reached');
+      console.log('🎯 User has been on page for 35:55 (2155 seconds) - pitch moment reached');
       
       // ✅ NEW: Trigger content reveal instead of just scrolling
       if (typeof window !== 'undefined' && (window as any).showRestOfContentAfterDelay) {

@@ -102,7 +102,7 @@ export const AdminDashboard: React.FC = () => {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
   const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'settings'>('analytics');
-  const [contentDelay, setContentDelay] = useState(30); // ✅ CHANGED: Default to 30 seconds for testing
+  const [contentDelay, setContentDelay] = useState(2155); // ✅ CHANGED: Default to 35:55 (2155 seconds)
 
   const navigate = useNavigate();
 
@@ -179,7 +179,7 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const resetToDefault = () => {
-    handleDelayChange(30); // ✅ CHANGED: Default to 30 seconds
+    handleDelayChange(2155); // ✅ CHANGED: Default to 35:55
   };
 
   // Enhanced country flag mapping
@@ -1081,8 +1081,8 @@ export const AdminDashboard: React.FC = () => {
                     { label: '1 minuto', value: 60 },
                     { label: '2 minutos', value: 120 },
                     { label: '5 minutos', value: 300 },
-                    { label: '30 segundos (Teste)', value: 30, isDefault: true },
-                    { label: '35min55s (Original)', value: 2155 }
+                    { label: '30 segundos (Teste)', value: 30 },
+                    { label: '35min55s (Padrão)', value: 2155, isDefault: true }
                   ].map((preset) => (
                     <button
                       key={preset.value}
@@ -1137,10 +1137,10 @@ export const AdminDashboard: React.FC = () => {
                   <h4 className="font-semibold text-blue-800 mb-2">⏰ Sistema de Delay Ativo:</h4>
                   <ul className="text-sm text-blue-700 space-y-1">
                     <li>• <strong>Conteúdo inicial:</strong> Vídeo + avisos até "Watch now before it's removed"</li>
-                    <li>• <strong>Conteúdo completo:</strong> Aparece após {contentDelay < 60 ? `${contentDelay}s` : `${Math.floor(contentDelay / 60)}min${contentDelay % 60 > 0 ? ` ${contentDelay % 60}s` : ''}`}</li>
+                    <li>• <strong>Conteúdo completo:</strong> Aparece após {Math.floor(contentDelay / 60)}min{contentDelay % 60 > 0 ? ` ${contentDelay % 60}s` : ''}</li>
                     <li>• <strong>Inclui:</strong> Botões de compra, depoimentos, médicos, notícias, garantia</li>
                     <li>• <strong>Admin override:</strong> Botão no canto superior direito para mostrar tudo</li>
-                    <li>• <strong>Modo atual:</strong> TESTE - 30 segundos para desenvolvimento</li>
+                    <li>• <strong>Objetivo:</strong> Usuário assiste mais tempo antes de ver ofertas</li>
                   </ul>
                 </div>
               </div>
