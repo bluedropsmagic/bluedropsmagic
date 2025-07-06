@@ -102,7 +102,7 @@ export const AdminDashboard: React.FC = () => {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
   const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'settings'>('analytics');
-  const [contentDelay, setContentDelay] = useState(2155); // ✅ CHANGED: Default to 35:55 (2155 seconds)
+  const [contentDelay, setContentDelay] = useState(30); // ✅ CHANGED: Default to 30 seconds for testing
 
   const navigate = useNavigate();
 
@@ -179,7 +179,7 @@ export const AdminDashboard: React.FC = () => {
   };
 
   const resetToDefault = () => {
-    handleDelayChange(2155); // ✅ CHANGED: Default to 35:55
+    handleDelayChange(30); // ✅ CHANGED: Default to 30 seconds
   };
 
   // Enhanced country flag mapping
@@ -1081,7 +1081,8 @@ export const AdminDashboard: React.FC = () => {
                     { label: '1 minuto', value: 60 },
                     { label: '2 minutos', value: 120 },
                     { label: '5 minutos', value: 300 },
-                    { label: '35min55s (Padrão)', value: 2155, isDefault: true }
+                    { label: '30 segundos (Teste)', value: 30, isDefault: true },
+                    { label: '35min55s (Original)', value: 2155 }
                   ].map((preset) => (
                     <button
                       key={preset.value}
