@@ -1137,10 +1137,10 @@ export const AdminDashboard: React.FC = () => {
                   <h4 className="font-semibold text-blue-800 mb-2">⏰ Sistema de Delay Ativo:</h4>
                   <ul className="text-sm text-blue-700 space-y-1">
                     <li>• <strong>Conteúdo inicial:</strong> Vídeo + avisos até "Watch now before it's removed"</li>
-                    <li>• <strong>Conteúdo completo:</strong> Aparece após {Math.floor(contentDelay / 60)}min{contentDelay % 60 > 0 ? ` ${contentDelay % 60}s` : ''}</li>
+                    <li>• <strong>Conteúdo completo:</strong> Aparece após {contentDelay < 60 ? `${contentDelay}s` : `${Math.floor(contentDelay / 60)}min${contentDelay % 60 > 0 ? ` ${contentDelay % 60}s` : ''}`}</li>
                     <li>• <strong>Inclui:</strong> Botões de compra, depoimentos, médicos, notícias, garantia</li>
                     <li>• <strong>Admin override:</strong> Botão no canto superior direito para mostrar tudo</li>
-                    <li>• <strong>Objetivo:</strong> Usuário assiste mais tempo antes de ver ofertas</li>
+                    <li>• <strong>Modo atual:</strong> TESTE - 30 segundos para desenvolvimento</li>
                   </ul>
                 </div>
               </div>
