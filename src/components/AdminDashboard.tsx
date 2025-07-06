@@ -7,6 +7,7 @@ import { ConversionHeatmap } from './ConversionHeatmap';
 import { TrackingTestPanel } from './TrackingTestPanel';
 import { ManelChart } from './ManelChart';
 import { RedTrackTestPanel } from './RedTrackTestPanel';
+import { AdminTestingEnvironment } from './AdminTestingEnvironment';
 import { 
   BarChart3, 
   Users, 
@@ -101,7 +102,7 @@ export const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
-  const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'settings'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'testing' | 'settings'>('analytics');
   const [contentDelay, setContentDelay] = useState(2155); // ✅ CHANGED: Default to 35:55 (2155 seconds)
 
   const navigate = useNavigate();
@@ -787,6 +788,17 @@ export const AdminDashboard: React.FC = () => {
                   RedTrack
                 </button>
                 <button
+                  onClick={() => setActiveTab('testing')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                    activeTab === 'testing'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <Monitor className="w-4 h-4 inline mr-2" />
+                  Testing
+                </button>
+                <button
                   onClick={() => setActiveTab('settings')}
                   className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                     activeTab === 'settings'
@@ -1044,6 +1056,8 @@ export const AdminDashboard: React.FC = () => {
             <TrackingTestPanel />
           ) : activeTab === 'redtrack' ? (
             <RedTrackTestPanel />
+          ) : activeTab === 'testing' ? (
+            <AdminTestingEnvironment />
           ) : (
             // ✅ NEW: Settings Tab - Delay Controller
             <div className="space-y-6">
