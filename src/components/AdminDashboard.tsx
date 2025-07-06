@@ -26,7 +26,8 @@ import {
   Zap,
   Settings,
   Lock,
-  LogOut
+  LogOut,
+  TestTube
 } from 'lucide-react';
 
 interface AnalyticsData {
@@ -795,7 +796,7 @@ export const AdminDashboard: React.FC = () => {
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  <Monitor className="w-4 h-4 inline mr-2" />
+                  <TestTube className="w-4 h-4 inline mr-2" />
                   Testing
                 </button>
                 <button
