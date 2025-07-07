@@ -47,7 +47,7 @@ export const TestimonialsSection: React.FC = () => {
       name: pageType === 'upsell' ? "Lisa G." : "John O.",
       location: pageType === 'upsell' ? "Texas" : "Florida",
       profileImage: pageType === 'upsell' ? "https://i.imgur.com/EWjVWtx.png" : "https://i.imgur.com/UJ0L2tZ.png",
-      videoId: pageType === 'upsell' ? "686b8e7d15fc4aa5f81acc7e" : "68678320c5ab1e6abe6e5b6f", // ✅ NOTE: Lisa G. uses same video as Marcus W.
+      videoId: pageType === 'upsell' ? "686b93df199e54169b0f7652" : "68678320c5ab1e6abe6e5b6f", // ✅ UPDATED: Lisa G. now has her own video
       caption: pageType === 'upsell' ? "My husband is back. Emotionally, physically, in every way. Thank you, BlueDrops." : "My wife noticed the difference before I even told her about BlueDrops!"
     }
   ];
