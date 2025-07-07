@@ -45,6 +45,11 @@ interface AnalyticsData {
     '3-bottle': { clicks: number; accepts: number; rejects: number };
     '6-bottle': { clicks: number; accepts: number; rejects: number };
   };
+  upsellOfferStats: {
+    '1-bottle': { claimOffers: number; rejectOffers: number };
+    '3-bottle': { claimOffers: number; rejectOffers: number };
+    '6-bottle': { claimOffers: number; rejectOffers: number };
+  };
   averageTimeOnPage: number;
   totalOfferClicks: number;
   totalPurchases: number;
@@ -393,6 +398,11 @@ export const AdminDashboard: React.FC = () => {
         '3-bottle': { clicks: 0, accepts: 0, rejects: 0 },
         '6-bottle': { clicks: 0, accepts: 0, rejects: 0 },
       };
+      upsellOfferStats: {
+        '1-bottle': { claimOffers: 0, rejectOffers: 0 },
+        '3-bottle': { claimOffers: 0, rejectOffers: 0 },
+        '6-bottle': { claimOffers: 0, rejectOffers: 0 },
+      },
 
       offerClicks.forEach(event => {
         const offerType = event.event_data?.offer_type;
@@ -422,6 +432,13 @@ export const AdminDashboard: React.FC = () => {
         '1-bottle': totalSessions > 0 ? ((offerClicksByType['1-bottle'] || 0) / totalSessions) * 100 : 0,
         '3-bottle': totalSessions > 0 ? ((offerClicksByType['3-bottle'] || 0) / totalSessions) * 100 : 0,
         '6-bottle': totalSessions > 0 ? ((offerClicksByType['6-bottle'] || 0) / totalSessions) * 100 : 0,
+      };
+
+      // ✅ NEW: Calculate upsell offer statistics
+      const upsellOfferStats = {
+        '1-bottle': { claimOffers: 0, rejectOffers: 0 },
+        '3-bottle': { claimOffers: 0, rejectOffers: 0 },
+        '6-bottle': { claimOffers: 0, rejectOffers: 0 },
       };
 
       // ✅ UPDATED: Calculate average time on page using total_time_on_page_ms
@@ -493,6 +510,7 @@ export const AdminDashboard: React.FC = () => {
         leadReachRate,
         offerClickRates,
         upsellStats,
+        upsellOfferStats,
         averageTimeOnPage,
         totalOfferClicks,
         totalPurchases,
@@ -661,6 +679,82 @@ export const AdminDashboard: React.FC = () => {
                 required
                 disabled={isLoggingIn}
               />
+            </div>
+
+            {/* ✅ NEW: Upsell Offer Performance - Separate section for CLAIM OFFER tracking */}
+            <div className="mb-4 sm:mb-8">
+              <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Target className="w-5 h-5" />
+                  🎯 Cliques nas Ofertas de Upsell (CLAIM OFFER)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {Object.entries(analytics.upsellOfferStats).map(([packageType, stats]) => (
+                    <div key={packageType} className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <h4 className="font-semibold text-blue-800 mb-3 capitalize flex items-center gap-2">
+                        🎯 {packageType.replace('-', ' ')} Upsell
+                      </h4>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex justify-between items-center">
+                          <span className="text-blue-700">🟢 Claim Offers:</span>
+                          <span className="font-bold text-green-600 text-lg">{stats.claimOffers}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-blue-700">🔴 Reject Offers:</span>
+                          <span className="font-bold text-red-600 text-lg">{stats.rejectOffers}</span>
+                        </div>
+                        <div className="border-t border-blue-200 pt-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-blue-700 font-medium">Taxa de Aceitação:</span>
+                            <span className="font-bold text-blue-600 text-lg">
+                              {(stats.claimOffers + stats.rejectOffers) > 0 
+                                ? ((stats.claimOffers / (stats.claimOffers + stats.rejectOffers)) * 100).toFixed(1)
+                                : 0}%
+                            </span>
+                          </div>
+                        </div>
+                        <div className="bg-white/50 p-2 rounded text-center">
+                          <span className="text-xs text-blue-600">
+                            Total: {stats.claimOffers + stats.rejectOffers} interações
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* ✅ Summary Stats */}
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <h5 className="font-semibold text-green-700 mb-2">🟢 Total Claim Offers</h5>
+                    <p className="text-2xl font-bold text-green-600">
+                      {Object.values(analytics.upsellOfferStats).reduce((sum, stats) => sum + stats.claimOffers, 0)}
+                    </p>
+                    <p className="text-xs text-green-600">usuários interessados</p>
+                  </div>
+                  
+                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                    <h5 className="font-semibold text-red-700 mb-2">🔴 Total Reject Offers</h5>
+                    <p className="text-2xl font-bold text-red-600">
+                      {Object.values(analytics.upsellOfferStats).reduce((sum, stats) => sum + stats.rejectOffers, 0)}
+                    </p>
+                    <p className="text-xs text-red-600">usuários que recusaram</p>
+                  </div>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h5 className="font-semibold text-blue-700 mb-2">📊 Taxa Geral</h5>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {(() => {
+                        const totalClaims = Object.values(analytics.upsellOfferStats).reduce((sum, stats) => sum + stats.claimOffers, 0);
+                        const totalRejects = Object.values(analytics.upsellOfferStats).reduce((sum, stats) => sum + stats.rejectOffers, 0);
+                        const total = totalClaims + totalRejects;
+                        return total > 0 ? ((totalClaims / total) * 100).toFixed(1) : 0;
+                      })()}%
+                    </p>
+                    <p className="text-xs text-blue-600">aceitação geral</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {loginError && (
