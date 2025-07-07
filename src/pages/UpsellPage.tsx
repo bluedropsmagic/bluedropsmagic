@@ -35,6 +35,13 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const [showPurchaseButton, setShowPurchaseButton] = useState(false);
+  
+  // ✅ NEW: Video IDs for each variant
+  const videoIds = {
+    '1-bottle': '686b6af315fc4aa5f81ab90b',
+    '3-bottle': '686b6af315fc4aa5f81ab90b', // Same video for now
+    '6-bottle': '686b6af315fc4aa5f81ab90b'  // Same video for now
+  };
 
   // Preserve CartPanda parameters
   useEffect(() => {
@@ -67,7 +74,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
   // ✅ NEW: Timer for 2min41s delay (161 seconds)
   useEffect(() => {
-    if (variant === '1-bottle') {
+    // ✅ Apply timer to all variants
       console.log('⏰ Starting 2min41s timer for purchase button...');
       
       const timer = setTimeout(() => {
@@ -78,13 +85,12 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       return () => {
         clearTimeout(timer);
       };
-    }
-  }, [variant]);
+  }, []);
   // ✅ NEW: Inject VTurb video for upsell
   useEffect(() => {
-    if (variant === '1-bottle') {
+    // ✅ Apply to all variants
       const injectUpsellVideo = () => {
-        const videoId = '686b6af315fc4aa5f81ab90b'; // ✅ NEW: Updated upsell video ID
+        const videoId = videoIds[variant]; // ✅ Use variant-specific video ID
         const targetContainer = document.getElementById(`vid-upsell-${videoId}`);
         if (!targetContainer) {
           console.error('❌ Upsell video container not found');
@@ -175,7 +181,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       setTimeout(() => {
         injectUpsellVideo();
       }, 1000);
-    }
   }, [variant]);
 
   const getUpsellContent = (variant: string): UpsellContent => {
@@ -285,7 +290,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   };
 
   // ✅ NEW: Simplified layout for 1-bottle
-  if (variant === '1-bottle') {
+  // ✅ UPDATED: Use simplified layout for ALL variants
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
         {/* Fixed Red Alert Banner */}
@@ -329,7 +334,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
               <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
                 {/* ✅ FIXED: Container with maximum isolation */}
                 <div
-                  id="vid-upsell-686b6af315fc4aa5f81ab90b"
+                  id={`vid-upsell-${videoIds[variant]}`}
                   style={{
                     position: 'absolute',
                     top: 0,
@@ -407,10 +412,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         </div>
       </div>
     );
-  }
-
-  // ✅ Keep original layout for 3-bottle and 6-bottle variants
-  const content = getUpsellContent(variant);
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
