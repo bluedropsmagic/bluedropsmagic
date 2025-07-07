@@ -84,7 +84,8 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   useEffect(() => {
       const injectUpsellVideo = () => {
         const videoId = videoIds[variant];
-        const targetContainer = document.getElementById(`vid-upsell-${videoId}`);
+        const containerId = `vid-upsell-${videoId}`;
+        const targetContainer = document.getElementById(containerId);
         if (!targetContainer) {
           console.error('❌ Upsell video container not found');
           setVideoError(true);
@@ -99,6 +100,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           console.log('🗑️ Removed existing upsell script');
         }
 
+        // ✅ CRITICAL: Clear container and set up isolation BEFORE injecting script
         targetContainer.style.position = 'absolute';
         targetContainer.style.top = '0';
         targetContainer.style.left = '0';
@@ -108,17 +110,18 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         targetContainer.style.overflow = 'hidden';
         targetContainer.style.borderRadius = '0.75rem';
         targetContainer.style.isolation = 'isolate';
+        targetContainer.style.contain = 'layout style paint size';
         targetContainer.innerHTML = '';
 
-        targetContainer.innerHTML = `
-          <div id="vid_${videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
-            <img id="thumb_${videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
-            <div id="backdrop_${videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
-          </div>
-          <style>
-            .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0;}
-          </style>
-        `;
+        // ✅ FIXED: Use unique VTurb container ID to prevent conflicts
+        const vTurbContainerId = `vid_upsell_${videoId}_container`;
+        
+        // ✅ Create VTurb smartplayer element directly
+        const smartPlayer = document.createElement('vturb-smartplayer');
+        smartPlayer.id = vTurbContainerId;
+        smartPlayer.style.cssText = 'display: block; margin: 0 auto; width: 100%; height: 100%;';
+        
+        targetContainer.appendChild(smartPlayer);
 
         const script = document.createElement('script');
         script.type = 'text/javascript';
@@ -126,6 +129,50 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         script.async = true;
         script.defer = true;
         
+        // ✅ FIXED: Use the exact script format you provided for 6-bottle
+        if (variant === '6-bottle') {
+          script.innerHTML = `
+            (function() {
+              try {
+                console.log('🎬 Loading 6-bottle upsell video: ${videoId}');
+                
+                var s = document.createElement("script");
+                s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
+                s.async = true;
+                
+                s.onload = function() {
+                  console.log('✅ VTurb 6-bottle upsell video loaded: ${videoId}');
+                  
+                  // ✅ CRITICAL: Ensure video stays in correct container
+                  setTimeout(function() {
+                    var upsellContainer = document.getElementById('${containerId}');
+                    var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+                    
+                    if (mainVideoContainer && upsellContainer) {
+                      // Move any orphaned elements back to upsell container
+                      var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"], [id*="${videoId}"]');
+                      orphanedElements.forEach(function(element) {
+                        if (element.parentNode === mainVideoContainer) {
+                          upsellContainer.appendChild(element);
+                          console.log('🔄 Moved 6-bottle video element back to upsell container');
+                        }
+                      });
+                    }
+                  }, 2000);
+                  
+                  window.upsellVideoLoaded_${videoId} = true;
+                };
+                s.onerror = function() {
+                  console.error('❌ Failed to load VTurb 6-bottle upsell video: ${videoId}');
+                };
+                document.head.appendChild(s);
+              } catch (error) {
+                console.error('Error injecting 6-bottle upsell video script:', error);
+              }
+            })();
+          `;
+        } else {
+          // ✅ For 1-bottle and 3-bottle, use the standard approach
         script.innerHTML = `
           (function() {
             try {
@@ -137,6 +184,23 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
               
               s.onload = function() {
                 console.log('✅ VTurb upsell video loaded: ${videoId}');
+                
+                // ✅ Ensure video stays in correct container
+                setTimeout(function() {
+                  var upsellContainer = document.getElementById('${containerId}');
+                  var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+                  
+                  if (mainVideoContainer && upsellContainer) {
+                    var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"]');
+                    orphanedElements.forEach(function(element) {
+                      if (element.parentNode === mainVideoContainer) {
+                        upsellContainer.appendChild(element);
+                        console.log('🔄 Moved upsell video element back to correct container');
+                      }
+                    });
+                  }
+                }, 2000);
+                
                 window.upsellVideoLoaded_${videoId} = true;
               };
               s.onerror = function() {
@@ -148,6 +212,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             }
           })();
         `;
+        }
         
         document.head.appendChild(script);
         console.log('✅ Upsell VTurb script injected');
