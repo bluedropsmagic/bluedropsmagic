@@ -327,30 +327,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                     contain: 'layout style paint size'
                   }}
                 ></div>
-                
-                {/* Loading Overlay */}
-                {!videoLoaded && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>
-                    <div className="text-center text-white p-4">
-                      <RefreshCw className="w-12 h-12 text-white/80 animate-spin mb-3 mx-auto" />
-                      <p className="text-sm font-medium mb-1">Loading upsell video...</p>
-                      <p className="text-xs text-white/70">Please wait</p>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Error Overlay */}
-                {videoError && (
-                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center" style={{ zIndex: 15 }}>
-                    <div className="text-center text-white p-4">
-                      <AlertTriangle className="w-8 h-8 text-red-400 mb-3 mx-auto" />
-                      <p className="text-sm font-medium mb-2">Error loading video</p>
-                      <button onClick={() => window.location.reload()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
-                        Reload Page
-                      </button>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
