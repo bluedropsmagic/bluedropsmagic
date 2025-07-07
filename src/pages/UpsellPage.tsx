@@ -39,7 +39,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const videoIds = {
     '1-bottle': '686b6af315fc4aa5f81ab90b',
     '3-bottle': '686b6af315fc4aa5f81ab90b',
-    '6-bottle': '686b6af315fc4aa5f81ab90b'  
+    '6-bottle': '686b75de199e54169b0f64af'  // ✅ UPDATED: Vídeo específico para quem compra 6 bottles
   };
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
               console.log('🎬 Loading upsell video: ${videoId}');
               
               var s = document.createElement("script");
-              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/player.js";
+              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
               s.async = true;
               
               s.onload = function() {
