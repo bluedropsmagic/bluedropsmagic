@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X, RefreshCw } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 
 interface UpsellPageProps {
@@ -32,6 +32,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const [searchParams] = useSearchParams();
   const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   // Preserve CartPanda parameters
   useEffect(() => {
@@ -61,6 +62,88 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
     setCartParams(params.toString());
   }, [searchParams]);
+
+  // ✅ NEW: Inject VTurb video for upsell
+  useEffect(() => {
+    if (variant === '1-bottle') {
+      const injectUpsellVideo = () => {
+        // Wait for main video to be loaded first
+        if (!window.vslVideoLoaded) {
+          console.log('⏳ Waiting for main video to load before injecting upsell video');
+          setTimeout(injectUpsellVideo, 2000);
+          return;
+        }
+
+        const videoId = '68677fbfd890d9c12c549f94'; // Upsell video ID
+        const targetContainer = document.getElementById(`vid-upsell-${videoId}`);
+        if (!targetContainer) {
+          console.error('❌ Upsell video container not found');
+          return;
+        }
+
+        // Remove existing script
+        const existingScript = document.getElementById(`scr_upsell_${videoId}`);
+        if (existingScript) {
+          existingScript.remove();
+        }
+
+        // Setup container
+        targetContainer.style.position = 'relative';
+        targetContainer.style.width = '100%';
+        targetContainer.style.height = '100%';
+        targetContainer.style.overflow = 'hidden';
+        targetContainer.style.borderRadius = '0.75rem';
+        targetContainer.innerHTML = '';
+
+        // Add HTML structure
+        targetContainer.innerHTML = `
+          <div id="vid_${videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
+            <img id="thumb_${videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
+            <div id="backdrop_${videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
+          </div>
+        `;
+
+        // Inject script
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.id = `scr_upsell_${videoId}`;
+        script.async = true;
+        script.innerHTML = `
+          (function() {
+            try {
+              console.log('🎬 Loading upsell video: ${videoId}');
+              
+              var s = document.createElement("script");
+              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/player.js";
+              s.async = true;
+              
+              s.onload = function() {
+                console.log('✅ VTurb upsell video loaded: ${videoId}');
+                window.upsellVideoLoaded_${videoId} = true;
+              };
+              s.onerror = function() {
+                console.error('❌ Failed to load VTurb upsell video: ${videoId}');
+              };
+              document.head.appendChild(s);
+            } catch (error) {
+              console.error('Error injecting upsell video script:', error);
+            }
+          })();
+        `;
+        
+        document.head.appendChild(script);
+
+        // Check for video load status
+        setTimeout(() => {
+          if ((window as any)[`upsellVideoLoaded_${videoId}`]) {
+            setVideoLoaded(true);
+          }
+        }, 5000);
+      };
+      
+      injectUpsellVideo();
+    }
+  }, [variant]);
 
   const getUpsellContent = (variant: string): UpsellContent => {
     const contents = {
@@ -167,6 +250,105 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       window.location.href = url;
     }, 150);
   };
+
+  // ✅ NEW: Simplified layout for 1-bottle
+  if (variant === '1-bottle') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
+        {/* Fixed Red Alert Banner */}
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 shadow-lg">
+          <div className="flex items-center justify-center gap-2">
+            <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5" />
+            <span className="font-black text-xs sm:text-sm md:text-base tracking-wide">⚠️ WAIT! YOUR ORDER IS NOT COMPLETE</span>
+            <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5" />
+          </div>
+        </div>
+
+        {/* Main container */}
+        <div className="pt-16 px-4 py-6 sm:py-8">
+          <div className="max-w-2xl mx-auto">
+            
+            {/* Header */}
+            <header className="mb-6 sm:mb-8 text-center animate-fadeInDown animation-delay-200">
+              <img 
+                src="https://i.imgur.com/QJxTIcN.png" 
+                alt="Blue Drops Logo"
+                className="h-6 sm:h-8 w-auto mx-auto"
+              />
+            </header>
+
+            {/* Hero Section */}
+            <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-3">
+                <span className="text-blue-900 block mb-1">You're Just ONE Step</span>
+                <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
+                  Away From Success
+                </span>
+              </h1>
+              
+              <p className="text-sm sm:text-base text-blue-800 font-semibold px-2">
+                Congratulations on securing your first bottles — but now, one last step could change everything.
+              </p>
+            </div>
+
+            {/* Video Section */}
+            <div className="mb-6 animate-fadeInUp animation-delay-600">
+              <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
+                <div
+                  id="vid-upsell-68677fbfd890d9c12c549f94"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: 20,
+                    overflow: 'hidden',
+                    borderRadius: '0.75rem',
+                    isolation: 'isolate'
+                  }}
+                ></div>
+                
+                {/* Loading Overlay */}
+                {!videoLoaded && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>
+                    <div className="text-center text-white p-4">
+                      <RefreshCw className="w-12 h-12 text-white/80 animate-spin mb-3 mx-auto" />
+                      <p className="text-sm font-medium mb-1">Loading upsell video...</p>
+                      <p className="text-xs text-white/70">Please wait</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Purchase Button */}
+            <div className="mb-6 animate-fadeInUp animation-delay-800">
+              <button 
+                onClick={handleAccept}
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+              >
+                <span className="relative z-10">YES — COMPLETE MY 9‑MONTH TREATMENT</span>
+              </button>
+            </div>
+
+            {/* Reject Button */}
+            <div className="mb-6 animate-fadeInUp animation-delay-1000">
+              <button 
+                onClick={handleReject}
+                className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
+              >
+                <span className="text-xs sm:text-sm font-medium">❌ No thanks — I'll throw away my progress and risk permanent failure</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ Keep original layout for 3-bottle and 6-bottle variants
+  const content = getUpsellContent(variant);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
