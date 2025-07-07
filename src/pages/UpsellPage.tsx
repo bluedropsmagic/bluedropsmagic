@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X, RefreshCw, Volume2, Play } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 
 interface UpsellPageProps {
@@ -32,23 +32,12 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const [searchParams] = useSearchParams();
   const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
-  const [videoLoaded, setVideoLoaded] = useState(false);
-  const [videoError, setVideoError] = useState(false);
-  const [showPurchaseButton, setShowPurchaseButton] = useState(false);
-  
-  // ✅ EXACT: Video IDs for each variant as specified
-  const videoIds = {
-    '1-bottle': '686b6af315fc4aa5f81ab90b',  // ✅ For 1 bottle buyers
-    '3-bottle': '686b7739756a766918015263',  // ✅ For 3 bottle buyers  
-    '6-bottle': '686b75de199e54169b0f64af'   // ✅ For 6 bottle buyers
-  };
-
-  const currentVideoId = videoIds[variant];
 
   // Preserve CartPanda parameters
   useEffect(() => {
     const params = new URLSearchParams();
     
+    // Common CartPanda parameters to preserve
     const cartPandaParams = [
       'order_id', 'customer_id', 'transaction_id', 'email', 'phone',
       'first_name', 'last_name', 'address', 'city', 'state', 'zip',
@@ -63,6 +52,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       }
     });
 
+    // Also preserve any other parameters that might be present
     searchParams.forEach((value, key) => {
       if (!cartPandaParams.includes(key)) {
         params.append(key, value);
@@ -71,183 +61,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
     setCartParams(params.toString());
   }, [searchParams]);
-
-  // Show purchase button after 2min41s
-  useEffect(() => {
-    console.log('⏰ Starting 2min41s timer for purchase button...');
-    
-    const timer = setTimeout(() => {
-      console.log('✅ 2min41s elapsed - showing purchase button');
-      setShowPurchaseButton(true);
-    }, 161000); // 2min41s = 161 seconds
-    
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
-
-  // ✅ COMPLETELY REWRITTEN: Automatic VTurb injection with EXACT HTML structure
-  useEffect(() => {
-    const injectVTurbPlayer = () => {
-      const videoId = currentVideoId;
-      
-      console.log(`🎬 [${variant}] Auto-injecting VTurb player with EXACT structure for video ID: ${videoId}`);
-      
-      // ✅ CRITICAL: Wait for DOM to be ready
-      setTimeout(() => {
-        // ✅ STEP 1: Create the container if it doesn't exist
-        let targetContainer = document.getElementById(`vid-${videoId}`);
-        if (!targetContainer) {
-          console.log(`📦 [${variant}] Creating VTurb container: vid-${videoId}`);
-          targetContainer = document.createElement('div');
-          targetContainer.id = `vid-${videoId}`;
-          targetContainer.style.cssText = 'width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 30;';
-          
-          // Find the video wrapper and append
-          const videoWrapper = document.querySelector('.aspect-\\[9\\/16\\]');
-          if (videoWrapper) {
-            videoWrapper.appendChild(targetContainer);
-          } else {
-            console.error(`❌ [${variant}] Video wrapper not found`);
-            setVideoError(true);
-            return;
-          }
-        }
-
-        console.log(`✅ [${variant}] Found/Created VTurb container:`, targetContainer);
-
-        // ✅ STEP 2: Remove existing script to prevent conflicts
-        const existingScript = document.getElementById(`scr_vturb_${videoId}`);
-        if (existingScript) {
-          existingScript.remove();
-          console.log(`🗑️ [${variant}] Removed existing VTurb script`);
-        }
-
-        // ✅ STEP 3: Clear container and inject EXACT VTurb HTML structure
-        targetContainer.innerHTML = '';
-        
-        // ✅ EXACT HTML structure as provided by user
-        targetContainer.innerHTML = `
-          <vturb-smartplayer id="vid-${videoId}" style="display: block; margin: 0 auto; width: 100%; height: 100%;"></vturb-smartplayer>
-        `;
-
-        console.log(`✅ [${variant}] VTurb HTML structure injected, creating script...`);
-
-        // ✅ STEP 4: Create and inject EXACT VTurb script as provided
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.id = `scr_vturb_${videoId}`;
-        script.async = true;
-        
-        // ✅ EXACT script structure as provided by user
-        let scriptSrc = '';
-        if (videoId === '686b6af315fc4aa5f81ab90b') {
-          // ✅ 1-bottle script
-          scriptSrc = `https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/686b6af315fc4aa5f81ab90b/v4/player.js`;
-        } else if (videoId === '686b7739756a766918015263') {
-          // ✅ 3-bottle script  
-          scriptSrc = `https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/686b7739756a766918015263/v4/player.js`;
-        } else if (videoId === '686b75de199e54169b0f64af') {
-          // ✅ 6-bottle script
-          scriptSrc = `https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/686b75de199e54169b0f64af/v4/player.js`;
-        }
-        
-        // ✅ EXACT script content as provided
-        script.innerHTML = `
-          var s=document.createElement("script");
-          s.src="${scriptSrc}";
-          s.async=true;
-          s.onload=function(){
-            console.log('✅ [${variant}] VTurb player script loaded successfully for ${videoId}');
-            window.upsellVideoLoaded_${variant} = true;
-            
-            // ✅ CRITICAL: Ensure video stays in correct container
-            setTimeout(function() {
-              var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
-              var upsellContainer = document.getElementById('vid-${videoId}');
-              
-              if (mainVideoContainer && upsellContainer) {
-                // ✅ Move any upsell video elements that ended up in main container
-                var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"]');
-                orphanedElements.forEach(function(element) {
-                  if (element.parentNode === mainVideoContainer) {
-                    upsellContainer.appendChild(element);
-                    console.log('🔄 [${variant}] Moved video element back to correct container');
-                  }
-                });
-              }
-              
-              if (upsellContainer) {
-                console.log('✅ [${variant}] Video container secured');
-                upsellContainer.setAttribute('data-upsell-video', 'true');
-                upsellContainer.setAttribute('data-video-id', '${videoId}');
-                upsellContainer.setAttribute('data-variant', '${variant}');
-              }
-            }, 3000);
-          };
-          s.onerror=function(){
-            console.error('❌ [${variant}] Failed to load VTurb player script for ${videoId}');
-          };
-          document.head.appendChild(s);
-        `;
-        
-        document.head.appendChild(script);
-        console.log(`✅ [${variant}] VTurb script injected with EXACT structure for ${videoId}`);
-
-        // ✅ STEP 5: Monitor video loading
-        setTimeout(() => {
-          if ((window as any)[`upsellVideoLoaded_${variant}`]) {
-            setVideoLoaded(true);
-            setVideoError(false);
-            console.log(`✅ [${variant}] Video loaded successfully via global flag`);
-          } else {
-            console.log(`⚠️ [${variant}] Video not loaded yet, checking container...`);
-            
-            // ✅ Check if video elements exist in container
-            const container = document.getElementById(`vid-${videoId}`);
-            if (container) {
-              const hasVideo = container.querySelector('video') || 
-                              container.querySelector('iframe') ||
-                              container.querySelector('vturb-smartplayer') ||
-                              container.querySelector('[data-vturb-player]');
-              
-              if (hasVideo) {
-                setVideoLoaded(true);
-                setVideoError(false);
-                console.log(`✅ [${variant}] Video detected in container via DOM check`);
-              } else {
-                console.log(`⚠️ [${variant}] No video elements found, will retry in 3 seconds...`);
-                setTimeout(() => injectVTurbPlayer(), 3000);
-              }
-            } else {
-              console.error(`❌ [${variant}] Container disappeared: vid-${videoId}`);
-              setVideoError(true);
-            }
-          }
-        }, 8000); // Wait 8 seconds for VTurb to load
-      }, 2000); // Wait 2 seconds for DOM to be ready
-    };
-    
-    // ✅ Start injection process
-    console.log(`🚀 [${variant}] Starting automatic VTurb injection for ${currentVideoId}...`);
-    injectVTurbPlayer();
-    
-    // ✅ Cleanup on unmount
-    return () => {
-      const scriptToRemove = document.getElementById(`scr_vturb_${currentVideoId}`);
-      if (scriptToRemove) {
-        try {
-          scriptToRemove.remove();
-          console.log(`🧹 [${variant}] Cleaned up VTurb script for ${currentVideoId}`);
-        } catch (error) {
-          console.error(`❌ [${variant}] Error cleaning up script:`, error);
-        }
-      }
-      
-      // ✅ Clean up global flag
-      delete (window as any)[`upsellVideoLoaded_${variant}`];
-    };
-  }, [variant, currentVideoId]);
 
   const getUpsellContent = (variant: string): UpsellContent => {
     const contents = {
@@ -273,7 +86,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       '3-bottle': {
         offer: {
           title: 'COMPLETE 9‑MONTH TREATMENT',
-          subtitle: '✔️ Add 3 More Bottles + Get 3 Extra Bottles FREE',
+          subtitle: '✔️ Add 3 More Bottles + Get 3 Extra Bottles FREE', // ✅ FIXED: 3+3
           description: 'Complete your transformation with the full protocol'
         },
         pricing: {
@@ -281,7 +94,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           totalPrice: '270 days of treatment',
           savings: 'Save $585 instantly',
           freeBottles: '3 FREE',
-          paidBottles: '3 PAID'
+          paidBottles: '3 PAID' // ✅ FIXED: 3 paid
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=no',
@@ -292,7 +105,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       '6-bottle': {
         offer: {
           title: 'COMPLETE 9‑MONTH TREATMENT',
-          subtitle: '✔️ Add 1 More Bottle + Get 2 Extra Bottles FREE',
+          subtitle: '✔️ Add 1 More Bottle + Get 2 Extra Bottles FREE', // ✅ FIXED: 1+2
           description: 'Just 1 more bottle to ensure complete, permanent results'
         },
         pricing: {
@@ -300,7 +113,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           totalPrice: '270 days of treatment',
           savings: 'Save $585 instantly',
           freeBottles: '2 FREE',
-          paidBottles: '1 PAID'
+          paidBottles: '1 PAID' // ✅ FIXED: 1 paid
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=no',
@@ -313,12 +126,15 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
     return contents[variant as keyof typeof contents];
   };
 
+  const content = getUpsellContent(variant);
+
   const handleAccept = () => {
-    const content = getUpsellContent(variant);
+    // ✅ FIXED: ONLY track InitiateCheckout - NO Purchase event
     trackInitiateCheckout(content.acceptUrl);
     
     trackOfferClick(`upsell-${variant}-accept`);
     
+    // ✅ NEW: Add CID parameter if present
     let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
@@ -326,17 +142,19 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
+    // ✅ NEW: Small delay to ensure Facebook Pixel event is sent
     setTimeout(() => {
       window.location.href = url;
     }, 150);
   };
 
   const handleReject = () => {
-    const content = getUpsellContent(variant);
+    // ✅ FIXED: ONLY track InitiateCheckout for reject
     trackInitiateCheckout(content.rejectUrl);
     
     trackOfferClick(`upsell-${variant}-reject`);
     
+    // ✅ NEW: Add CID parameter if present
     let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
@@ -344,12 +162,11 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
+    // ✅ NEW: Small delay to ensure Facebook Pixel event is sent
     setTimeout(() => {
       window.location.href = url;
     }, 150);
   };
-
-  const content = getUpsellContent(variant);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
@@ -364,7 +181,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
       {/* Main container */}
       <div className="pt-16 px-4 py-6 sm:py-8">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-md mx-auto">
           
           {/* Header */}
           <header className="mb-6 sm:mb-8 text-center animate-fadeInDown animation-delay-200">
@@ -389,160 +206,249 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             </p>
           </div>
 
-          {/* ✅ FIXED: Video Container with automatic VTurb injection */}
-          <div className="w-full mb-6 sm:mb-8 animate-fadeInUp animation-delay-600">
-            {/* Fixed aspect ratio container for mobile VSL */}
-            <div className="relative w-full max-w-sm mx-auto">
-              <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
-                {/* ✅ VTurb Container - Will be populated automatically */}
-                <div
-                  id={`vid-${currentVideoId}`}
-                  className="absolute inset-0 w-full h-full z-30"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    touchAction: 'manipulation',
-                    isolation: 'isolate',
-                    contain: 'layout style paint'
-                  }}
-                  onClick={() => {
-                    console.log(`🎬 [${variant}] Video container clicked`);
-                  }}
-                >
-                  {/* VTurb player will be injected here automatically */}
+          {/* Warning Sections */}
+          <div className="space-y-4 sm:space-y-6 mb-6">
+            {/* Critical Warning */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-red-200 shadow-lg animate-fadeInUp animation-delay-600">
+              <div className="text-center">
+                <div className="bg-red-500 text-white px-3 py-1.5 rounded-full inline-block mb-3">
+                  <span className="font-bold text-xs sm:text-sm">CRITICAL WARNING</span>
                 </div>
+                
+                <div className="space-y-2 text-blue-800 text-xs sm:text-sm leading-relaxed">
+                  <p className="font-bold text-red-600">
+                    If you skip this step, you might be wasting your entire investment.
+                  </p>
+                  <p className="font-bold text-red-600">Yes, I'm serious.</p>
+                  <p>
+                    Because stopping this treatment too early will erase ALL your progress — and can even make your condition worse than before.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-                {/* Loading Overlay */}
-                {!videoLoaded && !videoError && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>
-                    <div className="text-center text-white p-4">
-                      <RefreshCw className="w-12 h-12 text-white/80 animate-spin mb-3 mx-auto" />
-                      <p className="text-sm font-medium mb-1">Loading {variant} video...</p>
-                      <p className="text-xs text-white/70">VTurb ID: {currentVideoId}</p>
-                    </div>
-                  </div>
-                )}
+            {/* Truth Section */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200 shadow-lg animate-fadeInUp animation-delay-800">
+              <h3 className="text-base sm:text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
+                💧 Here's the Truth:
+              </h3>
+              
+              <div className="space-y-2 sm:space-y-3 text-blue-800 text-xs sm:text-sm leading-relaxed">
+                <p>
+                  BlueDrops is a liquid formula designed to remove the toxins that disrupt blood flow and performance.
+                </p>
+                <p>
+                  From the moment you take your first drops, your body begins a slow battle — fighting against the damage caused by years of poor circulation, stress, and hormonal imbalance.
+                </p>
+                <p className="font-bold text-red-600">
+                  But here's the problem...
+                </p>
+                <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+                  <p className="text-red-700 font-bold text-xs sm:text-sm">
+                    🧠 These toxins are deeply rooted in your body. And they don't go down without a fight. They resist. They hide. They rebuild.
+                  </p>
+                </div>
+                <p>
+                  And if you stop the treatment too soon — before they're completely eliminated — they'll come back stronger.
+                </p>
+              </div>
+            </div>
 
-                {/* Error Overlay */}
-                {videoError && (
-                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center" style={{ zIndex: 15 }}>
-                    <div className="text-center text-white p-6">
-                      <div className="w-12 h-12 bg-red-500/30 rounded-full flex items-center justify-center mb-3 mx-auto">
-                        <AlertTriangle className="w-6 h-6 text-red-400" />
-                      </div>
-                      <p className="text-sm font-medium mb-3">Failed to load {variant} video</p>
-                      <p className="text-xs text-white/70 mb-3">Video ID: {currentVideoId}</p>
-                      <button
-                        onClick={() => window.location.reload()}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors min-h-[44px]"
-                        style={{ touchAction: 'manipulation' }}
-                      > 
-                        Reload Page
-                      </button>
-                    </div>
-                  </div>
-                )}
+            {/* Consequences */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-red-200 shadow-lg animate-fadeInUp animation-delay-1000">
+              <h3 className="text-base sm:text-lg font-bold text-red-700 mb-3 text-center">
+                ❌ If You Don't Complete 9 Months of Treatment…
+              </h3>
+              
+              <div className="space-y-2 text-xs sm:text-sm">
+                <div className="flex items-center gap-2 text-red-600">
+                  <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
+                  <span>Your blood flow will weaken again</span>
+                </div>
+                <div className="flex items-center gap-2 text-red-600">
+                  <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
+                  <span>Your confidence and energy will drop</span>
+                </div>
+                <div className="flex items-center gap-2 text-red-600">
+                  <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
+                  <span>And in many cases, your body becomes immune to further treatment</span>
+                </div>
+              </div>
+              
+              <div className="mt-3 p-3 bg-gray-100 rounded-lg border border-gray-200">
+                <p className="text-blue-800 text-xs sm:text-sm italic text-center">
+                  "It's like sending your army into battle, winning the war... And then suddenly pulling them out, letting the enemy regroup and conquer your body again."
+                </p>
+              </div>
+              
+              <div className="mt-3 text-center">
+                <p className="text-red-600 font-bold text-xs sm:text-sm">
+                  You'll lose everything you gained — and worse — you may not be able to recover again.
+                </p>
+              </div>
+            </div>
 
-                {/* ✅ Play Button Overlay - Only show if video not loaded */}
-                {!videoLoaded && !videoError && (
-                  <div 
-                    className="absolute inset-0 flex items-center justify-center cursor-pointer"
-                    style={{ 
-                      touchAction: 'manipulation',
-                      zIndex: 20
-                    }}
-                    onClick={() => {
-                      console.log(`🎬 [${variant}] Play button clicked for ${currentVideoId}`);
-                      const videoContainer = document.getElementById(`vid-${currentVideoId}`);
-                      if (videoContainer) {
-                        videoContainer.click();
-                      }
-                    }} 
-                  >
-                    <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30 hover:bg-white/30 transition-colors">
-                      <Play className="w-10 h-10 text-white ml-1" />
-                    </div>
-                  </div>
-                )}
+            {/* Solution */}
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-green-200 shadow-lg animate-fadeInUp animation-delay-1200">
+              <h3 className="text-base sm:text-lg font-bold text-green-700 mb-3 text-center">
+                ✅ Why 9 Months of BlueDrops is Absolutely Essential
+              </h3>
+              
+              <div className="space-y-2 sm:space-y-3 text-blue-800 text-xs sm:text-sm leading-relaxed">
+                <p>
+                  Only after 9 months of consistent use will your body create a strong defensive wall — a new, healthier internal state where performance-killing toxins can never return.
+                </p>
+                
+                <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                  <p className="text-green-700 font-bold text-center text-xs sm:text-sm">Once that happens...</p>
+                  <p className="text-green-600 text-center font-bold text-xs sm:text-sm">You'll NEVER need another product again.</p>
+                </div>
+                
+                <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+                  <p className="text-red-700 font-bold text-center text-xs sm:text-sm">But if you stop early…</p>
+                  <p className="text-red-600 text-center font-bold text-xs sm:text-sm">You might not be able to stand up again.</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Purchase Button - Only show after 2min41s */}
-          {showPurchaseButton && (
-            <div className="mb-6 animate-fadeInUp animation-delay-800">
-              <button 
-                onClick={handleAccept}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
-              >
-                <span className="relative z-10">{content.acceptButtonText}</span>
-              </button>
-            </div>
-          )}
-
-          {/* Warning Messages - Same as main page */}
-          {!showPurchaseButton && (
-            <div className="mb-6 text-center animate-fadeInUp animation-delay-800">
-              <div className="space-y-3">
-                {/* Sound Warning */}
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Volume2 className="w-4 h-4 text-blue-600" />
-                    <span className="text-blue-800 font-semibold text-sm">
-                      Please make sure your sound is on
-                    </span>
-                  </div>
-                  <p className="text-blue-600 text-xs">
-                    This video contains important audio information
-                  </p>
-                </div>
-
-                {/* Video Takedown Warning */}
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <AlertTriangle className="w-4 h-4 text-red-600" />
-                    <span className="text-red-800 font-semibold text-sm">
-                      This video may be taken down at any time
-                    </span>
-                  </div>
-                  <p className="text-red-600 text-xs">
-                    Watch now before it's removed from the internet
-                  </p>
+          {/* Product Box */}
+          <div className="mb-6 relative animate-fadeInUp animation-delay-1400">
+            {/* FINAL CHANCE Tag */}
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
+              <div className="bg-gradient-to-r from-red-400 via-red-500 to-red-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <AlertTriangle className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
+                  <span className="tracking-wide">FINAL CHANCE</span>
                 </div>
               </div>
             </div>
-          )}
 
-          {/* Reject Button - Less prominent */}
-          {showPurchaseButton && (
-            <div className="mb-6 animate-fadeInUp animation-delay-1000">
-              <button 
-                onClick={handleReject}
-                className="w-full bg-transparent border border-gray-300 text-gray-500 hover:text-gray-700 hover:border-gray-400 font-normal py-2 px-4 rounded-lg transition-all duration-300 text-xs checkout-button"
-              >
-                <span className="opacity-70">{content.rejectButtonText}</span>
-              </button>
-            </div>
-          )}
+            {/* Card Container */}
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 rounded-2xl sm:rounded-3xl blur-lg opacity-60 animate-pulse"></div>
+              
+              <div className="relative bg-gradient-to-br from-blue-600/95 to-blue-800/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 pt-6 sm:pt-8 border-2 border-white/30 shadow-2xl">
+                
+                {/* Product Image */}
+                <div className="flex justify-center mb-3 sm:mb-4">
+                  <img 
+                    src={content.productImage} 
+                    alt="BlueDrops Complete Treatment"
+                    className="w-full h-auto object-contain drop-shadow-2xl max-h-32 sm:max-h-40 md:max-h-48"
+                  />
+                </div>
 
-          {/* Debug Info - Only in development */}
-          {(window.location.hostname.includes('localhost') || 
-            window.location.hostname.includes('stackblitz') ||
-            window.location.hostname.includes('bolt.new')) && (
-            <div className="mt-8 p-4 bg-gray-100 rounded-lg text-xs text-gray-600">
-              <p><strong>🎬 VTurb Auto-Injection Debug:</strong></p>
-              <p>Variant: <strong>{variant}</strong></p>
-              <p>Video ID: <strong>{currentVideoId}</strong></p>
-              <p>Video Loaded: <strong>{videoLoaded ? '✅ Yes' : '❌ No'}</strong></p>
-              <p>Video Error: <strong>{videoError ? '❌ Yes' : '✅ No'}</strong></p>
-              <p>Show Purchase Button: <strong>{showPurchaseButton ? '✅ Yes' : '❌ No'}</strong></p>
-              <p>Container ID: <strong>vid-{currentVideoId}</strong></p>
-              <p>Script ID: <strong>scr_vturb_{currentVideoId}</strong></p>
+                {/* Product Name */}
+                <div className="text-center mb-3 sm:mb-4">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-none">
+                    BLUEDROPS
+                  </h3>
+                  <p className="text-white/80 text-sm sm:text-base font-bold tracking-wide -mt-1">
+                    {content.offer.title}
+                  </p>
+                </div>
+
+                {/* Offer Details */}
+                <div className="text-center mb-4">
+                  <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm shadow-lg mb-3">
+                    {content.offer.subtitle}
+                  </div>
+                  
+                  {/* Benefits List */}
+                  <div className="space-y-1.5 sm:space-y-2 bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20 mb-4">
+                    <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-green-400 flex-shrink-0" />
+                      <span>{content.pricing.totalPrice}</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-green-400 flex-shrink-0" />
+                      <span>{content.pricing.pricePerBottle}</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-green-400 flex-shrink-0" />
+                      <span>No extra shipping fees</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-green-400 flex-shrink-0" />
+                      <span>{content.pricing.savings}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <div className="relative mb-4">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 rounded-xl blur opacity-75 animate-pulse"></div>
+                  <button 
+                    onClick={handleAccept}
+                    className="relative w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                  >
+                    <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
+                    <span className="relative z-10">{content.acceptButtonText}</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  </button>
+                </div>
+
+                {/* Benefits Icons */}
+                <div className="flex justify-center items-center gap-1 mb-3">
+                  <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded px-2 py-1 border border-blue-300/40 flex-1">
+                    <div className="flex items-center justify-center gap-1 text-white">
+                      <Shield className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                      <span className="text-center font-semibold text-xs">180-Day</span>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded px-2 py-1 border border-blue-300/40 flex-1">
+                    <div className="flex items-center justify-center gap-1 text-white">
+                      <Truck className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                      <span className="text-center font-semibold text-xs">Free Ship</span>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded px-2 py-1 border border-blue-300/40 flex-1">
+                    <div className="flex items-center justify-center gap-1 text-white">
+                      <Clock className="w-3 h-3 text-red-400 flex-shrink-0" />
+                      <span className="text-center font-semibold text-xs">Secure</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Benefits Image */}
+                <div>
+                  <div className="bg-white rounded p-1 shadow-sm">
+                    <img 
+                      src="https://i.imgur.com/1in1oo5.png" 
+                      alt="Product Benefits"
+                      className="w-full h-auto object-contain max-h-8 sm:max-h-10"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* Reject Button */}
+          <div className="mb-6 animate-fadeInUp animation-delay-1600">
+            <button 
+              onClick={handleReject}
+              className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
+            >
+              <span className="text-xs sm:text-sm font-medium">❌ {content.rejectButtonText}</span>
+            </button>
+          </div>
+
+          {/* Footer Warning */}
+          <footer className="text-center text-blue-700 animate-fadeInUp animation-delay-2000">
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
+              <div className="bg-red-500 text-white px-3 py-1.5 rounded-lg inline-block mb-2">
+                <span className="font-bold text-xs sm:text-sm">🔴 FINAL WARNING</span>
+              </div>
+              <p className="text-xs sm:text-sm font-bold text-red-600 mb-1">
+                Once this page closes, this offer disappears forever.
+              </p>
+              <p className="text-xs opacity-70">
+                This is your only chance to secure the full 9-month protocol
+              </p>
+            </div>
+          </footer>
         </div>
       </div>
     </div>
