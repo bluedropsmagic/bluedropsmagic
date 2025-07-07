@@ -448,10 +448,13 @@ const TestimonialCard: React.FC<{
 
         // ✅ EXACT SAME HTML structure as DoctorsSection
         targetContainer.innerHTML = `
-          <vturb-smartplayer 
-            id="vid_${testimonial.videoId}" 
-            style="display: block; margin: 0 auto; width: 100%; height: 100%;"
-          ></vturb-smartplayer>
+          <div id="vid_${testimonial.videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
+            <img id="thumb_${testimonial.videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${testimonial.videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
+            <div id="backdrop_${testimonial.videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
+          </div>
+          <style>
+            .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0;}
+          </style>
         `;
 
         // ✅ EXACT SAME script injection as DoctorsSection
@@ -468,37 +471,52 @@ const TestimonialCard: React.FC<{
               console.log('🎬 Loading testimonial video: ${testimonial.videoId}');
               
               var s = document.createElement("script");
-              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${testimonial.videoId}/v4/player.js";
+              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${testimonial.videoId}/player.js";
               s.async = true;
               
               s.onload = function() {
                 console.log('✅ VTurb testimonial video loaded: ${testimonial.videoId}');
                 
-                // ✅ NEW: Auto-play video after load
+                // ✅ NEW: Auto-play video after load with multiple fallbacks
                 setTimeout(function() {
                   try {
-                    // Try multiple methods to auto-play
+                    // Method 1: Try smartplayer instance
+                    if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances['${testimonial.videoId}']) {
+                      var player = window.smartplayer.instances['${testimonial.videoId}'];
+                      if (player && player.play) {
+                        player.play();
+                        console.log('✅ Auto-play via smartplayer for testimonial: ${testimonial.videoId}');
+                        return;
+                      }
+                    }
+                    
+                    // Method 2: Try video element directly
                     var videoElement = document.querySelector('#vid_${testimonial.videoId} video');
                     if (videoElement && videoElement.play) {
                       videoElement.play().then(function() {
-                        console.log('✅ Auto-play successful for testimonial: ${testimonial.videoId}');
+                        console.log('✅ Auto-play via video element for testimonial: ${testimonial.videoId}');
                       }).catch(function(error) {
                         console.log('⚠️ Auto-play blocked by browser for testimonial: ${testimonial.videoId}', error);
+                        
+                        // Method 3: Try clicking the container as fallback
+                        var container = document.getElementById('vid_${testimonial.videoId}');
+                        if (container) {
+                          container.click();
+                          console.log('✅ Auto-play via container click for testimonial: ${testimonial.videoId}');
+                        }
                       });
-                    }
-                    
-                    // Try VTurb player API if available
-                    if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances['${testimonial.videoId}']) {
-                      var player = window.smartplayer.instances['${testimonial.videoId}'];
-                      if (player.play) {
-                        player.play();
-                        console.log('✅ Auto-play via smartplayer for testimonial: ${testimonial.videoId}');
+                    } else {
+                      // Method 4: Try clicking the container directly
+                      var container = document.getElementById('vid_${testimonial.videoId}');
+                      if (container) {
+                        container.click();
+                        console.log('✅ Auto-play via direct container click for testimonial: ${testimonial.videoId}');
                       }
                     }
                   } catch (error) {
-                    console.log('⚠️ Auto-play failed for testimonial:', error);
+                    console.log('⚠️ Auto-play failed for testimonial: ${testimonial.videoId}', error);
                   }
-                }, 2000); // Wait 2 seconds for video to fully load
+                }, 3000); // Wait 3 seconds for video to fully load
                 
                 // ✅ FIXED: Ensure video elements stay in correct container
                 setTimeout(function() {
@@ -518,10 +536,12 @@ const TestimonialCard: React.FC<{
                   }
                   
                 }, 2000);
-                window.testimonialVideoLoaded_${testimonial.videoId} = true;
+                window.testimonialVideoLoaded_${testimonial.videoId}_${pageType} = true;
               };
               s.onerror = function() {
                 console.error('❌ Failed to load VTurb testimonial video: ${testimonial.videoId}');
+                // ✅ FIXED: Set as loaded even on error to prevent infinite loading
+                window.testimonialVideoLoaded_${testimonial.videoId}_${pageType} = true;
               };
               document.head.appendChild(s);
             } catch (error) {
@@ -538,6 +558,7 @@ const TestimonialCard: React.FC<{
           if ((window as any)[`testimonialVideoLoaded_${testimonial.videoId}_${pageType}`]) {
             setVideoLoaded(true);
             console.log('✅ Testimonial video loaded for:', testimonial.name);
+                  var testimonialContainer = document.getElementById('vid-${testimonial.videoId}-${pageType}');
           } else {
             console.log('⚠️ Testimonial video not loaded yet, will retry...');
             // Retry once if not loaded
@@ -617,10 +638,11 @@ const TestimonialCard: React.FC<{
       {isActive && (
         <div className="mb-4">
           <div 
-            className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative" 
+            className="aspect-video rounded-xl overflow-hidden shadow-lg bg-black relative" 
             style={{ 
               isolation: 'isolate',
-              contain: 'layout style paint'
+              contain: 'layout style paint',
+              backgroundColor: '#000000' // ✅ FIXED: Ensure black background to prevent white flashes
             }}
           >
             {/* ✅ Container with maximum isolation - EXACT SAME as DoctorsSection */}
@@ -636,12 +658,24 @@ const TestimonialCard: React.FC<{
                 overflow: 'hidden',
                 borderRadius: '0.75rem',
                 isolation: 'isolate',
-                contain: 'layout style paint size'
+                contain: 'layout style paint size',
+                backgroundColor: 'transparent' // ✅ FIXED: Transparent to show video properly
               }}
             ></div>
             
             {/* ✅ Placeholder - Only show while loading */}
-            {/* ✅ REMOVED: No placeholder for auto-playing videos */}
+            {/* ✅ FIXED: Show loading state only while video is loading */}
+            {!videoLoaded && (
+              <div 
+                className="absolute inset-0 bg-black flex items-center justify-center"
+                style={{ zIndex: 15 }}
+              >
+                <div className="text-center">
+                  <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mb-2"></div>
+                  <p className="text-white/70 text-xs">Loading video...</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
