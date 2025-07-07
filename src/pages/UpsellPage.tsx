@@ -193,30 +193,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
   const content = getUpsellContent(variant);
 
-  // ✅ NEW: Get benefits specific to each variant
-  const getBenefitsForVariant = (variant: string) => {
-    const benefits = {
-      '1-bottle': {
-        guarantee: '180-Day', // 1 + 8 = 9 bottles total = 270 days
-        shipping: 'Free Ship',
-        security: 'Secure'
-      },
-      '3-bottle': {
-        guarantee: '270-Day', // 3 + 6 = 9 bottles total = 270 days  
-        shipping: 'Free Ship',
-        security: 'Secure'
-      },
-      '6-bottle': {
-        guarantee: '270-Day', // 6 + 3 = 9 bottles total = 270 days
-        shipping: 'Free Ship', 
-        security: 'Secure'
-      }
-    };
-    
-    return benefits[variant as keyof typeof benefits];
-  };
-
-  const variantBenefits = getBenefitsForVariant(variant);
   const handleAccept = () => {
     trackInitiateCheckout(content.acceptUrl);
     trackOfferClick(`upsell-${variant}-accept`);
@@ -386,19 +362,19 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                   <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded px-2 py-1 border border-blue-300/40 flex-1">
                     <div className="flex items-center justify-center gap-1 text-white">
                       <Shield className="w-3 h-3 text-yellow-400 flex-shrink-0" />
-                      <span className="text-center font-semibold text-xs">{variantBenefits.guarantee}</span>
+                      <span className="text-center font-semibold text-xs">180-Day</span>
                     </div>
                   </div>
                   <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded px-2 py-1 border border-blue-300/40 flex-1">
                     <div className="flex items-center justify-center gap-1 text-white">
                       <Truck className="w-3 h-3 text-yellow-400 flex-shrink-0" />
-                      <span className="text-center font-semibold text-xs">{variantBenefits.shipping}</span>
+                      <span className="text-center font-semibold text-xs">Free Ship</span>
                     </div>
                   </div>
                   <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded px-2 py-1 border border-blue-300/40 flex-1">
                     <div className="flex items-center justify-center gap-1 text-white">
                       <Clock className="w-3 h-3 text-red-400 flex-shrink-0" />
-                      <span className="text-center font-semibold text-xs">{variantBenefits.security}</span>
+                      <span className="text-center font-semibold text-xs">Secure</span>
                     </div>
                   </div>
                 </div>
