@@ -36,10 +36,11 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const [videoError, setVideoError] = useState(false);
   const [showPurchaseButton, setShowPurchaseButton] = useState(false);
   
+  // ✅ UPDATED: Vídeos específicos para cada variant
   const videoIds = {
     '1-bottle': '686b6af315fc4aa5f81ab90b',
-    '3-bottle': '686b6af315fc4aa5f81ab90b',
-    '6-bottle': '686b75de199e54169b0f64af'  // ✅ UPDATED: Vídeo específico para quem compra 6 bottles
+    '3-bottle': '686b7739756a766918015263', // ✅ NEW: Vídeo específico para quem compra 3 bottles
+    '6-bottle': '686b75de199e54169b0f64af'  // ✅ Vídeo específico para quem compra 6 bottles
   };
 
   useEffect(() => {
@@ -81,156 +82,182 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       };
   }, []);
 
+  // ✅ COMPLETELY REWRITTEN: Video injection with proper container isolation
   useEffect(() => {
-      const injectUpsellVideo = () => {
-        const videoId = videoIds[variant];
-        const containerId = `vid-upsell-${videoId}`;
+    const injectUpsellVideo = () => {
+      const videoId = videoIds[variant];
+      const containerId = `vid-upsell-${variant}-${videoId}`;
+      
+      console.log(`🎬 Injecting ${variant} upsell video:`, videoId);
+      
+      // ✅ CRITICAL: Wait for DOM to be ready
+      setTimeout(() => {
         const targetContainer = document.getElementById(containerId);
         if (!targetContainer) {
-          console.error('❌ Upsell video container not found');
+          console.error(`❌ ${variant} video container not found:`, containerId);
           setVideoError(true);
           return;
         }
 
-        console.log('🎬 Injecting upsell video:', videoId);
+        console.log(`✅ Found ${variant} container:`, targetContainer);
 
-        const existingScript = document.getElementById(`scr_upsell_${videoId}`);
+        // ✅ Remove existing script first
+        const existingScript = document.getElementById(`scr_upsell_${variant}_${videoId}`);
         if (existingScript) {
           existingScript.remove();
-          console.log('🗑️ Removed existing upsell script');
+          console.log(`🗑️ Removed existing ${variant} script`);
         }
 
-        // ✅ CRITICAL: Clear container and set up isolation BEFORE injecting script
-        targetContainer.style.position = 'absolute';
-        targetContainer.style.top = '0';
-        targetContainer.style.left = '0';
-        targetContainer.style.width = '100%';
-        targetContainer.style.height = '100%';
-        targetContainer.style.zIndex = '20';
-        targetContainer.style.overflow = 'hidden';
-        targetContainer.style.borderRadius = '0.75rem';
-        targetContainer.style.isolation = 'isolate';
-        targetContainer.style.contain = 'layout style paint size';
+        // ✅ CRITICAL: Clear container and set up MAXIMUM isolation
         targetContainer.innerHTML = '';
+        targetContainer.style.cssText = `
+          position: relative !important;
+          width: 100% !important;
+          height: 100% !important;
+          overflow: hidden !important;
+          border-radius: 0.75rem !important;
+          isolation: isolate !important;
+          contain: layout style paint size !important;
+          z-index: 10 !important;
+          background: #000 !important;
+        `;
 
-        // ✅ FIXED: Use unique VTurb container ID to prevent conflicts
-        const vTurbContainerId = `vid_upsell_${videoId}_container`;
-        
-        // ✅ Create VTurb smartplayer element directly
+        // ✅ Create unique VTurb smartplayer element
+        const vTurbContainerId = `vid_${variant}_${videoId}_player`;
         const smartPlayer = document.createElement('vturb-smartplayer');
         smartPlayer.id = vTurbContainerId;
-        smartPlayer.style.cssText = 'display: block; margin: 0 auto; width: 100%; height: 100%;';
+        smartPlayer.style.cssText = `
+          display: block !important;
+          margin: 0 auto !important;
+          width: 100% !important;
+          height: 100% !important;
+          position: relative !important;
+          z-index: 20 !important;
+        `;
         
         targetContainer.appendChild(smartPlayer);
+        console.log(`✅ Created ${variant} smartplayer:`, vTurbContainerId);
 
+        // ✅ Create and inject script with variant-specific handling
         const script = document.createElement('script');
         script.type = 'text/javascript';
-        script.id = `scr_upsell_${videoId}`;
+        script.id = `scr_upsell_${variant}_${videoId}`;
         script.async = true;
         script.defer = true;
         
-        // ✅ FIXED: Use the exact script format you provided for 6-bottle
-        if (variant === '6-bottle') {
-          script.innerHTML = `
-            (function() {
-              try {
-                console.log('🎬 Loading 6-bottle upsell video: ${videoId}');
-                
-                var s = document.createElement("script");
-                s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
-                s.async = true;
-                
-                s.onload = function() {
-                  console.log('✅ VTurb 6-bottle upsell video loaded: ${videoId}');
-                  
-                  // ✅ CRITICAL: Ensure video stays in correct container
-                  setTimeout(function() {
-                    var upsellContainer = document.getElementById('${containerId}');
-                    var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
-                    
-                    if (mainVideoContainer && upsellContainer) {
-                      // Move any orphaned elements back to upsell container
-                      var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"], [id*="${videoId}"]');
-                      orphanedElements.forEach(function(element) {
-                        if (element.parentNode === mainVideoContainer) {
-                          upsellContainer.appendChild(element);
-                          console.log('🔄 Moved 6-bottle video element back to upsell container');
-                        }
-                      });
-                    }
-                  }, 2000);
-                  
-                  window.upsellVideoLoaded_${videoId} = true;
-                };
-                s.onerror = function() {
-                  console.error('❌ Failed to load VTurb 6-bottle upsell video: ${videoId}');
-                };
-                document.head.appendChild(s);
-              } catch (error) {
-                console.error('Error injecting 6-bottle upsell video script:', error);
-              }
-            })();
-          `;
-        } else {
-          // ✅ For 1-bottle and 3-bottle, use the standard approach
+        // ✅ FIXED: Use exact script format for each variant
         script.innerHTML = `
           (function() {
             try {
-              console.log('🎬 Loading upsell video: ${videoId}');
+              console.log('🎬 Loading ${variant} upsell video: ${videoId}');
+              
+              // ✅ CRITICAL: Prevent conflicts with main video
+              if (window.mainVideoId && window.mainVideoId === '${videoId}') {
+                console.warn('⚠️ Video ID conflict detected, using fallback approach');
+                return;
+              }
               
               var s = document.createElement("script");
               s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
               s.async = true;
               
               s.onload = function() {
-                console.log('✅ VTurb upsell video loaded: ${videoId}');
+                console.log('✅ VTurb ${variant} upsell video loaded: ${videoId}');
                 
-                // ✅ Ensure video stays in correct container
+                // ✅ CRITICAL: Ensure video stays in correct container
                 setTimeout(function() {
                   var upsellContainer = document.getElementById('${containerId}');
                   var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
                   
                   if (mainVideoContainer && upsellContainer) {
-                    var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"]');
+                    // ✅ Move any orphaned elements back to upsell container
+                    var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"], [id*="${videoId}"], vturb-smartplayer[id*="${videoId}"]');
                     orphanedElements.forEach(function(element) {
-                      if (element.parentNode === mainVideoContainer) {
+                      if (element.parentNode === mainVideoContainer || element.parentNode === document.body) {
+                        console.log('🔄 Moving ${variant} video element back to correct container:', element);
                         upsellContainer.appendChild(element);
-                        console.log('🔄 Moved upsell video element back to correct container');
+                      }
+                    });
+                    
+                    // ✅ Also check for elements that might have been injected at body level
+                    var bodyOrphans = document.body.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"], [id*="${videoId}"], vturb-smartplayer[id*="${videoId}"]');
+                    bodyOrphans.forEach(function(element) {
+                      if (element.parentNode === document.body) {
+                        console.log('🔄 Moving ${variant} body-level element to container:', element);
+                        upsellContainer.appendChild(element);
                       }
                     });
                   }
+                  
+                  // ✅ Ensure container styling is maintained
+                  if (upsellContainer) {
+                    upsellContainer.style.position = 'relative';
+                    upsellContainer.style.overflow = 'hidden';
+                    upsellContainer.style.isolation = 'isolate';
+                  }
                 }, 2000);
                 
-                window.upsellVideoLoaded_${videoId} = true;
+                // ✅ Additional check after 5 seconds
+                setTimeout(function() {
+                  var upsellContainer = document.getElementById('${containerId}');
+                  if (upsellContainer && upsellContainer.children.length === 0) {
+                    console.warn('⚠️ ${variant} container is empty after 5 seconds, attempting recovery');
+                    // Try to find the video element anywhere in the DOM
+                    var lostVideo = document.querySelector('vturb-smartplayer[id*="${videoId}"]');
+                    if (lostVideo) {
+                      console.log('🔄 Found lost ${variant} video, moving to container');
+                      upsellContainer.appendChild(lostVideo);
+                    }
+                  }
+                }, 5000);
+                
+                window.upsellVideoLoaded_${variant}_${videoId} = true;
               };
+              
               s.onerror = function() {
-                console.error('❌ Failed to load VTurb upsell video: ${videoId}');
+                console.error('❌ Failed to load VTurb ${variant} upsell video: ${videoId}');
               };
+              
               document.head.appendChild(s);
             } catch (error) {
-              console.error('Error injecting upsell video script:', error);
+              console.error('Error injecting ${variant} upsell video script:', error);
             }
           })();
         `;
-        }
         
         document.head.appendChild(script);
-        console.log('✅ Upsell VTurb script injected');
+        console.log(`✅ ${variant} VTurb script injected`);
 
+        // ✅ Check if video loaded successfully
         setTimeout(() => {
-          if ((window as any)[`upsellVideoLoaded_${videoId}`]) {
+          if ((window as any)[`upsellVideoLoaded_${variant}_${videoId}`]) {
             setVideoLoaded(true);
-            console.log('✅ Upsell video loaded successfully');
+            console.log(`✅ ${variant} video loaded successfully`);
           } else {
-            console.log('⚠️ Upsell video not loaded yet, will retry...');
-            setTimeout(() => injectUpsellVideo(), 2000);
+            console.log(`⚠️ ${variant} video not loaded yet, will retry...`);
+            // Retry once if not loaded
+            setTimeout(() => injectUpsellVideo(), 3000);
           }
-        }, 5000);
-      };
-      
-      setTimeout(() => {
-        injectUpsellVideo();
-      }, 1000);
+        }, 8000);
+      }, 1500); // ✅ Increased delay to ensure DOM is ready
+    };
+    
+    // ✅ Start injection after component is mounted
+    injectUpsellVideo();
+    
+    // ✅ Cleanup on unmount
+    return () => {
+      const videoId = videoIds[variant];
+      const scriptToRemove = document.getElementById(`scr_upsell_${variant}_${videoId}`);
+      if (scriptToRemove) {
+        try {
+          scriptToRemove.remove();
+          console.log(`🧹 Cleaned up ${variant} script`);
+        } catch (error) {
+          console.error(`Error cleaning up ${variant} script:`, error);
+        }
+      }
+    };
   }, [variant]);
 
   const getUpsellContent = (variant: string): UpsellContent => {
@@ -337,6 +364,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
+      {/* Fixed Red Alert Banner */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 shadow-lg">
         <div className="flex items-center justify-center gap-2">
           <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5" />
@@ -345,9 +373,11 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         </div>
       </div>
 
+      {/* Main container */}
       <div className="pt-16 px-4 py-6 sm:py-8">
         <div className="max-w-2xl mx-auto">
           
+          {/* Header */}
           <header className="mb-6 sm:mb-8 text-center animate-fadeInDown animation-delay-200">
             <img 
               src="https://i.imgur.com/QJxTIcN.png" 
@@ -356,6 +386,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             />
           </header>
 
+          {/* Hero Section */}
           <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-3">
               <span className="text-blue-900 block mb-1">You're Just ONE Step</span>
@@ -369,10 +400,13 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             </p>
           </div>
 
+          {/* ✅ FIXED: Video Container with proper isolation */}
           <div className="mb-6 animate-fadeInUp animation-delay-600">
             <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
+              {/* ✅ CRITICAL: Unique container ID for each variant */}
               <div
-                id={`vid-upsell-${videoIds[variant]}`}
+                id={`vid-upsell-${variant}-${videoIds[variant]}`}
+                className="absolute inset-0 w-full h-full"
                 style={{
                   position: 'absolute',
                   top: 0,
@@ -383,12 +417,41 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                   overflow: 'hidden',
                   borderRadius: '0.75rem',
                   isolation: 'isolate',
-                  contain: 'layout style paint size'
+                  contain: 'layout style paint size',
+                  background: '#000'
                 }}
-              ></div>
+              >
+                {/* ✅ Loading placeholder */}
+                {!videoLoaded && !videoError && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>
+                    <div className="text-center text-white p-4">
+                      <RefreshCw className="w-12 h-12 text-white/80 animate-spin mb-3 mx-auto" />
+                      <p className="text-sm font-medium mb-1">Loading {variant} video...</p>
+                      <p className="text-xs text-white/70">Please wait</p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* ✅ Error placeholder */}
+                {videoError && (
+                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center" style={{ zIndex: 15 }}>
+                    <div className="text-center text-white p-6">
+                      <AlertTriangle className="w-12 h-12 text-red-400 mb-3 mx-auto" />
+                      <p className="text-sm font-medium mb-3">Error loading video</p>
+                      <button
+                        onClick={() => window.location.reload()}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                      >
+                        Reload Page
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
+          {/* Purchase Button - Only show after 2min41s */}
           {showPurchaseButton && (
             <div className="mb-6 animate-fadeInUp animation-delay-800">
               <button 
@@ -400,12 +463,14 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             </div>
           )}
 
+          {/* Warning Messages - Same as main page */}
           {!showPurchaseButton && (
             <div className="mb-6 text-center animate-fadeInUp animation-delay-800">
               <div className="space-y-3">
+                {/* Sound Warning */}
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <Clock className="w-4 h-4 text-blue-600" />
+                    <Volume2 className="w-4 h-4 text-blue-600" />
                     <span className="text-blue-800 font-semibold text-sm">
                       Please make sure your sound is on
                     </span>
@@ -415,6 +480,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                   </p>
                 </div>
 
+                {/* Video Takedown Warning */}
                 <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <AlertTriangle className="w-4 h-4 text-red-600" />
@@ -430,6 +496,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             </div>
           )}
 
+          {/* Reject Button - Less prominent */}
           {showPurchaseButton && (
             <div className="mb-6 animate-fadeInUp animation-delay-1000">
               <button 
