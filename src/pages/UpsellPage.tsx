@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X, RefreshCw } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X, RefreshCw, Volume2 } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 
 interface UpsellPageProps {
@@ -361,13 +361,33 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             {/* ✅ NEW: Timer display while waiting */}
             {!showPurchaseButton && (
               <div className="mb-6 text-center animate-fadeInUp animation-delay-800">
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                  <p className="text-blue-700 font-semibold text-sm mb-2">
-                    🕐 Please watch the complete presentation
-                  </p>
-                  <p className="text-blue-600 text-xs">
-                    Your exclusive offer will appear shortly...
-                  </p>
+                {/* ✅ NEW: Sound and Video Warning Section - Same as main page */}
+                <div className="space-y-3">
+                  {/* Sound Warning */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <Clock className="w-4 h-4 text-blue-600" />
+                      <span className="text-blue-800 font-semibold text-sm">
+                        Please make sure your sound is on
+                      </span>
+                    </div>
+                    <p className="text-blue-600 text-xs">
+                      This video contains important audio information
+                    </p>
+                  </div>
+
+                  {/* Video Takedown Warning */}
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <AlertTriangle className="w-4 h-4 text-red-600" />
+                      <span className="text-red-800 font-semibold text-sm">
+                        This video may be taken down at any time
+                      </span>
+                    </div>
+                    <p className="text-red-600 text-xs">
+                      Watch now before it's removed from the internet
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
