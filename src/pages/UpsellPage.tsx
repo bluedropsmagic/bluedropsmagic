@@ -26,6 +26,7 @@ interface UpsellContent {
   productImage: string;
   acceptButtonText: string;
   rejectButtonText: string;
+  videoId: string; // ✅ NEW: VTurb video ID for each variant
 }
 
 export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
@@ -62,6 +63,67 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
     setCartParams(params.toString());
   }, [searchParams]);
 
+  // ✅ NEW: Inject VTurb script based on variant
+  useEffect(() => {
+    const content = getUpsellContent(variant);
+    const videoId = content.videoId;
+    
+    console.log(`🎬 Injecting VTurb for ${variant} upsell, video ID: ${videoId}`);
+    
+    // Remove existing script if any
+    const existingScript = document.getElementById(`scr_${videoId}`);
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Create the vturb-smartplayer element
+    const playerContainer = document.getElementById(`upsell-video-${variant}`);
+    if (playerContainer) {
+      playerContainer.innerHTML = `
+        <vturb-smartplayer 
+          id="vid-${videoId}" 
+          style="display: block; margin: 0 auto; width: 100%;"
+        ></vturb-smartplayer>
+      `;
+
+      // Inject the script
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.id = `scr_${videoId}`;
+      script.async = true;
+      script.innerHTML = `
+        (function() {
+          try {
+            console.log('🎬 Loading upsell VTurb video: ${videoId}');
+            var s = document.createElement("script");
+            s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
+            s.async = true;
+            s.onload = function() {
+              console.log('✅ Upsell VTurb video loaded: ${videoId}');
+            };
+            s.onerror = function() {
+              console.error('❌ Failed to load upsell VTurb video: ${videoId}');
+            };
+            document.head.appendChild(s);
+          } catch (error) {
+            console.error('Error injecting upsell VTurb script:', error);
+          }
+        })();
+      `;
+      
+      document.head.appendChild(script);
+      console.log(`✅ VTurb script injected for ${variant} upsell`);
+    }
+
+    // Cleanup on unmount
+    return () => {
+      const scriptToRemove = document.getElementById(`scr_${videoId}`);
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [variant]);
+
   const getUpsellContent = (variant: string): UpsellContent => {
     const contents = {
       '1-bottle': {
@@ -81,7 +143,8 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=no',
         productImage: 'https://i.imgur.com/2YU6i8f.png',
         acceptButtonText: 'YES — COMPLETE MY 9‑MONTH TREATMENT',
-        rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure'
+        rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure',
+        videoId: '686b6af315fc4aa5f81ab90b' // ✅ VTurb ID for 1-bottle upsell
       },
       '3-bottle': {
         offer: {
@@ -100,7 +163,8 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=no',
         productImage: 'https://i.imgur.com/2YU6i8f.png',
         acceptButtonText: 'YES — COMPLETE MY 9‑MONTH TREATMENT',
-        rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure'
+        rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure',
+        videoId: '686b7739756a766918015263' // ✅ VTurb ID for 3-bottle upsell
       },
       '6-bottle': {
         offer: {
@@ -119,7 +183,8 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=no',
         productImage: 'https://i.imgur.com/2YU6i8f.png',
         acceptButtonText: 'YES — COMPLETE MY 9‑MONTH TREATMENT',
-        rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure'
+        rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure',
+        videoId: '686b75de199e54169b0f64af' // ✅ VTurb ID for 6-bottle upsell
       }
     };
 
@@ -193,9 +258,26 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
               </span>
             </h1>
             
-            <p className="text-sm sm:text-base text-blue-800 font-semibold px-2">
+            <p className="text-sm sm:text-base text-blue-800 font-semibold px-2 mb-6">
               Congratulations on securing your first bottles — but now, one last step could change everything.
             </p>
+          </div>
+
+          {/* ✅ NEW: VTurb Video Section */}
+          <div className="mb-6 animate-fadeInUp animation-delay-500">
+            <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
+              <div
+                id={`upsell-video-${variant}`}
+                className="w-full h-full"
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%'
+                }}
+              >
+                {/* VTurb player will be injected here */}
+              </div>
+            </div>
           </div>
 
           {/* Product Box */}
