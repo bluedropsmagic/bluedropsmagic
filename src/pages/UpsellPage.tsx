@@ -34,6 +34,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const [cartParams, setCartParams] = useState<string>('');
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const [showPurchaseButton, setShowPurchaseButton] = useState(false);
 
   // Preserve CartPanda parameters
   useEffect(() => {
@@ -64,6 +65,21 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
     setCartParams(params.toString());
   }, [searchParams]);
 
+  // ✅ NEW: Timer for 2min41s delay (161 seconds)
+  useEffect(() => {
+    if (variant === '1-bottle') {
+      console.log('⏰ Starting 2min41s timer for purchase button...');
+      
+      const timer = setTimeout(() => {
+        console.log('✅ 2min41s elapsed - showing purchase button');
+        setShowPurchaseButton(true);
+      }, 161000); // 2min41s = 161 seconds = 161,000 milliseconds
+      
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [variant]);
   // ✅ NEW: Inject VTurb video for upsell
   useEffect(() => {
     if (variant === '1-bottle') {
@@ -330,25 +346,43 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
               </div>
             </div>
 
-            {/* ✅ NEW: Green Purchase Button with CLAIM OFFER text */}
-            <div className="mb-6 animate-fadeInUp animation-delay-800">
-              <button 
-                onClick={handleAccept}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
-              >
-                <span className="relative z-10">CLAIM OFFER</span>
-              </button>
-            </div>
+            {/* ✅ NEW: Green Purchase Button with CLAIM OFFER text - Only shows after 2min41s */}
+            {showPurchaseButton && (
+              <div className="mb-6 animate-fadeInUp animation-delay-800">
+                <button 
+                  onClick={handleAccept}
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                >
+                  <span className="relative z-10">CLAIM OFFER</span>
+                </button>
+              </div>
+            )}
 
-            {/* Reject Button */}
+            {/* ✅ NEW: Timer display while waiting */}
+            {!showPurchaseButton && (
+              <div className="mb-6 text-center animate-fadeInUp animation-delay-800">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                  <p className="text-blue-700 font-semibold text-sm mb-2">
+                    🕐 Please watch the complete presentation
+                  </p>
+                  <p className="text-blue-600 text-xs">
+                    Your exclusive offer will appear shortly...
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* ✅ UPDATED: Reject Button - Less prominent and only shows with purchase button */}
+            {showPurchaseButton && (
             <div className="mb-6 animate-fadeInUp animation-delay-1000">
               <button 
                 onClick={handleReject}
-                className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
+                className="w-full bg-transparent border border-gray-300 text-gray-500 hover:text-gray-700 hover:border-gray-400 font-normal py-2 px-4 rounded-lg transition-all duration-300 text-xs checkout-button"
               >
-                <span className="text-xs sm:text-sm font-medium">❌ No thanks — I'll throw away my progress and risk permanent failure</span>
+                <span className="opacity-70">No thanks — I'll pass on this opportunity</span>
               </button>
             </div>
+            )}
           </div>
         </div>
       </div>
