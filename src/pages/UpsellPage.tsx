@@ -36,15 +36,16 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const [videoError, setVideoError] = useState(false);
   const [showPurchaseButton, setShowPurchaseButton] = useState(false);
   
-  // ✅ UPDATED: Vídeos específicos para cada variant
+  // ✅ EXACT: Video IDs for each variant as specified
   const videoIds = {
-    '1-bottle': '686b6af315fc4aa5f81ab90b',
-    '3-bottle': '686b7739756a766918015263', // ✅ Vídeo para quem compra 3 bottles
-    '6-bottle': '686b75de199e54169b0f64af'  // ✅ Vídeo para quem compra 6 bottles
+    '1-bottle': '686b6af315fc4aa5f81ab90b',  // ✅ For 1 bottle buyers
+    '3-bottle': '686b7739756a766918015263',  // ✅ For 3 bottle buyers  
+    '6-bottle': '686b75de199e54169b0f64af'   // ✅ For 6 bottle buyers
   };
 
   const currentVideoId = videoIds[variant];
 
+  // Preserve CartPanda parameters
   useEffect(() => {
     const params = new URLSearchParams();
     
@@ -71,104 +72,99 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
     setCartParams(params.toString());
   }, [searchParams]);
 
+  // Show purchase button after 2min41s
   useEffect(() => {
     console.log('⏰ Starting 2min41s timer for purchase button...');
     
     const timer = setTimeout(() => {
       console.log('✅ 2min41s elapsed - showing purchase button');
       setShowPurchaseButton(true);
-    }, 161000);
+    }, 161000); // 2min41s = 161 seconds
     
     return () => {
       clearTimeout(timer);
     };
   }, []);
 
-  // ✅ COMPLETELY REWRITTEN: Video injection with EXACT VTurb HTML structure
+  // ✅ COMPLETELY REWRITTEN: Automatic VTurb injection with EXACT HTML structure
   useEffect(() => {
-    const injectUpsellVideo = () => {
+    const injectVTurbPlayer = () => {
       const videoId = currentVideoId;
       
-      console.log(`🎬 [${variant}] Injecting upsell video with EXACT VTurb structure:`, videoId);
+      console.log(`🎬 [${variant}] Auto-injecting VTurb player with EXACT structure for video ID: ${videoId}`);
       
       // ✅ CRITICAL: Wait for DOM to be ready
       setTimeout(() => {
-        const targetContainer = document.getElementById(`vid_${videoId}`);
+        // ✅ STEP 1: Create the container if it doesn't exist
+        let targetContainer = document.getElementById(`vid-${videoId}`);
         if (!targetContainer) {
-          console.error(`❌ [${variant}] VTurb container not found: vid_${videoId}`);
-          setVideoError(true);
-          return;
+          console.log(`📦 [${variant}] Creating VTurb container: vid-${videoId}`);
+          targetContainer = document.createElement('div');
+          targetContainer.id = `vid-${videoId}`;
+          targetContainer.style.cssText = 'width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 30;';
+          
+          // Find the video wrapper and append
+          const videoWrapper = document.querySelector('.aspect-\\[9\\/16\\]');
+          if (videoWrapper) {
+            videoWrapper.appendChild(targetContainer);
+          } else {
+            console.error(`❌ [${variant}] Video wrapper not found`);
+            setVideoError(true);
+            return;
+          }
         }
 
-        console.log(`✅ [${variant}] Found VTurb container:`, targetContainer);
+        console.log(`✅ [${variant}] Found/Created VTurb container:`, targetContainer);
 
-        // ✅ Remove existing script first
-        const existingScript = document.getElementById(`scr_${videoId}`);
+        // ✅ STEP 2: Remove existing script to prevent conflicts
+        const existingScript = document.getElementById(`scr_vturb_${videoId}`);
         if (existingScript) {
           existingScript.remove();
-          console.log(`🗑️ [${variant}] Removed existing script`);
+          console.log(`🗑️ [${variant}] Removed existing VTurb script`);
         }
 
-        // ✅ CRITICAL: Clear container and add EXACT VTurb HTML structure
+        // ✅ STEP 3: Clear container and inject EXACT VTurb HTML structure
         targetContainer.innerHTML = '';
         
-        // ✅ Add EXACT VTurb HTML structure as provided
-        if (videoId === '686b75de199e54169b0f64af') {
-          // ✅ 6-bottle video structure
-          targetContainer.innerHTML = `
-            <div id="vid_${videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
-              <img id="thumb_${videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
-              <div id="backdrop_${videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
-            </div>
-            <style>
-              .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0;}
-            </style>
-          `;
-        } else if (videoId === '686b7739756a766918015263') {
-          // ✅ 3-bottle video structure
-          targetContainer.innerHTML = `
-            <div id="vid_${videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
-              <img id="thumb_${videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
-              <div id="backdrop_${videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
-            </div>
-            <style>
-              .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0;}
-            </style>
-          `;
-        } else {
-          // ✅ 1-bottle video structure (fallback)
-          targetContainer.innerHTML = `
-            <div id="vid_${videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
-              <img id="thumb_${videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
-              <div id="backdrop_${videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
-            </div>
-            <style>
-              .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0;}
-            </style>
-          `;
-        }
+        // ✅ EXACT HTML structure as provided by user
+        targetContainer.innerHTML = `
+          <vturb-smartplayer id="vid-${videoId}" style="display: block; margin: 0 auto; width: 100%; height: 100%;"></vturb-smartplayer>
+        `;
 
-        console.log(`✅ [${variant}] VTurb HTML structure added, injecting script...`);
+        console.log(`✅ [${variant}] VTurb HTML structure injected, creating script...`);
 
-        // ✅ Create and inject script with EXACT VTurb format
+        // ✅ STEP 4: Create and inject EXACT VTurb script as provided
         const script = document.createElement('script');
         script.type = 'text/javascript';
-        script.id = `scr_${videoId}`;
+        script.id = `scr_vturb_${videoId}`;
         script.async = true;
         
-        // ✅ EXACT VTurb script structure
+        // ✅ EXACT script structure as provided by user
+        let scriptSrc = '';
+        if (videoId === '686b6af315fc4aa5f81ab90b') {
+          // ✅ 1-bottle script
+          scriptSrc = `https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/686b6af315fc4aa5f81ab90b/v4/player.js`;
+        } else if (videoId === '686b7739756a766918015263') {
+          // ✅ 3-bottle script  
+          scriptSrc = `https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/686b7739756a766918015263/v4/player.js`;
+        } else if (videoId === '686b75de199e54169b0f64af') {
+          // ✅ 6-bottle script
+          scriptSrc = `https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/686b75de199e54169b0f64af/v4/player.js`;
+        }
+        
+        // ✅ EXACT script content as provided
         script.innerHTML = `
           var s=document.createElement("script");
-          s.src="https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/player.js";
-          s.async=!0;
+          s.src="${scriptSrc}";
+          s.async=true;
           s.onload=function(){
-            console.log('✅ [${variant}] VTurb player script loaded successfully');
+            console.log('✅ [${variant}] VTurb player script loaded successfully for ${videoId}');
             window.upsellVideoLoaded_${variant} = true;
             
             // ✅ CRITICAL: Ensure video stays in correct container
             setTimeout(function() {
               var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
-              var upsellContainer = document.getElementById('vid_${videoId}');
+              var upsellContainer = document.getElementById('vid-${videoId}');
               
               if (mainVideoContainer && upsellContainer) {
                 // ✅ Move any upsell video elements that ended up in main container
@@ -185,63 +181,71 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                 console.log('✅ [${variant}] Video container secured');
                 upsellContainer.setAttribute('data-upsell-video', 'true');
                 upsellContainer.setAttribute('data-video-id', '${videoId}');
+                upsellContainer.setAttribute('data-variant', '${variant}');
               }
-            }, 2000);
+            }, 3000);
           };
           s.onerror=function(){
-            console.error('❌ [${variant}] Failed to load VTurb player script');
+            console.error('❌ [${variant}] Failed to load VTurb player script for ${videoId}');
           };
           document.head.appendChild(s);
         `;
         
         document.head.appendChild(script);
-        console.log(`✅ [${variant}] VTurb script injected with exact structure`);
+        console.log(`✅ [${variant}] VTurb script injected with EXACT structure for ${videoId}`);
 
-        // ✅ Check if video loaded successfully
+        // ✅ STEP 5: Monitor video loading
         setTimeout(() => {
           if ((window as any)[`upsellVideoLoaded_${variant}`]) {
             setVideoLoaded(true);
             setVideoError(false);
-            console.log(`✅ [${variant}] Video loaded successfully`);
+            console.log(`✅ [${variant}] Video loaded successfully via global flag`);
           } else {
             console.log(`⚠️ [${variant}] Video not loaded yet, checking container...`);
             
-            // ✅ Check if video elements exist
-            const container = document.getElementById(`vid_${videoId}`);
+            // ✅ Check if video elements exist in container
+            const container = document.getElementById(`vid-${videoId}`);
             if (container) {
               const hasVideo = container.querySelector('video') || 
                               container.querySelector('iframe') ||
+                              container.querySelector('vturb-smartplayer') ||
                               container.querySelector('[data-vturb-player]');
               
               if (hasVideo) {
                 setVideoLoaded(true);
                 setVideoError(false);
-                console.log(`✅ [${variant}] Video detected in container`);
+                console.log(`✅ [${variant}] Video detected in container via DOM check`);
               } else {
-                console.log(`⚠️ [${variant}] No video elements found, will retry...`);
-                setTimeout(() => injectUpsellVideo(), 3000);
+                console.log(`⚠️ [${variant}] No video elements found, will retry in 3 seconds...`);
+                setTimeout(() => injectVTurbPlayer(), 3000);
               }
+            } else {
+              console.error(`❌ [${variant}] Container disappeared: vid-${videoId}`);
+              setVideoError(true);
             }
           }
-        }, 8000);
-      }, 2000); // ✅ Wait for DOM to be ready
+        }, 8000); // Wait 8 seconds for VTurb to load
+      }, 2000); // Wait 2 seconds for DOM to be ready
     };
     
-    // ✅ Start injection after component is mounted
-    console.log(`🚀 [${variant}] Starting VTurb video injection process...`);
-    injectUpsellVideo();
+    // ✅ Start injection process
+    console.log(`🚀 [${variant}] Starting automatic VTurb injection for ${currentVideoId}...`);
+    injectVTurbPlayer();
     
     // ✅ Cleanup on unmount
     return () => {
-      const scriptToRemove = document.getElementById(`scr_${currentVideoId}`);
+      const scriptToRemove = document.getElementById(`scr_vturb_${currentVideoId}`);
       if (scriptToRemove) {
         try {
           scriptToRemove.remove();
-          console.log(`🧹 [${variant}] Cleaned up VTurb script`);
+          console.log(`🧹 [${variant}] Cleaned up VTurb script for ${currentVideoId}`);
         } catch (error) {
           console.error(`❌ [${variant}] Error cleaning up script:`, error);
         }
       }
+      
+      // ✅ Clean up global flag
+      delete (window as any)[`upsellVideoLoaded_${variant}`];
     };
   }, [variant, currentVideoId]);
 
@@ -385,33 +389,39 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             </p>
           </div>
 
-          {/* ✅ FIXED: Video Container with EXACT VTurb structure */}
+          {/* ✅ FIXED: Video Container with automatic VTurb injection */}
           <div className="w-full mb-6 sm:mb-8 animate-fadeInUp animation-delay-600">
             {/* Fixed aspect ratio container for mobile VSL */}
             <div className="relative w-full max-w-sm mx-auto">
               <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
-                {/* ✅ EXACT VTurb Video Container - Using the EXACT structure provided */}
-                <vturb-smartplayer 
-                  id={`vid_${currentVideoId}`}
+                {/* ✅ VTurb Container - Will be populated automatically */}
+                <div
+                  id={`vid-${currentVideoId}`}
+                  className="absolute inset-0 w-full h-full z-30"
                   style={{
-                    display: 'block',
-                    margin: '0 auto',
-                    width: '100%',
-                    height: '100%',
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    zIndex: 30
+                    width: '100%',
+                    height: '100%',
+                    touchAction: 'manipulation',
+                    isolation: 'isolate',
+                    contain: 'layout style paint'
                   }}
-                />
+                  onClick={() => {
+                    console.log(`🎬 [${variant}] Video container clicked`);
+                  }}
+                >
+                  {/* VTurb player will be injected here automatically */}
+                </div>
 
                 {/* Loading Overlay */}
                 {!videoLoaded && !videoError && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>
                     <div className="text-center text-white p-4">
                       <RefreshCw className="w-12 h-12 text-white/80 animate-spin mb-3 mx-auto" />
-                      <p className="text-sm font-medium mb-1">Carregando vídeo {variant}...</p>
-                      <p className="text-xs text-white/70">Aguarde um momento</p>
+                      <p className="text-sm font-medium mb-1">Loading {variant} video...</p>
+                      <p className="text-xs text-white/70">VTurb ID: {currentVideoId}</p>
                     </div>
                   </div>
                 )}
@@ -423,13 +433,14 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                       <div className="w-12 h-12 bg-red-500/30 rounded-full flex items-center justify-center mb-3 mx-auto">
                         <AlertTriangle className="w-6 h-6 text-red-400" />
                       </div>
-                      <p className="text-sm font-medium mb-3">Erro ao carregar o vídeo</p>
+                      <p className="text-sm font-medium mb-3">Failed to load {variant} video</p>
+                      <p className="text-xs text-white/70 mb-3">Video ID: {currentVideoId}</p>
                       <button
                         onClick={() => window.location.reload()}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors min-h-[44px]"
                         style={{ touchAction: 'manipulation' }}
                       > 
-                        Recarregar página
+                        Reload Page
                       </button>
                     </div>
                   </div>
@@ -444,8 +455,8 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                       zIndex: 20
                     }}
                     onClick={() => {
-                      console.log(`🎬 [${variant}] Play button clicked`);
-                      const videoContainer = document.getElementById(`vid_${currentVideoId}`);
+                      console.log(`🎬 [${variant}] Play button clicked for ${currentVideoId}`);
+                      const videoContainer = document.getElementById(`vid-${currentVideoId}`);
                       if (videoContainer) {
                         videoContainer.click();
                       }
@@ -522,12 +533,14 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             window.location.hostname.includes('stackblitz') ||
             window.location.hostname.includes('bolt.new')) && (
             <div className="mt-8 p-4 bg-gray-100 rounded-lg text-xs text-gray-600">
-              <p><strong>Debug Info:</strong></p>
-              <p>Variant: {variant}</p>
-              <p>Video ID: {currentVideoId}</p>
-              <p>Video Loaded: {videoLoaded ? 'Yes' : 'No'}</p>
-              <p>Video Error: {videoError ? 'Yes' : 'No'}</p>
-              <p>Show Purchase Button: {showPurchaseButton ? 'Yes' : 'No'}</p>
+              <p><strong>🎬 VTurb Auto-Injection Debug:</strong></p>
+              <p>Variant: <strong>{variant}</strong></p>
+              <p>Video ID: <strong>{currentVideoId}</strong></p>
+              <p>Video Loaded: <strong>{videoLoaded ? '✅ Yes' : '❌ No'}</strong></p>
+              <p>Video Error: <strong>{videoError ? '❌ Yes' : '✅ No'}</strong></p>
+              <p>Show Purchase Button: <strong>{showPurchaseButton ? '✅ Yes' : '❌ No'}</strong></p>
+              <p>Container ID: <strong>vid-{currentVideoId}</strong></p>
+              <p>Script ID: <strong>scr_vturb_{currentVideoId}</strong></p>
             </div>
           )}
         </div>
