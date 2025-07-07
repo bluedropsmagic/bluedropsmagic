@@ -490,17 +490,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           </footer>
           )}
 
-          {/* ✅ NEW: Loading message while waiting for purchase section */}
-          {!showPurchaseSection && (
-          <div className="text-center py-8 animate-fadeInUp animation-delay-800">
-            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-6 border border-blue-200">
-              <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-blue-700 text-sm font-medium">
-                Your exclusive offer is loading...
-              </p>
-            </div>
-          </div>
-          )}
         </div>
       </div>
     </div>
