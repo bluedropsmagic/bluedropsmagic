@@ -129,15 +129,15 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       '1-bottle': {
         offer: {
           title: 'COMPLETE 9‑MONTH TREATMENT',
-          subtitle: '✔️ Add 5 More Bottles + Get 4 Extra Bottles FREE',
+          subtitle: '✔️ Add 5 More Bottles and Secure Your Masculinity',
           description: 'All at our lowest price ever...'
         },
         pricing: {
           pricePerBottle: 'Biggest discount ever: only $39 per bottle',
           totalPrice: '270 days of treatment',
           savings: 'Save $585 instantly',
-          freeBottles: '4 FREE',
-          paidBottles: '5 PAID'
+          freeBottles: '',
+          paidBottles: '5 MORE BOTTLES'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=no',
@@ -149,15 +149,15 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       '3-bottle': {
         offer: {
           title: 'COMPLETE 9‑MONTH TREATMENT',
-          subtitle: '✔️ Add 3 More Bottles + Get 3 Extra Bottles FREE',
+          subtitle: '✔️ Add 3 More Bottles and Secure Your Masculinity',
           description: 'Complete your transformation with the full protocol'
         },
         pricing: {
           pricePerBottle: 'Biggest discount ever: only $39 per bottle',
           totalPrice: '270 days of treatment',
           savings: 'Save $585 instantly',
-          freeBottles: '3 FREE',
-          paidBottles: '3 PAID'
+          freeBottles: '',
+          paidBottles: '3 MORE BOTTLES'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=no',
@@ -169,15 +169,15 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       '6-bottle': {
         offer: {
           title: 'COMPLETE 9‑MONTH TREATMENT',
-          subtitle: '✔️ Add 1 More Bottle + Get 2 Extra Bottles FREE',
+          subtitle: '✔️ Add 1 More Bottle and Secure Your Masculinity',
           description: 'Just 1 more bottle to ensure complete, permanent results'
         },
         pricing: {
           pricePerBottle: 'Biggest discount ever: only $39 per bottle',
           totalPrice: '270 days of treatment',
           savings: 'Save $585 instantly',
-          freeBottles: '2 FREE',
-          paidBottles: '1 PAID'
+          freeBottles: '',
+          paidBottles: '1 MORE BOTTLE'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=no',
@@ -335,11 +335,11 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                     </div>
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
                       <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-green-400 flex-shrink-0" />
-                      <span>No extra shipping fees</span>
+                      <span>Complete your transformation</span>
                     </div>
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
                       <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-green-400 flex-shrink-0" />
-                      <span>{content.pricing.savings}</span>
+                      <span>Secure your masculinity forever</span>
                     </div>
                   </div>
                 </div>
