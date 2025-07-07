@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { AlertTriangle, CheckCircle, Shield, Truck, Clock, Star, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Shield, Truck, Clock } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 
 interface UpsellPageProps {
@@ -86,7 +86,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       '3-bottle': {
         offer: {
           title: 'COMPLETE 9‑MONTH TREATMENT',
-          subtitle: '✔️ Add 3 More Bottles + Get 3 Extra Bottles FREE', // ✅ FIXED: 3+3
+          subtitle: '✔️ Add 3 More Bottles + Get 3 Extra Bottles FREE',
           description: 'Complete your transformation with the full protocol'
         },
         pricing: {
@@ -94,7 +94,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           totalPrice: '270 days of treatment',
           savings: 'Save $585 instantly',
           freeBottles: '3 FREE',
-          paidBottles: '3 PAID' // ✅ FIXED: 3 paid
+          paidBottles: '3 PAID'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=no',
@@ -105,7 +105,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       '6-bottle': {
         offer: {
           title: 'COMPLETE 9‑MONTH TREATMENT',
-          subtitle: '✔️ Add 1 More Bottle + Get 2 Extra Bottles FREE', // ✅ FIXED: 1+2
+          subtitle: '✔️ Add 1 More Bottle + Get 2 Extra Bottles FREE',
           description: 'Just 1 more bottle to ensure complete, permanent results'
         },
         pricing: {
@@ -113,7 +113,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           totalPrice: '270 days of treatment',
           savings: 'Save $585 instantly',
           freeBottles: '2 FREE',
-          paidBottles: '1 PAID' // ✅ FIXED: 1 paid
+          paidBottles: '1 PAID'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=no',
@@ -129,12 +129,9 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const content = getUpsellContent(variant);
 
   const handleAccept = () => {
-    // ✅ FIXED: ONLY track InitiateCheckout - NO Purchase event
     trackInitiateCheckout(content.acceptUrl);
-    
     trackOfferClick(`upsell-${variant}-accept`);
     
-    // ✅ NEW: Add CID parameter if present
     let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
@@ -142,19 +139,15 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    // ✅ NEW: Small delay to ensure Facebook Pixel event is sent
     setTimeout(() => {
       window.location.href = url;
     }, 150);
   };
 
   const handleReject = () => {
-    // ✅ FIXED: ONLY track InitiateCheckout for reject
     trackInitiateCheckout(content.rejectUrl);
-    
     trackOfferClick(`upsell-${variant}-reject`);
     
-    // ✅ NEW: Add CID parameter if present
     let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
@@ -162,7 +155,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
     
-    // ✅ NEW: Small delay to ensure Facebook Pixel event is sent
     setTimeout(() => {
       window.location.href = url;
     }, 150);
@@ -206,114 +198,8 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             </p>
           </div>
 
-          {/* Warning Sections */}
-          <div className="space-y-4 sm:space-y-6 mb-6">
-            {/* Critical Warning */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-red-200 shadow-lg animate-fadeInUp animation-delay-600">
-              <div className="text-center">
-                <div className="bg-red-500 text-white px-3 py-1.5 rounded-full inline-block mb-3">
-                  <span className="font-bold text-xs sm:text-sm">CRITICAL WARNING</span>
-                </div>
-                
-                <div className="space-y-2 text-blue-800 text-xs sm:text-sm leading-relaxed">
-                  <p className="font-bold text-red-600">
-                    If you skip this step, you might be wasting your entire investment.
-                  </p>
-                  <p className="font-bold text-red-600">Yes, I'm serious.</p>
-                  <p>
-                    Because stopping this treatment too early will erase ALL your progress — and can even make your condition worse than before.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Truth Section */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200 shadow-lg animate-fadeInUp animation-delay-800">
-              <h3 className="text-base sm:text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
-                💧 Here's the Truth:
-              </h3>
-              
-              <div className="space-y-2 sm:space-y-3 text-blue-800 text-xs sm:text-sm leading-relaxed">
-                <p>
-                  BlueDrops is a liquid formula designed to remove the toxins that disrupt blood flow and performance.
-                </p>
-                <p>
-                  From the moment you take your first drops, your body begins a slow battle — fighting against the damage caused by years of poor circulation, stress, and hormonal imbalance.
-                </p>
-                <p className="font-bold text-red-600">
-                  But here's the problem...
-                </p>
-                <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-                  <p className="text-red-700 font-bold text-xs sm:text-sm">
-                    🧠 These toxins are deeply rooted in your body. And they don't go down without a fight. They resist. They hide. They rebuild.
-                  </p>
-                </div>
-                <p>
-                  And if you stop the treatment too soon — before they're completely eliminated — they'll come back stronger.
-                </p>
-              </div>
-            </div>
-
-            {/* Consequences */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-red-200 shadow-lg animate-fadeInUp animation-delay-1000">
-              <h3 className="text-base sm:text-lg font-bold text-red-700 mb-3 text-center">
-                ❌ If You Don't Complete 9 Months of Treatment…
-              </h3>
-              
-              <div className="space-y-2 text-xs sm:text-sm">
-                <div className="flex items-center gap-2 text-red-600">
-                  <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
-                  <span>Your blood flow will weaken again</span>
-                </div>
-                <div className="flex items-center gap-2 text-red-600">
-                  <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
-                  <span>Your confidence and energy will drop</span>
-                </div>
-                <div className="flex items-center gap-2 text-red-600">
-                  <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
-                  <span>And in many cases, your body becomes immune to further treatment</span>
-                </div>
-              </div>
-              
-              <div className="mt-3 p-3 bg-gray-100 rounded-lg border border-gray-200">
-                <p className="text-blue-800 text-xs sm:text-sm italic text-center">
-                  "It's like sending your army into battle, winning the war... And then suddenly pulling them out, letting the enemy regroup and conquer your body again."
-                </p>
-              </div>
-              
-              <div className="mt-3 text-center">
-                <p className="text-red-600 font-bold text-xs sm:text-sm">
-                  You'll lose everything you gained — and worse — you may not be able to recover again.
-                </p>
-              </div>
-            </div>
-
-            {/* Solution */}
-            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-green-200 shadow-lg animate-fadeInUp animation-delay-1200">
-              <h3 className="text-base sm:text-lg font-bold text-green-700 mb-3 text-center">
-                ✅ Why 9 Months of BlueDrops is Absolutely Essential
-              </h3>
-              
-              <div className="space-y-2 sm:space-y-3 text-blue-800 text-xs sm:text-sm leading-relaxed">
-                <p>
-                  Only after 9 months of consistent use will your body create a strong defensive wall — a new, healthier internal state where performance-killing toxins can never return.
-                </p>
-                
-                <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                  <p className="text-green-700 font-bold text-center text-xs sm:text-sm">Once that happens...</p>
-                  <p className="text-green-600 text-center font-bold text-xs sm:text-sm">You'll NEVER need another product again.</p>
-                </div>
-                
-                <div className="bg-red-50 p-3 rounded-lg border border-red-200">
-                  <p className="text-red-700 font-bold text-center text-xs sm:text-sm">But if you stop early…</p>
-                  <p className="text-red-600 text-center font-bold text-xs sm:text-sm">You might not be able to stand up again.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Product Box */}
-          <div className="mb-6 relative animate-fadeInUp animation-delay-1400">
+          <div className="mb-6 relative animate-fadeInUp animation-delay-600">
             {/* FINAL CHANCE Tag */}
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
               <div className="bg-gradient-to-r from-red-400 via-red-500 to-red-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
@@ -426,7 +312,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           </div>
 
           {/* Reject Button */}
-          <div className="mb-6 animate-fadeInUp animation-delay-1600">
+          <div className="mb-6 animate-fadeInUp animation-delay-800">
             <button 
               onClick={handleReject}
               className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
@@ -436,7 +322,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           </div>
 
           {/* Footer Warning */}
-          <footer className="text-center text-blue-700 animate-fadeInUp animation-delay-2000">
+          <footer className="text-center text-blue-700 animate-fadeInUp animation-delay-1000">
             <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
               <div className="bg-red-500 text-white px-3 py-1.5 rounded-lg inline-block mb-2">
                 <span className="font-bold text-xs sm:text-sm">🔴 FINAL WARNING</span>
