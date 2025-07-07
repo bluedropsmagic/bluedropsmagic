@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { AlertTriangle, CheckCircle, Shield, Truck, Clock } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
+import { TestimonialsSection } from '../components/TestimonialsSection';
 
 interface UpsellPageProps {
   variant: '1-bottle' | '3-bottle' | '6-bottle';
@@ -462,6 +463,13 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             >
               <span className="text-xs sm:text-sm font-medium">❌ {content.rejectButtonText}</span>
             </button>
+          </div>
+          )}
+
+          {/* ✅ NEW: Testimonials Section - Only show after purchase section appears */}
+          {showPurchaseSection && (
+          <div className="mb-6 animate-fadeInUp animation-delay-1100">
+            <TestimonialsSection />
           </div>
           )}
 
