@@ -74,7 +74,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           return;
         }
 
-        const videoId = '68677fbfd890d9c12c549f94'; // Upsell video ID
+        const videoId = '686b6af315fc4aa5f81ab90b'; // ✅ NEW: Updated upsell video ID
         const targetContainer = document.getElementById(`vid-upsell-${videoId}`);
         if (!targetContainer) {
           console.error('❌ Upsell video container not found');
@@ -95,12 +95,9 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         targetContainer.style.borderRadius = '0.75rem';
         targetContainer.innerHTML = '';
 
-        // Add HTML structure
+        // ✅ NEW: Add VTurb smartplayer element
         targetContainer.innerHTML = `
-          <div id="vid_${videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
-            <img id="thumb_${videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
-            <div id="backdrop_${videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
-          </div>
+          <vturb-smartplayer id="vid-${videoId}" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>
         `;
 
         // Inject script
@@ -108,27 +105,17 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         script.type = 'text/javascript';
         script.id = `scr_upsell_${videoId}`;
         script.async = true;
+        
+        // ✅ NEW: Use the exact script you provided
         script.innerHTML = `
-          (function() {
-            try {
-              console.log('🎬 Loading upsell video: ${videoId}');
-              
-              var s = document.createElement("script");
-              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/player.js";
-              s.async = true;
-              
-              s.onload = function() {
-                console.log('✅ VTurb upsell video loaded: ${videoId}');
-                window.upsellVideoLoaded_${videoId} = true;
-              };
-              s.onerror = function() {
-                console.error('❌ Failed to load VTurb upsell video: ${videoId}');
-              };
-              document.head.appendChild(s);
-            } catch (error) {
-              console.error('Error injecting upsell video script:', error);
-            }
-          })();
+          var s=document.createElement("script"); 
+          s.src="https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
+          s.async=!0;
+          s.onload = function() {
+            console.log('✅ VTurb upsell video loaded: ${videoId}');
+            window.upsellVideoLoaded_${videoId} = true;
+          };
+          document.head.appendChild(s);
         `;
         
         document.head.appendChild(script);
@@ -295,7 +282,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             <div className="mb-6 animate-fadeInUp animation-delay-600">
               <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
                 <div
-                  id="vid-upsell-68677fbfd890d9c12c549f94"
+                  id="vid-upsell-686b6af315fc4aa5f81ab90b"
                   style={{
                     position: 'absolute',
                     top: 0,
@@ -322,13 +309,13 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
               </div>
             </div>
 
-            {/* Purchase Button */}
+            {/* ✅ NEW: Green Purchase Button with CLAIM OFFER text */}
             <div className="mb-6 animate-fadeInUp animation-delay-800">
               <button 
                 onClick={handleAccept}
-                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
               >
-                <span className="relative z-10">YES — COMPLETE MY 9‑MONTH TREATMENT</span>
+                <span className="relative z-10">CLAIM OFFER</span>
               </button>
             </div>
 
