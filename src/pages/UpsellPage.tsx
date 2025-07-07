@@ -220,10 +220,8 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const content = getUpsellContent(variant);
 
   const handleAccept = () => {
-    // ✅ NEW: Track upsell offer click with specific variant
-    trackOfferClick(`upsell-${variant}-claim-offer`);
-    
     trackInitiateCheckout(content.acceptUrl);
+    trackOfferClick(`upsell-${variant}-accept`);
     
     let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
     const urlParams = new URLSearchParams(window.location.search);
@@ -238,10 +236,8 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   };
 
   const handleReject = () => {
-    // ✅ NEW: Track upsell offer rejection with specific variant
-    trackOfferClick(`upsell-${variant}-reject-offer`);
-    
     trackInitiateCheckout(content.rejectUrl);
+    trackOfferClick(`upsell-${variant}-reject`);
     
     let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
     const urlParams = new URLSearchParams(window.location.search);
