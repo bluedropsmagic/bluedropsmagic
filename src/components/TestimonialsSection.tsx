@@ -22,6 +22,7 @@ export const TestimonialsSection: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
+  const [pageType, setPageType] = useState<'main' | 'upsell'>('main');
 
   // ✅ UPDATED: ALL testimonials now have real VTurb video IDs and profile images
   const testimonials: Testimonial[] = [
@@ -50,6 +51,18 @@ export const TestimonialsSection: React.FC = () => {
       caption: "My wife noticed the difference before I even told her about BlueDrops!"
     }
   ];
+
+  // ✅ NEW: Detect if we're on an upsell page
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.includes('/up1bt') || path.includes('/up3bt') || path.includes('/up6bt')) {
+      setPageType('upsell');
+      console.log('🎬 TestimonialsSection: Detected upsell page, using upsell video injection');
+    } else {
+      setPageType('main');
+      console.log('🎬 TestimonialsSection: Detected main page, using main video injection');
+    }
+  }, []);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
@@ -343,6 +356,7 @@ export const TestimonialsSection: React.FC = () => {
               testimonial={testimonial} 
               isActive={index === currentTestimonial}
               isDragging={isDragging}
+              pageType={pageType}
             />
           </div>
         ))}
@@ -376,10 +390,12 @@ const TestimonialCard: React.FC<{
   testimonial: any; 
   isActive: boolean; 
   isDragging: boolean;
+  pageType?: 'main' | 'upsell';
 }> = ({ 
   testimonial, 
   isActive, 
-  isDragging 
+  isDragging,
+  pageType = 'main'
 }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
 
@@ -389,15 +405,19 @@ const TestimonialCard: React.FC<{
       console.log('🎬 Injecting TESTIMONIAL VTurb for:', testimonial.name, 'VideoID:', testimonial.videoId);
       
       const injectTestimonialVideo = () => {
-        // ✅ CRITICAL: Wait for main video to be fully loaded first
-        if (!window.vslVideoLoaded) {
+        // ✅ UPDATED: Different logic for upsell pages
+        if (pageType === 'main' && !window.vslVideoLoaded) {
           console.log('⏳ Waiting for main video to load before injecting testimonial video');
           setTimeout(injectTestimonialVideo, 2000);
           return;
+        } else if (pageType === 'upsell') {
+          // ✅ NEW: For upsell pages, wait a bit longer to avoid conflicts
+          console.log('🎬 Upsell page: Injecting testimonial video with delay');
         }
 
         // Remove any existing script first
-        const existingScript = document.getElementById(`scr_testimonial_${testimonial.videoId}`);
+        const scriptId = `scr_testimonial_${testimonial.videoId}_${pageType}`;
+        const existingScript = document.getElementById(scriptId);
         if (existingScript) {
           try {
             existingScript.remove();
@@ -407,9 +427,10 @@ const TestimonialCard: React.FC<{
         }
 
         // ✅ CRITICAL: Ensure container exists and is properly isolated BEFORE injecting script
-        const targetContainer = document.getElementById(`vid-${testimonial.videoId}`);
+        const containerId = `vid-${testimonial.videoId}-${pageType}`;
+        const targetContainer = document.getElementById(containerId);
         if (!targetContainer) {
-          console.error('❌ Target container not found for video:', testimonial.videoId);
+          console.error('❌ Target container not found for video:', containerId);
           return;
         }
 
@@ -491,7 +512,7 @@ const TestimonialCard: React.FC<{
 
         // Check for video load status
         setTimeout(() => {
-          if ((window as any)[`testimonialVideoLoaded_${testimonial.videoId}`]) {
+          if ((window as any)[`testimonialVideoLoaded_${testimonial.videoId}_${pageType}`]) {
             setVideoLoaded(true);
             console.log('✅ Testimonial video loaded for:', testimonial.name);
           } else {
@@ -502,15 +523,22 @@ const TestimonialCard: React.FC<{
         }, 5000);
       };
       
-      // Try to inject immediately
-      injectTestimonialVideo();
+      // ✅ UPDATED: Different timing for upsell pages
+      if (pageType === 'upsell') {
+        // Wait longer on upsell pages to avoid conflicts
+        setTimeout(injectTestimonialVideo, 3000);
+      } else {
+        // Immediate injection on main page
+        injectTestimonialVideo();
+      }
     }
 
     // Cleanup when card becomes inactive
     return () => {
       if (!isActive) {
         // Clean up scripts when switching testimonials
-        const script = document.getElementById(`scr_testimonial_${testimonial.videoId}`);
+        const scriptId = `scr_testimonial_${testimonial.videoId}_${pageType}`;
+        const script = document.getElementById(scriptId);
         if (script) {
           try {
             script.remove();
@@ -523,7 +551,7 @@ const TestimonialCard: React.FC<{
         setVideoLoaded(false);
       }
     };
-  }, [isActive, testimonial.videoId, testimonial.name]);
+  }, [isActive, testimonial.videoId, testimonial.name, pageType]);
 
   return (
     <div className={`bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200 hover:bg-white/95 transition-all duration-300 max-w-md w-full mx-4 ${
@@ -574,7 +602,7 @@ const TestimonialCard: React.FC<{
           >
             {/* ✅ Container with maximum isolation - EXACT SAME as DoctorsSection */}
             <div
-              id={`vid-${testimonial.videoId}`}
+              id={`vid-${testimonial.videoId}-${pageType}`}
               style={{
                 position: 'absolute',
                 top: 0,
@@ -592,7 +620,7 @@ const TestimonialCard: React.FC<{
             {/* ✅ Placeholder - Only show while loading */}
             {!videoLoaded && (
               <div 
-                id={`placeholder_${testimonial.videoId}`}
+                id={`placeholder_${testimonial.videoId}_${pageType}`}
                 className="absolute inset-0 bg-gradient-to-br from-blue-800 to-blue-900 flex items-center justify-center"
                 style={{ zIndex: 10 }}
               >
