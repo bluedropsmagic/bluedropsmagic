@@ -33,6 +33,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
   // Preserve CartPanda parameters
   useEffect(() => {
@@ -67,68 +68,97 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   useEffect(() => {
     if (variant === '1-bottle') {
       const injectUpsellVideo = () => {
-        // Wait for main video to be loaded first
-        if (!window.vslVideoLoaded) {
-          console.log('⏳ Waiting for main video to load before injecting upsell video');
-          setTimeout(injectUpsellVideo, 2000);
-          return;
-        }
-
         const videoId = '686b6af315fc4aa5f81ab90b'; // ✅ NEW: Updated upsell video ID
         const targetContainer = document.getElementById(`vid-upsell-${videoId}`);
         if (!targetContainer) {
           console.error('❌ Upsell video container not found');
+          setVideoError(true);
           return;
         }
+
+        console.log('🎬 Injecting upsell video:', videoId);
 
         // Remove existing script
         const existingScript = document.getElementById(`scr_upsell_${videoId}`);
         if (existingScript) {
           existingScript.remove();
+          console.log('🗑️ Removed existing upsell script');
         }
 
-        // Setup container
-        targetContainer.style.position = 'relative';
+        // ✅ FIXED: Setup container with exact same approach as main video
+        targetContainer.style.position = 'absolute';
+        targetContainer.style.top = '0';
+        targetContainer.style.left = '0';
         targetContainer.style.width = '100%';
         targetContainer.style.height = '100%';
+        targetContainer.style.zIndex = '20';
         targetContainer.style.overflow = 'hidden';
         targetContainer.style.borderRadius = '0.75rem';
+        targetContainer.style.isolation = 'isolate';
         targetContainer.innerHTML = '';
 
-        // ✅ NEW: Add VTurb smartplayer element
+        // ✅ FIXED: Add the HTML structure exactly like main video
         targetContainer.innerHTML = `
-          <vturb-smartplayer id="vid-${videoId}" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>
+          <div id="vid_${videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
+            <img id="thumb_${videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
+            <div id="backdrop_${videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
+          </div>
+          <style>
+            .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0;}
+          </style>
         `;
 
-        // Inject script
+        // ✅ FIXED: Inject script with exact same approach as main video
         const script = document.createElement('script');
         script.type = 'text/javascript';
         script.id = `scr_upsell_${videoId}`;
         script.async = true;
+        script.defer = true;
         
-        // ✅ NEW: Use the exact script you provided
+        // ✅ FIXED: Use the same script structure as main video
         script.innerHTML = `
-          var s=document.createElement("script"); 
-          s.src="https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
-          s.async=!0;
-          s.onload = function() {
-            console.log('✅ VTurb upsell video loaded: ${videoId}');
-            window.upsellVideoLoaded_${videoId} = true;
-          };
-          document.head.appendChild(s);
+          (function() {
+            try {
+              console.log('🎬 Loading upsell video: ${videoId}');
+              
+              var s = document.createElement("script");
+              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/player.js";
+              s.async = true;
+              
+              s.onload = function() {
+                console.log('✅ VTurb upsell video loaded: ${videoId}');
+                window.upsellVideoLoaded_${videoId} = true;
+              };
+              s.onerror = function() {
+                console.error('❌ Failed to load VTurb upsell video: ${videoId}');
+              };
+              document.head.appendChild(s);
+            } catch (error) {
+              console.error('Error injecting upsell video script:', error);
+            }
+          })();
         `;
         
         document.head.appendChild(script);
+        console.log('✅ Upsell VTurb script injected');
 
         // Check for video load status
         setTimeout(() => {
           if ((window as any)[`upsellVideoLoaded_${videoId}`]) {
             setVideoLoaded(true);
+            console.log('✅ Upsell video loaded successfully');
+          } else {
+            console.log('⚠️ Upsell video not loaded yet, will retry...');
+            // Retry once if not loaded
+            setTimeout(() => injectUpsellVideo(), 2000);
           }
         }, 5000);
       };
       
-      injectUpsellVideo();
+      // ✅ FIXED: Wait a bit for DOM to be ready
+      setTimeout(() => {
+        injectUpsellVideo();
+      }, 1000);
     }
   }, [variant]);
 
@@ -281,6 +311,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             {/* Video Section */}
             <div className="mb-6 animate-fadeInUp animation-delay-600">
               <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
+                {/* ✅ FIXED: Container with maximum isolation */}
                 <div
                   id="vid-upsell-686b6af315fc4aa5f81ab90b"
                   style={{
@@ -292,7 +323,8 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                     zIndex: 20,
                     overflow: 'hidden',
                     borderRadius: '0.75rem',
-                    isolation: 'isolate'
+                    isolation: 'isolate',
+                    contain: 'layout style paint size'
                   }}
                 ></div>
                 
@@ -303,6 +335,19 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                       <RefreshCw className="w-12 h-12 text-white/80 animate-spin mb-3 mx-auto" />
                       <p className="text-sm font-medium mb-1">Loading upsell video...</p>
                       <p className="text-xs text-white/70">Please wait</p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Error Overlay */}
+                {videoError && (
+                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center" style={{ zIndex: 15 }}>
+                    <div className="text-center text-white p-4">
+                      <AlertTriangle className="w-8 h-8 text-red-400 mb-3 mx-auto" />
+                      <p className="text-sm font-medium mb-2">Error loading video</p>
+                      <button onClick={() => window.location.reload()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
+                        Reload Page
+                      </button>
                     </div>
                   </div>
                 )}
