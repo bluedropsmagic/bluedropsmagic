@@ -28,27 +28,27 @@ export const TestimonialsSection: React.FC = () => {
   const testimonials: Testimonial[] = [
     {
       id: 1,
-      name: "Michael R.",
-      location: "Texas",
-      profileImage: "https://i.imgur.com/IYyJR1B.png",
-      videoId: "68677fbfd890d9c12c549f94", // REAL VTurb video ID
-      caption: "BlueDrops completely changed my life. I felt the difference in just 2 weeks!"
+      name: pageType === 'upsell' ? "Carlos M." : "Michael R.",
+      location: pageType === 'upsell' ? "Florida" : "Texas",
+      profileImage: pageType === 'upsell' ? "https://i.imgur.com/4bcFSBQ.png" : "https://i.imgur.com/IYyJR1B.png",
+      videoId: pageType === 'upsell' ? "686b8e7715fc4aa5f81acc69" : "68677fbfd890d9c12c549f94",
+      caption: pageType === 'upsell' ? "I followed the full 9-month protocol — and let me tell you… I feel like a new man." : "BlueDrops completely changed my life. I felt the difference in just 2 weeks!"
     },
     {
       id: 2,
-      name: "Robert S.",
-      location: "California",
-      profileImage: "https://i.imgur.com/d1raEIm.png",
-      videoId: "6867816a78c1d68a675981f1", // REAL VTurb video ID
-      caption: "After 50, I thought there was no hope. BlueDrops proved me wrong!"
+      name: pageType === 'upsell' ? "Marcus W." : "Robert S.",
+      location: pageType === 'upsell' ? "Georgia" : "California",
+      profileImage: pageType === 'upsell' ? "https://i.imgur.com/Ob6Vy9q.png" : "https://i.imgur.com/d1raEIm.png",
+      videoId: pageType === 'upsell' ? "686b8e7d15fc4aa5f81acc7e" : "6867816a78c1d68a675981f1",
+      caption: pageType === 'upsell' ? "It's not just about stronger performance… it gave me my confidence back." : "After 50, I thought there was no hope. BlueDrops proved me wrong!"
     },
     {
       id: 3,
-      name: "John O.",
-      location: "Florida",
-      profileImage: "https://i.imgur.com/UJ0L2tZ.png",
-      videoId: "68678320c5ab1e6abe6e5b6f", // REAL VTurb video ID
-      caption: "My wife noticed the difference before I even told her about BlueDrops!"
+      name: pageType === 'upsell' ? "Lisa G." : "John O.",
+      location: pageType === 'upsell' ? "Texas" : "Florida",
+      profileImage: pageType === 'upsell' ? "https://i.imgur.com/EWjVWtx.png" : "https://i.imgur.com/UJ0L2tZ.png",
+      videoId: pageType === 'upsell' ? "686b8e7d15fc4aa5f81acc7e" : "68678320c5ab1e6abe6e5b6f", // ✅ NOTE: Lisa G. uses same video as Marcus W.
+      caption: pageType === 'upsell' ? "My husband is back. Emotionally, physically, in every way. Thank you, BlueDrops." : "My wife noticed the difference before I even told her about BlueDrops!"
     }
   ];
 
@@ -448,13 +448,10 @@ const TestimonialCard: React.FC<{
 
         // ✅ EXACT SAME HTML structure as DoctorsSection
         targetContainer.innerHTML = `
-          <div id="vid_${testimonial.videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
-            <img id="thumb_${testimonial.videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${testimonial.videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
-            <div id="backdrop_${testimonial.videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
-          </div>
-          <style>
-            .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0;}
-          </style>
+          <vturb-smartplayer 
+            id="vid_${testimonial.videoId}" 
+            style="display: block; margin: 0 auto; width: 100%; height: 100%;"
+          ></vturb-smartplayer>
         `;
 
         // ✅ EXACT SAME script injection as DoctorsSection
@@ -471,11 +468,37 @@ const TestimonialCard: React.FC<{
               console.log('🎬 Loading testimonial video: ${testimonial.videoId}');
               
               var s = document.createElement("script");
-              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${testimonial.videoId}/player.js";
+              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${testimonial.videoId}/v4/player.js";
               s.async = true;
               
               s.onload = function() {
                 console.log('✅ VTurb testimonial video loaded: ${testimonial.videoId}');
+                
+                // ✅ NEW: Auto-play video after load
+                setTimeout(function() {
+                  try {
+                    // Try multiple methods to auto-play
+                    var videoElement = document.querySelector('#vid_${testimonial.videoId} video');
+                    if (videoElement && videoElement.play) {
+                      videoElement.play().then(function() {
+                        console.log('✅ Auto-play successful for testimonial: ${testimonial.videoId}');
+                      }).catch(function(error) {
+                        console.log('⚠️ Auto-play blocked by browser for testimonial: ${testimonial.videoId}', error);
+                      });
+                    }
+                    
+                    // Try VTurb player API if available
+                    if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances['${testimonial.videoId}']) {
+                      var player = window.smartplayer.instances['${testimonial.videoId}'];
+                      if (player.play) {
+                        player.play();
+                        console.log('✅ Auto-play via smartplayer for testimonial: ${testimonial.videoId}');
+                      }
+                    }
+                  } catch (error) {
+                    console.log('⚠️ Auto-play failed for testimonial:', error);
+                  }
+                }, 2000); // Wait 2 seconds for video to fully load
                 
                 // ✅ FIXED: Ensure video elements stay in correct container
                 setTimeout(function() {
@@ -618,25 +641,7 @@ const TestimonialCard: React.FC<{
             ></div>
             
             {/* ✅ Placeholder - Only show while loading */}
-            {!videoLoaded && (
-              <div 
-                id={`placeholder_${testimonial.videoId}_${pageType}`}
-                className="absolute inset-0 bg-gradient-to-br from-blue-800 to-blue-900 flex items-center justify-center"
-                style={{ zIndex: 10 }}
-              >
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-3 mx-auto">
-                    <Play className="w-6 h-6 text-white ml-0.5" />
-                  </div>
-                  <p className="text-white/90 text-base font-medium mb-1">
-                    {testimonial.name}
-                  </p>
-                  <p className="text-white/70 text-sm">
-                    Customer Story
-                  </p>
-                </div>
-              </div>
-            )}
+            {/* ✅ REMOVED: No placeholder for auto-playing videos */}
           </div>
         </div>
       )}
