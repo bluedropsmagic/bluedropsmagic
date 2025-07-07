@@ -33,6 +33,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const [searchParams] = useSearchParams();
   const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
+  const [showPurchaseSection, setShowPurchaseSection] = useState(false);
 
   // Preserve CartPanda parameters
   useEffect(() => {
@@ -62,6 +63,30 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
     setCartParams(params.toString());
   }, [searchParams]);
+
+  // ✅ NEW: Show purchase section after 2min41s (161 seconds)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('⏰ 2min41s elapsed - showing purchase section');
+      setShowPurchaseSection(true);
+      
+      // ✅ Auto-scroll to purchase section
+      setTimeout(() => {
+        const purchaseSection = document.getElementById('purchase-section');
+        if (purchaseSection) {
+          purchaseSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+          });
+          console.log('📍 Auto-scrolled to purchase section');
+        }
+      }, 500); // Small delay to ensure section is rendered
+      
+    }, 161000); // 2min41s = 161 seconds = 161,000 milliseconds
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // ✅ NEW: Inject VTurb script based on variant
   useEffect(() => {
@@ -280,8 +305,42 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             </div>
           </div>
 
-          {/* Product Box */}
-          <div className="mb-6 relative animate-fadeInUp animation-delay-600">
+          {/* ✅ NEW: Sound Warning */}
+          <div className="mb-4 animate-fadeInUp animation-delay-600">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-lg">🔊</span>
+                <span className="text-blue-800 font-semibold text-sm">
+                  Please make sure your sound is on
+                </span>
+              </div>
+              <p className="text-blue-600 text-xs">
+                This video contains important audio information
+              </p>
+            </div>
+          </div>
+
+          {/* ✅ NEW: Unique Offer Warning */}
+          <div className="mb-6 animate-fadeInUp animation-delay-700">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <AlertTriangle className="w-4 h-4 text-red-600" />
+                <span className="text-red-800 font-semibold text-sm">
+                  This is a unique, one-time offer
+                </span>
+              </div>
+              <p className="text-red-600 text-xs">
+                Once you leave this page, this offer will never be available again
+              </p>
+            </div>
+          </div>
+
+          {/* ✅ Purchase Section - Only show after 2min41s */}
+          {showPurchaseSection && (
+          <div 
+            id="purchase-section"
+            className="mb-6 relative animate-fadeInUp animation-delay-800"
+          >
             {/* FINAL CHANCE Tag */}
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
               <div className="bg-gradient-to-r from-red-400 via-red-500 to-red-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
@@ -392,9 +451,11 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </div>
+          )}
 
-          {/* Reject Button */}
-          <div className="mb-6 animate-fadeInUp animation-delay-800">
+          {/* ✅ Reject Button - Only show after 2min41s */}
+          {showPurchaseSection && (
+          <div className="mb-6 animate-fadeInUp animation-delay-900">
             <button 
               onClick={handleReject}
               className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
@@ -402,8 +463,10 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
               <span className="text-xs sm:text-sm font-medium">❌ {content.rejectButtonText}</span>
             </button>
           </div>
+          )}
 
-          {/* Footer Warning */}
+          {/* ✅ Footer Warning - Only show after 2min41s */}
+          {showPurchaseSection && (
           <footer className="text-center text-blue-700 animate-fadeInUp animation-delay-1000">
             <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
               <div className="bg-red-500 text-white px-3 py-1.5 rounded-lg inline-block mb-2">
@@ -417,6 +480,22 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
               </p>
             </div>
           </footer>
+          )}
+
+          {/* ✅ NEW: Loading message while waiting for purchase section */}
+          {!showPurchaseSection && (
+          <div className="text-center py-8 animate-fadeInUp animation-delay-800">
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-6 border border-blue-200">
+              <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <h3 className="text-lg font-bold text-blue-900 mb-2">
+                Watch the complete video above
+              </h3>
+              <p className="text-blue-700 text-sm">
+                Your exclusive offer will appear after the video presentation
+              </p>
+            </div>
+          </div>
+          )}
         </div>
       </div>
     </div>
