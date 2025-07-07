@@ -209,10 +209,9 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
     return contents[variant as keyof typeof contents];
   };
 
-  const content = getUpsellContent(variant);
-
   const handleAccept = () => {
     // ✅ FIXED: ONLY track InitiateCheckout - NO Purchase event
+    const content = getUpsellContent(variant);
     trackInitiateCheckout(content.acceptUrl);
     
     trackOfferClick(`upsell-${variant}-accept`);
@@ -233,6 +232,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
   const handleReject = () => {
     // ✅ FIXED: ONLY track InitiateCheckout for reject
+    const content = getUpsellContent(variant);
     trackInitiateCheckout(content.rejectUrl);
     
     trackOfferClick(`upsell-${variant}-reject`);
