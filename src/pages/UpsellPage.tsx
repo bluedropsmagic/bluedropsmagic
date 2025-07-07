@@ -142,7 +142,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=no',
         productImage: 'https://i.imgur.com/2YU6i8f.png',
-        acceptButtonText: 'YES — COMPLETE MY 9‑MONTH TREATMENT',
+        acceptButtonText: 'CLAIM OFFER',
         rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure',
         videoId: '686b6af315fc4aa5f81ab90b' // ✅ VTurb ID for 1-bottle upsell
       },
@@ -162,7 +162,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=no',
         productImage: 'https://i.imgur.com/2YU6i8f.png',
-        acceptButtonText: 'YES — COMPLETE MY 9‑MONTH TREATMENT',
+        acceptButtonText: 'CLAIM OFFER',
         rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure',
         videoId: '686b7739756a766918015263' // ✅ VTurb ID for 3-bottle upsell
       },
@@ -182,7 +182,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=no',
         productImage: 'https://i.imgur.com/2YU6i8f.png',
-        acceptButtonText: 'YES — COMPLETE MY 9‑MONTH TREATMENT',
+        acceptButtonText: 'CLAIM OFFER',
         rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure',
         videoId: '686b75de199e54169b0f64af' // ✅ VTurb ID for 6-bottle upsell
       }
@@ -346,10 +346,10 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
                 {/* CTA Button */}
                 <div className="relative mb-4">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 rounded-xl blur opacity-75 animate-pulse"></div>
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-xl blur opacity-75 animate-pulse"></div>
                   <button 
                     onClick={handleAccept}
-                    className="relative w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                    className="relative w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
                   >
                     <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
                     <span className="relative z-10">{content.acceptButtonText}</span>
