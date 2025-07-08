@@ -141,12 +141,12 @@ function App() {
 
   // ✅ NEW: Check for admin override or time-based content reveal
   useEffect(() => {
-    if (isAdmin && adminDelayOverride) {
-      console.log('👨‍💼 Admin override - showing all content immediately');
+    if (isAdmin) {
+      console.log('👨‍💼 Admin logged in - showing purchase buttons and content');
       setShowRestOfContent(true);
       setShowPurchaseButton(true);
     }
-  }, [isAdmin, adminDelayOverride]);
+  }, [isAdmin]);
 
   // ✅ NEW: Auto-trigger content reveal after 30 seconds
   useEffect(() => {
@@ -736,16 +736,9 @@ function App() {
       {/* ✅ NEW: Admin DTC Button - For content override */}
       {isAdmin && (
         <div className="fixed top-4 right-4 z-50">
-          <button
-            onClick={() => setAdminDelayOverride(!adminDelayOverride)}
-            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all duration-300 shadow-lg ${
-              adminDelayOverride
-                ? 'bg-red-500 hover:bg-red-600 text-white'
-                : 'bg-green-500 hover:bg-green-600 text-white'
-            }`}
-          >
-            {adminDelayOverride ? '🔓 ADMIN: All Content Visible' : '🔒 ADMIN: Show All Content'}
-          </button>
+          <div className="bg-green-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
+            👨‍💼 ADMIN MODE: All Content Visible
+          </div>
         </div>
       )}
 
@@ -765,7 +758,7 @@ function App() {
           <VideoSection />
 
           {/* Product Offers - Only show after 35:55 or admin override */}
-          {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
+          {(showRestOfContent || isAdmin) && (
             <ProductOffers 
               showPurchaseButton={showPurchaseButton}
               onPurchase={handlePurchase}
@@ -775,27 +768,27 @@ function App() {
         </div>
 
         {/* Testimonials Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
+        {(showRestOfContent || isAdmin) && (
         <TestimonialsSection />
         )}
 
         {/* Doctors Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
+        {(showRestOfContent || isAdmin) && (
         <DoctorsSection />
         )}
 
         {/* News Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
+        {(showRestOfContent || isAdmin) && (
         <NewsSection />
         )}
 
         {/* Guarantee Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
+        {(showRestOfContent || isAdmin) && (
         <GuaranteeSection />
         )}
 
         {/* Final purchase section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || (isAdmin && adminDelayOverride)) && (
+        {(showRestOfContent || isAdmin) && (
           <section 
             id="final-purchase-section"
             data-purchase-section="true"
