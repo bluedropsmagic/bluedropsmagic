@@ -38,10 +38,16 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
   // ✅ NEW: Inject Hotjar for upsell pages
   useEffect(() => {
-    // Remove existing Hotjar script if any
-    const existingHotjar = document.querySelector('script[src*="hotjar"]');
-    if (existingHotjar) {
-      existingHotjar.remove();
+    // Remove ALL existing Hotjar scripts to prevent conflicts
+    const existingHotjar = document.querySelectorAll('script[src*="hotjar"]');
+    existingHotjar.forEach(script => script.remove());
+    
+    // Also remove any Hotjar settings
+    if ((window as any).hj) {
+      delete (window as any).hj;
+    }
+    if ((window as any)._hjSettings) {
+      delete (window as any)._hjSettings;
     }
 
     // Inject Hotjar script for upsells
@@ -62,9 +68,15 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
     // Cleanup on unmount
     return () => {
-      const scriptToRemove = document.querySelector('script[src*="hotjar"]');
-      if (scriptToRemove) {
-        scriptToRemove.remove();
+      const scriptsToRemove = document.querySelectorAll('script[src*="hotjar"]');
+      scriptsToRemove.forEach(script => script.remove());
+      
+      // Clean up Hotjar globals
+      if ((window as any).hj) {
+        delete (window as any).hj;
+      }
+      if ((window as any)._hjSettings) {
+        delete (window as any)._hjSettings;
       }
     };
   }, []);

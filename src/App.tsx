@@ -26,6 +26,35 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminDelayOverride, setAdminDelayOverride] = useState(false); // ✅ CHANGED: Default false
 
+  // ✅ NEW: Load Hotjar for main page only
+  useEffect(() => {
+    // Only load Hotjar if we're on the main page (not upsell/downsell)
+    const path = window.location.pathname;
+    const isMainPage = path === '/' || path === '/home';
+    
+    if (isMainPage) {
+      // Remove any existing Hotjar scripts
+      const existingHotjar = document.querySelectorAll('script[src*="hotjar"]');
+      existingHotjar.forEach(script => script.remove());
+      
+      // Load Hotjar for main page
+      const hotjarScript = document.createElement('script');
+      hotjarScript.innerHTML = `
+        (function(h,o,t,j,a,r){
+            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+            h._hjSettings={hjid:6457423,hjsv:6};
+            a=o.getElementsByTagName('head')[0];
+            r=o.createElement('script');r.async=1;
+            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+      `;
+      
+      document.head.appendChild(hotjarScript);
+      console.log('🔥 Hotjar main page tracking loaded (ID: 6457423)');
+    }
+  }, []);
+
   // ✅ NEW: Prevent white page after errors
   useEffect(() => {
     // Global error handler to prevent white page

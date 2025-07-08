@@ -32,6 +32,23 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
 
+  // ✅ NEW: Ensure no Hotjar on downsell pages
+  useEffect(() => {
+    // Remove ALL Hotjar scripts from downsell pages
+    const existingHotjar = document.querySelectorAll('script[src*="hotjar"]');
+    existingHotjar.forEach(script => script.remove());
+    
+    // Clean up Hotjar globals
+    if ((window as any).hj) {
+      delete (window as any).hj;
+    }
+    if ((window as any)._hjSettings) {
+      delete (window as any)._hjSettings;
+    }
+    
+    console.log('🚫 Hotjar removed from downsell page');
+  }, []);
+
   // Preserve CartPanda parameters
   useEffect(() => {
     const params = new URLSearchParams();

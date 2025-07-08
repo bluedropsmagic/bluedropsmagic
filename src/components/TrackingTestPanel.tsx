@@ -89,10 +89,23 @@ export const TrackingTestPanel: React.FC = () => {
       if (typeof (window as any).hj === 'function') {
         // Test Hotjar by triggering a custom event
         (window as any).hj('event', 'admin_test');
+        
+        const hjid = (window as any)._hjSettings?.hjid;
+        const path = window.location.pathname;
+        let expectedId = '';
+        
+        if (path === '/' || path === '/home') {
+          expectedId = '6457423 (main page)';
+        } else if (path.includes('/up')) {
+          expectedId = '6457430 (upsell)';
+        } else if (path.includes('/dws') || path.includes('/dw')) {
+          expectedId = 'NONE (downsell)';
+        }
+        
         updateStatus(index, { 
           status: 'success', 
           message: 'Hotjar carregado e funcionando',
-          details: `Script carregado, eventos sendo enviados (ID: ${(window as any)._hjSettings?.hjid || 'unknown'})`
+          details: `ID atual: ${hjid || 'none'} | Esperado: ${expectedId}`
         });
       } else {
         updateStatus(index, { 
@@ -706,16 +719,18 @@ export const TrackingTestPanel: React.FC = () => {
           <div className="space-y-2">
             <h4 className="font-medium text-gray-900">Hotjar</h4>
             <p className="text-sm text-gray-600">
-              Página principal: <code className="bg-gray-100 px-1 rounded">6457423</code>
+              <strong>Página principal (/):</strong> <code className="bg-gray-100 px-1 rounded">6457423</code>
             </p>
             <p className="text-sm text-gray-600">
-              Páginas upsell: <code className="bg-gray-100 px-1 rounded">6457424</code>
+              <strong>Páginas upsell (/up*):</strong> <code className="bg-gray-100 px-1 rounded">6457430</code>
             </p>
             <p className="text-sm text-gray-600">
-              Páginas upsell (novo): <code className="bg-gray-100 px-1 rounded">6457430</code>
+              <strong>Páginas downsell (/dws*, /dw*):</strong> <code className="bg-red-100 px-1 rounded text-red-600">SEM HOTJAR</code>
             </p>
             <p className="text-sm text-gray-600">Versão: <code className="bg-gray-100 px-1 rounded">6</code></p>
-            <p className="text-sm text-gray-500">Carregamento dinâmico por página</p>
+            <p className="text-sm text-gray-500">
+              <strong>Atual:</strong> ID {typeof window !== 'undefined' && (window as any)._hjSettings?.hjid || 'nenhum'}
+            </p>
           </div>
           
           <div className="space-y-2">
