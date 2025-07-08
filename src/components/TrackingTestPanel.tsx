@@ -711,6 +711,9 @@ export const TrackingTestPanel: React.FC = () => {
             <p className="text-sm text-gray-600">
               Páginas upsell: <code className="bg-gray-100 px-1 rounded">6457424</code>
             </p>
+            <p className="text-sm text-gray-600">
+              Páginas upsell (novo): <code className="bg-gray-100 px-1 rounded">6457430</code>
+            </p>
             <p className="text-sm text-gray-600">Versão: <code className="bg-gray-100 px-1 rounded">6</code></p>
             <p className="text-sm text-gray-500">Carregamento dinâmico por página</p>
           </div>
