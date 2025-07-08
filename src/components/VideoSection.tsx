@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Play, Volume2, AlertTriangle, Clock, RefreshCw } from 'lucide-react';
 
-// Fallback video container ID
-const MAIN_VIDEO_ID = '683ba3d1b87ae17c6e07e7db';
-
 export const VideoSection: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const [videoContainerId, setVideoContainerId] = useState<string>(MAIN_VIDEO_ID);
 
   useEffect(() => {
     // Check if video is loaded
@@ -16,20 +12,7 @@ export const VideoSection: React.FC = () => {
     let checkInterval: number;
     
     const checkVideoLoad = () => {
-      // Try to find the video container
-      const videoContainer = document.getElementById(`vid_${videoContainerId}`);
-      
-      // If container not found, try to find any VTurb container as fallback
-      if (!videoContainer) {
-        const allContainers = document.querySelectorAll('[id^="vid_"]');
-        if (allContainers.length > 0) {
-          const foundId = allContainers[0].id.replace('vid_', '');
-          console.log(`🔍 Main video container not found, using alternative: ${foundId}`);
-          setVideoContainerId(foundId);
-          return;
-        }
-      }
-      
+      const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
       if (videoContainer) {
         // Check for actual video content
         const hasVideo = videoContainer.querySelector('video') || 
@@ -51,8 +34,6 @@ export const VideoSection: React.FC = () => {
     try {
       // Check periodically for up to 15 seconds
       checkInterval = window.setInterval(checkVideoLoad, 1000);
-      
-      // Longer timeout for video loading
       loadingTimeout = window.setTimeout(() => {
         window.clearInterval(checkInterval);
         if (isLoading) {
@@ -60,8 +41,7 @@ export const VideoSection: React.FC = () => {
           setHasError(true);
           setIsLoading(false);
         }
-      }, 20000);
-      
+      }, 15000);
       console.log('🎬 Starting video load check...');
     } catch (error) {
       console.error('Error setting up video load check:', error);
@@ -75,7 +55,7 @@ export const VideoSection: React.FC = () => {
         console.error('Error cleaning up video load check:', error);
       }
     };
-  }, [isLoading, videoContainerId]);
+  }, [isLoading]);
 
   // ✅ UPDATED: Better retry logic with more logging
   const handleRetryLoad = () => {
@@ -85,7 +65,7 @@ export const VideoSection: React.FC = () => {
     setHasError(false);
     
     // Force reload the VTurb script
-    const existingScript = document.getElementById(`scr_${videoContainerId}`);
+    const existingScript = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
     if (existingScript) {
       existingScript.remove();
       console.log('🔄 Removed existing VTurb script');
@@ -102,7 +82,7 @@ export const VideoSection: React.FC = () => {
     // Re-inject script
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.id = `scr_${videoContainerId}`;
+    script.id = 'scr_683ba3d1b87ae17c6e07e7db';
     script.async = true;
     script.innerHTML = `
       console.log('🔄 Retry #${retryCount + 1}: Executing VTurb script reload...');
@@ -114,7 +94,7 @@ export const VideoSection: React.FC = () => {
           }
           
           var s = document.createElement("script");
-          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoContainerId}/player.js";
+          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/player.js";
           s.async = true; 
           s.defer = true;
           
@@ -146,74 +126,15 @@ export const VideoSection: React.FC = () => {
     
     // ✅ FIXED: Force reload after 3 retries
     if (retryCount >= 3) {
-      console.log('🔄 Maximum retries reached, trying alternative approach');
+      console.log('🔄 Maximum retries reached, forcing page refresh');
+      // Save current scroll position
+      const scrollPos = window.scrollY;
+      localStorage.setItem('scrollPosition', scrollPos.toString());
       
-      // Try to create a completely new video container
-      const videoContainer = document.getElementById(`vid_${videoContainerId}`);
-      if (videoContainer) {
-        // Clear the container
-        videoContainer.innerHTML = '';
-        
-        // Create a new container with a different structure
-        const newContainer = document.createElement('div');
-        newContainer.style.width = '100%';
-        newContainer.style.height = '100%';
-        newContainer.style.position = 'relative';
-        
-        // Add a placeholder image
-        const placeholderImg = document.createElement('img');
-        placeholderImg.src = `https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoContainerId}/thumbnail.jpg`;
-        placeholderImg.style.width = '100%';
-        placeholderImg.style.height = '100%';
-        placeholderImg.style.objectFit = 'cover';
-        newContainer.appendChild(placeholderImg);
-        
-        // Add a play button overlay
-        const playButton = document.createElement('div');
-        playButton.style.position = 'absolute';
-        playButton.style.top = '50%';
-        playButton.style.left = '50%';
-        playButton.style.transform = 'translate(-50%, -50%)';
-        playButton.style.width = '80px';
-        playButton.style.height = '80px';
-        playButton.style.borderRadius = '50%';
-        playButton.style.backgroundColor = 'rgba(0,0,0,0.7)';
-        playButton.style.display = 'flex';
-        playButton.style.alignItems = 'center';
-        playButton.style.justifyContent = 'center';
-        playButton.style.cursor = 'pointer';
-        
-        // Add play icon
-        playButton.innerHTML = `
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
-        `;
-        
-        // Add click handler to play button
-        playButton.onclick = () => {
-          // Force reload page when clicked
-          const scrollPos = window.scrollY;
-          localStorage.setItem('scrollPosition', scrollPos.toString());
-          window.location.reload();
-        };
-        
-        newContainer.appendChild(playButton);
-        videoContainer.appendChild(newContainer);
-        
-        // Hide loading and error states
-        setIsLoading(false);
-        setHasError(false);
-      } else {
-        // Last resort: force page reload
-        console.log('🔄 Video container not found, forcing page refresh');
-        const scrollPos = window.scrollY;
-        localStorage.setItem('scrollPosition', scrollPos.toString());
-        
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }
+      // Reload page after a short delay
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   };
   
@@ -235,8 +156,8 @@ export const VideoSection: React.FC = () => {
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ FIXED: VTurb Video Container - Ensure container exists */}
-          <div 
-            id={`vid_${videoContainerId}`}
+          <div
+            id="vid_683ba3d1b87ae17c6e07e7db"
             className="absolute inset-0 w-full h-full z-30 cursor-pointer"
             style={{
               position: 'absolute',
@@ -254,8 +175,8 @@ export const VideoSection: React.FC = () => {
           >
             {/* ✅ FIXED: Ensure thumbnail and backdrop are always present */}
             <img 
-              id={`thumb_${videoContainerId}`}
-              src={`https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoContainerId}/thumbnail.jpg`}
+              id="thumb_683ba3d1b87ae17c6e07e7db" 
+              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/thumbnail.jpg" 
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
               loading="eager"
@@ -267,7 +188,7 @@ export const VideoSection: React.FC = () => {
             
             {/* ✅ FIXED: Backdrop with proper z-index */}
             <div 
-              id={`backdrop_${videoContainerId}`}
+              id="backdrop_683ba3d1b87ae17c6e07e7db" 
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
@@ -279,7 +200,7 @@ export const VideoSection: React.FC = () => {
             
             {/* ✅ NEW: VTurb content will be injected here with higher z-index */}
             <div 
-              id={`vturb-content-${videoContainerId}`}
+              id="vturb-content-683ba3d1b87ae17c6e07e7db"
               className="absolute inset-0 w-full h-full"
               style={{
                 zIndex: 10,
@@ -294,7 +215,7 @@ export const VideoSection: React.FC = () => {
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>
                 <div className="text-center text-white p-4">
                   <RefreshCw className="w-12 h-12 text-white/80 animate-spin mb-3 mx-auto" />
-                  <p className="text-sm font-medium mb-1">Carregando vídeo principal... ({retryCount}/4)</p>
+                  <p className="text-sm font-medium mb-1">Carregando vídeo principal...</p>
                   <p className="text-xs text-white/70">Aguarde um momento</p>
                   
                   {/* ✅ FIXED: Add manual retry button after 5 seconds */}
@@ -317,7 +238,7 @@ export const VideoSection: React.FC = () => {
                   <div className="w-12 h-12 bg-red-500/30 rounded-full flex items-center justify-center mb-3 mx-auto">
                     <AlertTriangle className="w-6 h-6 text-red-400" />
                   </div>
-                  <p className="text-sm font-medium mb-3">Erro ao carregar o vídeo (ID: {videoContainerId})</p>
+                  <p className="text-sm font-medium mb-3">Erro ao carregar o vídeo</p>
                   <p className="text-xs text-white/70 mb-4">Tentativa {retryCount + 1} de 4</p>
                   <button
                     onClick={handleRetryLoad}
@@ -330,13 +251,7 @@ export const VideoSection: React.FC = () => {
                   {/* ✅ FIXED: Add force reload button after 2 retries */}
                   {retryCount >= 2 && (
                     <button
-                      onClick={() => {
-                        // Save scroll position
-                        const scrollPos = window.scrollY;
-                        localStorage.setItem('scrollPosition', scrollPos.toString());
-                        // Force reload
-                        window.location.reload();
-                      }}
+                      onClick={() => window.location.reload()}
                       className="mt-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm transition-colors min-h-[44px] w-full"
                       style={{ touchAction: 'manipulation' }}
                     >
@@ -351,13 +266,13 @@ export const VideoSection: React.FC = () => {
             {!window.vslVideoLoaded && !hasError && (
             <div 
               className="absolute inset-0 flex items-center justify-center cursor-pointer"
-              style={{
+              style={{ 
                 touchAction: 'manipulation',
                 zIndex: 20
               }}
               onClick={() => {
                 console.log('🎬 Play button clicked');
-                const videoContainer = document.getElementById(`vid_${videoContainerId}`);
+                const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
                 if (videoContainer) {
                   videoContainer.click();
                 }
