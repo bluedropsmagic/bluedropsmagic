@@ -27,7 +27,9 @@ import {
   Settings,
   Lock,
   LogOut,
-  TestTube
+  TestTube,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 
 interface AnalyticsData {
@@ -105,6 +107,8 @@ export const AdminDashboard: React.FC = () => {
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
   const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'testing' | 'settings'>('analytics');
   const [contentDelay, setContentDelay] = useState(2155); // ✅ CHANGED: Default to 35:55 (2155 seconds)
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
 
   const navigate = useNavigate();
 
@@ -182,6 +186,41 @@ export const AdminDashboard: React.FC = () => {
 
   const resetToDefault = () => {
     handleDelayChange(2155); // ✅ CHANGED: Default to 35:55
+  };
+
+  // ✅ NEW: Function to clear all analytics data
+  const clearAllAnalytics = async () => {
+    setIsClearing(true);
+    try {
+      console.log('🗑️ Starting to clear all analytics data...');
+      
+      // Delete all records from vsl_analytics table
+      const { error } = await supabase
+        .from('vsl_analytics')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all records (using impossible ID)
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log('✅ All analytics data cleared successfully');
+      
+      // Refresh analytics data
+      await fetchAnalytics();
+      
+      // Close confirmation modal
+      setShowClearConfirm(false);
+      
+      // Show success message
+      alert('✅ Dashboard zerada com sucesso! Todos os dados de analytics foram removidos.');
+      
+    } catch (error) {
+      console.error('❌ Error clearing analytics data:', error);
+      alert('❌ Erro ao zerar dashboard: ' + (error as Error).message);
+    } finally {
+      setIsClearing(false);
+    }
   };
 
   // Enhanced country flag mapping
@@ -740,6 +779,14 @@ export const AdminDashboard: React.FC = () => {
                     <span className="hidden sm:inline">Atualizar</span>
                   </button>
                   <button
+                    onClick={() => setShowClearConfirm(true)}
+                    disabled={loading || isClearing}
+                    className="bg-red-600 hover:bg-red-700 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm disabled:opacity-50"
+                  >
+                    <Trash2 className="w-3 sm:w-4 h-3 sm:h-4" />
+                    <span className="hidden sm:inline">Zerar</span>
+                  </button>
+                  <button
                     onClick={handleLogout}
                     className="bg-red-600 hover:bg-red-700 text-white px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm"
                   >
@@ -1164,5 +1211,72 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </div>
     </div>
+
+      {/* ✅ NEW: Clear Dashboard Confirmation Modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-8 h-8 text-red-600" />
+              </div>
+              
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                ⚠️ Zerar Dashboard Completa
+              </h3>
+              
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                <strong className="text-red-600">ATENÇÃO:</strong> Esta ação irá deletar 
+                <strong> TODOS os dados de analytics</strong> permanentemente:
+              </p>
+              
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-left">
+                <ul className="text-sm text-red-700 space-y-1">
+                  <li>• <strong>Todas as sessões</strong> de usuários</li>
+                  <li>• <strong>Todos os eventos</strong> (page_enter, video_play, etc.)</li>
+                  <li>• <strong>Dados geográficos</strong> (países, cidades)</li>
+                  <li>• <strong>Histórico de vendas</strong> e conversões</li>
+                  <li>• <strong>Gráficos e estatísticas</strong></li>
+                  <li>• <strong>Usuários ativos</strong> e pings</li>
+                </ul>
+              </div>
+              
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+                <p className="text-yellow-700 text-sm font-medium">
+                  🚨 <strong>Esta ação NÃO pode ser desfeita!</strong>
+                </p>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowClearConfirm(false)}
+                  disabled={isClearing}
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                
+                <button
+                  onClick={clearAllAnalytics}
+                  disabled={isClearing}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isClearing ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      Zerando...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      ZERAR TUDO
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
   );
 };
