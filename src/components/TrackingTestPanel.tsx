@@ -705,7 +705,12 @@ export const TrackingTestPanel: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
             <h4 className="font-medium text-gray-900">Hotjar</h4>
-            <p className="text-sm text-gray-600">Site ID: <code className="bg-gray-100 px-1 rounded">6454408</code></p>
+            <p className="text-sm text-gray-600">
+              Main Page ID: <code className="bg-gray-100 px-1 rounded">6457423</code>
+            </p>
+            <p className="text-sm text-gray-600">
+              Upsell 6-bottle ID: <code className="bg-gray-100 px-1 rounded">6457424</code>
+            </p>
             <p className="text-sm text-gray-600">Versão: <code className="bg-gray-100 px-1 rounded">6</code></p>
           </div>
           
