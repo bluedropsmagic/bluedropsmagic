@@ -91,30 +91,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
   // ✅ NEW: Inject VTurb script based on variant
   useEffect(() => {
-    // ✅ NEW: Inject Hotjar for 6-bottle upsell pages only
-    if (variant === '6-bottle') {
-      // Remove existing Hotjar script if any
-      const existingHotjar = document.querySelector('script[src*="hotjar"]');
-      if (existingHotjar) {
-        existingHotjar.remove();
-      }
-
-      // Inject Hotjar for UPSELL MAGIC BLUEDROPS
-      const hotjarScript = document.createElement('script');
-      hotjarScript.innerHTML = `
-        (function(h,o,t,j,a,r){
-            h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-            h._hjSettings={hjid:6457424,hjsv:6};
-            a=o.getElementsByTagName('head')[0];
-            r=o.createElement('script');r.async=1;
-            r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-            a.appendChild(r);
-        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-      `;
-      document.head.appendChild(hotjarScript);
-      console.log('✅ Hotjar UPSELL (6457424) injected for 6-bottle upsell page');
-    }
-
     const content = getUpsellContent(variant);
     const videoId = content.videoId;
     
@@ -167,14 +143,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
     // Cleanup on unmount
     return () => {
-      // Remove Hotjar script on unmount
-      if (variant === '6-bottle') {
-        const hotjarScript = document.querySelector('script[src*="hotjar"]');
-        if (hotjarScript) {
-          hotjarScript.remove();
-        }
-      }
-      
       const scriptToRemove = document.getElementById(`scr_${videoId}`);
       if (scriptToRemove) {
         scriptToRemove.remove();
