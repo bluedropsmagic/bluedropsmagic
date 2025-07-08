@@ -6,7 +6,7 @@ import {
   RefreshCw,
   Calendar,
   LogOut,
-  Lock
+  Lock,
   Trash2,
   AlertTriangle
 } from 'lucide-react';
@@ -133,6 +133,10 @@ export const AdminDashboard: React.FC = () => {
       console.error('Error clearing data:', error);
       alert('Erro ao limpar dados. Tente novamente.');
     } finally {
+      setIsClearing(false);
+    }
+  };
+
   // Enhanced country flag mapping
   const getCountryFlag = (countryCode: string, countryName?: string) => {
     const countryFlags: { [key: string]: string } = {
@@ -173,11 +177,13 @@ export const AdminDashboard: React.FC = () => {
         .neq('country_name', 'Brazil')
         .order('created_at', { ascending: false });
       
+      if (error) throw error;
+
       // Each page_enter event represents one unique session
-      const totalSessions = allEvents.length;
+      const totalSessions = allEvents ? allEvents.length : 0;
 
       // Get recent sessions (last 20)
-      const recentSessions = allEvents.slice(0, 20).map((session) => {
+      const recentSessions = allEvents ? allEvents.slice(0, 20).map((session) => {
         return {
           sessionId: session.session_id,
           timestamp: session.created_at,
@@ -186,7 +192,7 @@ export const AdminDashboard: React.FC = () => {
           city: session.city || 'Unknown',
           ip: session.ip || 'Unknown',
         };
-      });
+      }) : [];
 
       setSessionData({
         totalSessions,
@@ -206,13 +212,7 @@ export const AdminDashboard: React.FC = () => {
       fetchSessionData();
       
       // Set up real-time subscription for new sessions
-      // ✅ ZEROED: Set all totals to zero
-      setTotalSales({
-        '6-bottle': 0,
-        '3-bottle': 0,
-        '1-bottle': 0,
-        total: 0
-      });
+      const subscription = supabase
         .channel('vsl_analytics_sessions')
         .on('postgres_changes', 
           { 
