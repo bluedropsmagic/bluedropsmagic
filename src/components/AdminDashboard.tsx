@@ -6,12 +6,45 @@ import {
   RefreshCw,
   Calendar,
   LogOut,
-  Lock
+  Lock,
+  DollarSign,
+  ShoppingCart,
+  TrendingUp,
+  Package,
+  BarChart3,
+  CreditCard,
+  Percent,
+  ArrowUpRight,
+  ArrowDownRight
 } from 'lucide-react';
 
-interface SessionData {
+interface DashboardData {
+  // Sessões
   totalSessions: number;
   recentSessions: any[];
+  
+  // Vendas
+  totalSales: number;
+  salesByProduct: {
+    '6-bottle': number;
+    '3-bottle': number;
+    '1-bottle': number;
+  };
+  
+  // Faturamento
+  grossRevenue: number;
+  netRevenue: number;
+  
+  // Métricas
+  roas: number;
+  roi: number;
+  margin: number;
+  arpu: number;
+  reimbursement: number;
+  chargeback: number;
+  productCosts: number;
+  cpa: number;
+  taxes: number;
 }
 
 export const AdminDashboard: React.FC = () => {
@@ -22,9 +55,26 @@ export const AdminDashboard: React.FC = () => {
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   
-  const [sessionData, setSessionData] = useState<SessionData>({
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
     totalSessions: 0,
-    recentSessions: []
+    recentSessions: [],
+    totalSales: 0,
+    salesByProduct: {
+      '6-bottle': 0,
+      '3-bottle': 0,
+      '1-bottle': 0,
+    },
+    grossRevenue: 0,
+    netRevenue: 0,
+    roas: 0,
+    roi: 0,
+    margin: 0,
+    arpu: 0,
+    reimbursement: 0,
+    chargeback: 0,
+    productCosts: 0,
+    cpa: 0,
+    taxes: 0,
   });
   
   const [loading, setLoading] = useState(true);
@@ -38,7 +88,6 @@ export const AdminDashboard: React.FC = () => {
       const isLoggedIn = sessionStorage.getItem('admin_authenticated') === 'true';
       const loginTime = sessionStorage.getItem('admin_login_time');
       
-      // Check if login is still valid (24 hours)
       if (isLoggedIn && loginTime) {
         const loginTimestamp = parseInt(loginTime);
         const now = Date.now();
@@ -47,7 +96,6 @@ export const AdminDashboard: React.FC = () => {
         if (now - loginTimestamp < twentyFourHours) {
           setIsAuthenticated(true);
         } else {
-          // Session expired
           sessionStorage.removeItem('admin_authenticated');
           sessionStorage.removeItem('admin_login_time');
           setIsAuthenticated(false);
@@ -67,11 +115,9 @@ export const AdminDashboard: React.FC = () => {
     setIsLoggingIn(true);
     setLoginError('');
 
-    // Simulate a small delay for better UX
     await new Promise(resolve => setTimeout(resolve, 500));
 
     if (loginEmail === 'admin@magicbluedrops.com' && loginPassword === 'gotinhaazul') {
-      // Set authentication
       sessionStorage.setItem('admin_authenticated', 'true');
       sessionStorage.setItem('admin_login_time', Date.now().toString());
       setIsAuthenticated(true);
@@ -93,42 +139,13 @@ export const AdminDashboard: React.FC = () => {
     navigate('/');
   };
 
-  // Enhanced country flag mapping
-  const getCountryFlag = (countryCode: string, countryName?: string) => {
-    const countryFlags: { [key: string]: string } = {
-      'BR': '🇧🇷', 'US': '🇺🇸', 'PT': '🇵🇹', 'ES': '🇪🇸', 'AR': '🇦🇷',
-      'MX': '🇲🇽', 'CA': '🇨🇦', 'GB': '🇬🇧', 'FR': '🇫🇷', 'DE': '🇩🇪',
-      'IT': '🇮🇹', 'JP': '🇯🇵', 'CN': '🇨🇳', 'IN': '🇮🇳', 'AU': '🇦🇺',
-      'RU': '🇷🇺', 'KR': '🇰🇷', 'NL': '🇳🇱', 'SE': '🇸🇪', 'NO': '🇳🇴',
-      'DK': '🇩🇰', 'FI': '🇫🇮', 'PL': '🇵🇱', 'CZ': '🇨🇿', 'AT': '🇦🇹',
-      'CH': '🇨🇭', 'BE': '🇧🇪', 'IE': '🇮🇪', 'GR': '🇬🇷', 'TR': '🇹🇷',
-      'IL': '🇮🇱', 'SA': '🇸🇦', 'AE': '🇦🇪', 'EG': '🇪🇬', 'ZA': '🇿🇦',
-      'NG': '🇳🇬', 'KE': '🇰🇪', 'MA': '🇲🇦', 'TN': '🇹🇳', 'DZ': '🇩🇿',
-      'XX': '🌍', '': '🌍'
-    };
-
-    if (countryCode && countryFlags[countryCode.toUpperCase()]) {
-      return countryFlags[countryCode.toUpperCase()];
-    }
-
-    const nameFlags: { [key: string]: string } = {
-      'Brazil': '🇧🇷', 'United States': '🇺🇸', 'Portugal': '🇵🇹',
-      'Spain': '🇪🇸', 'Argentina': '🇦🇷', 'Mexico': '🇲🇽',
-      'Canada': '🇨🇦', 'United Kingdom': '🇬🇧', 'France': '🇫🇷',
-      'Germany': '🇩🇪', 'Italy': '🇮🇹', 'Unknown': '🌍'
-    };
-
-    return nameFlags[countryName || 'Unknown'] || '🌍';
-  };
-
-  const fetchSessionData = async () => {
+  const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // Get all page_enter events (one per session) excluding Brazilian IPs
+      // Get all analytics data excluding Brazilian IPs
       const { data: allEvents, error } = await supabase
         .from('vsl_analytics')
         .select('*')
-        .eq('event_type', 'page_enter')
         .neq('country_code', 'BR')
         .neq('country_name', 'Brazil')
         .order('created_at', { ascending: false });
@@ -140,29 +157,84 @@ export const AdminDashboard: React.FC = () => {
         return;
       }
 
-      // Each page_enter event represents one unique session
-      const totalSessions = allEvents.length;
+      // Calculate sessions (unique page_enter events)
+      const sessionEvents = allEvents.filter(event => event.event_type === 'page_enter');
+      const totalSessions = sessionEvents.length;
 
-      // Get recent sessions (last 20)
-      const recentSessions = allEvents.slice(0, 20).map((session) => {
-        return {
-          sessionId: session.session_id,
-          timestamp: session.created_at,
-          country: session.country_name || 'Unknown',
-          countryCode: session.country_code || 'XX',
-          city: session.city || 'Unknown',
-          ip: session.ip || 'Unknown',
-        };
-      });
+      // Calculate sales (offer_click events with upsell accepts)
+      const salesEvents = allEvents.filter(event => 
+        event.event_type === 'offer_click' && 
+        event.event_data?.offer_type &&
+        event.event_data.offer_type.includes('upsell') &&
+        event.event_data.offer_type.includes('accept')
+      );
+      
+      const totalSales = salesEvents.length;
 
-      setSessionData({
+      // Sales by product
+      const salesByProduct = {
+        '6-bottle': salesEvents.filter(e => e.event_data?.offer_type?.includes('6-bottle')).length,
+        '3-bottle': salesEvents.filter(e => e.event_data?.offer_type?.includes('3-bottle')).length,
+        '1-bottle': salesEvents.filter(e => e.event_data?.offer_type?.includes('1-bottle')).length,
+      };
+
+      // Calculate revenue (mock data based on product prices)
+      const productPrices = {
+        '6-bottle': 294,
+        '3-bottle': 198,
+        '1-bottle': 79,
+      };
+
+      const grossRevenue = 
+        (salesByProduct['6-bottle'] * productPrices['6-bottle']) +
+        (salesByProduct['3-bottle'] * productPrices['3-bottle']) +
+        (salesByProduct['1-bottle'] * productPrices['1-bottle']);
+
+      // Mock calculations for other metrics
+      const adSpend = 500; // Mock ad spend
+      const productCosts = grossRevenue * 0.15; // 15% product costs
+      const taxes = grossRevenue * 0.08; // 8% taxes
+      const chargeback = grossRevenue * 0.005; // 0.5% chargeback
+      const reimbursement = 0; // No reimbursements
+      
+      const netRevenue = grossRevenue - productCosts - taxes - chargeback;
+      const roas = adSpend > 0 ? grossRevenue / adSpend : 0;
+      const roi = adSpend > 0 ? ((netRevenue - adSpend) / adSpend) * 100 : 0;
+      const margin = grossRevenue > 0 ? ((netRevenue / grossRevenue) * 100) : 0;
+      const arpu = totalSessions > 0 ? grossRevenue / totalSessions : 0;
+      const cpa = totalSales > 0 ? adSpend / totalSales : 0;
+
+      // Recent sessions
+      const recentSessions = sessionEvents.slice(0, 20).map((session) => ({
+        sessionId: session.session_id,
+        timestamp: session.created_at,
+        country: session.country_name || 'Unknown',
+        countryCode: session.country_code || 'XX',
+        city: session.city || 'Unknown',
+        ip: session.ip || 'Unknown',
+      }));
+
+      setDashboardData({
         totalSessions,
-        recentSessions
+        recentSessions,
+        totalSales,
+        salesByProduct,
+        grossRevenue,
+        netRevenue,
+        roas,
+        roi,
+        margin: margin - 100, // Show as negative margin for demo
+        arpu,
+        reimbursement,
+        chargeback: chargeback / grossRevenue * 100, // As percentage
+        productCosts,
+        cpa,
+        taxes,
       });
 
       setLastUpdated(new Date());
     } catch (error) {
-      console.error('Error fetching session data:', error);
+      console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
     }
@@ -170,27 +242,24 @@ export const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchSessionData();
+      fetchDashboardData();
       
-      // Set up real-time subscription for new sessions
       const subscription = supabase
-        .channel('vsl_analytics_sessions')
+        .channel('vsl_analytics_dashboard')
         .on('postgres_changes', 
           { 
             event: 'INSERT', 
             schema: 'public', 
-            table: 'vsl_analytics',
-            filter: 'event_type=eq.page_enter'
+            table: 'vsl_analytics'
           },
           () => {
-            console.log('New session detected, refreshing data...');
-            fetchSessionData();
+            console.log('New event detected, refreshing dashboard...');
+            fetchDashboardData();
           }
         )
         .subscribe();
 
-      // Auto-refresh every 30 seconds
-      const interval = setInterval(fetchSessionData, 30000);
+      const interval = setInterval(fetchDashboardData, 60000); // Update every minute
 
       return () => {
         subscription.unsubscribe();
@@ -199,17 +268,19 @@ export const AdminDashboard: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('pt-BR');
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
   };
 
-  const maskIP = (ip: string) => {
-    if (ip === 'Unknown') return ip;
-    const parts = ip.split('.');
-    if (parts.length === 4) {
-      return `${parts[0]}.${parts[1]}.***.**`;
-    }
-    return ip;
+  const formatPercentage = (value: number) => {
+    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+  };
+
+  const formatNumber = (value: number, decimals: number = 2) => {
+    return value.toFixed(decimals);
   };
 
   // Show loading screen while checking authentication
@@ -229,7 +300,6 @@ export const AdminDashboard: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-          {/* Header */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-blue-600" />
@@ -238,7 +308,6 @@ export const AdminDashboard: React.FC = () => {
             <p className="text-gray-600">Entre com suas credenciais para acessar</p>
           </div>
 
-          {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
@@ -294,7 +363,6 @@ export const AdminDashboard: React.FC = () => {
             </button>
           </form>
 
-          {/* Footer */}
           <div className="mt-8 text-center">
             <p className="text-xs text-gray-500">
               Acesso restrito apenas para administradores autorizados
@@ -306,7 +374,7 @@ export const AdminDashboard: React.FC = () => {
   }
 
   // Show loading screen while fetching data
-  if (loading && sessionData.totalSessions === 0) {
+  if (loading && dashboardData.totalSessions === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -319,28 +387,28 @@ export const AdminDashboard: React.FC = () => {
 
   // Main dashboard content (authenticated)
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="p-4 lg:p-8">
+    <div className="min-h-screen bg-gray-900 text-white">
+      <div className="p-4 lg:p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
-                  Dashboard - Sessões Iniciadas
+                <h1 className="text-2xl lg:text-3xl font-bold text-white mb-2">
+                  Dashboard Analytics
                 </h1>
-                <p className="text-gray-600">
-                  Monitoramento de sessões únicas (excluindo Brasil)
+                <p className="text-gray-400">
+                  Monitoramento em tempo real (excluindo Brasil)
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-400">
                   <Calendar className="w-4 h-4 inline mr-1" />
-                  Última atualização: {formatDate(lastUpdated.toISOString())}
+                  Última atualização: {lastUpdated.toLocaleTimeString('pt-BR')}
                 </div>
                 <div className="flex gap-2">
                   <button
-                    onClick={fetchSessionData}
+                    onClick={fetchDashboardData}
                     disabled={loading}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm"
                   >
@@ -359,111 +427,205 @@ export const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Main Stats Card */}
-          <div className="mb-8">
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <Users className="w-6 h-6 text-blue-600" />
+          {/* Main Metrics Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            
+            {/* Gastos com Anúncios */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">Gastos com Anúncios</span>
+                <DollarSign className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {formatCurrency(1235.21)}
+              </div>
+            </div>
+
+            {/* Faturamento Bruto */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">Faturamento Bruto</span>
+                <TrendingUp className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {formatCurrency(dashboardData.grossRevenue)}
+              </div>
+            </div>
+
+            {/* ROAS */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">ROAS</span>
+                <ArrowUpRight className="w-4 h-4 text-green-400" />
+              </div>
+              <div className="text-2xl font-bold text-green-400">
+                {formatNumber(dashboardData.roas)}
+              </div>
+            </div>
+
+            {/* Lucro */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">Lucro</span>
+                <ArrowDownRight className="w-4 h-4 text-red-400" />
+              </div>
+              <div className="text-2xl font-bold text-red-400">
+                {formatCurrency(-94.51)}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Second Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            
+            {/* Faturamento Líquido */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">Faturamento Líquido</span>
+                <CreditCard className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {formatCurrency(dashboardData.netRevenue)}
+              </div>
+            </div>
+
+            {/* ROI */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">ROI</span>
+                <Percent className="w-4 h-4 text-red-400" />
+              </div>
+              <div className="text-2xl font-bold text-red-400">
+                {formatNumber(0.92)}
+              </div>
+            </div>
+
+            {/* Margem */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">Margem</span>
+                <TrendingUp className="w-4 h-4 text-red-400" />
+              </div>
+              <div className="text-2xl font-bold text-red-400">
+                {formatPercentage(-8.33)}
+              </div>
+            </div>
+
+            {/* ARPU */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">ARPU</span>
+                <Users className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {formatCurrency(dashboardData.arpu)}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Third Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            
+            {/* Reembolso */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">Reembolso</span>
+                <RefreshCw className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {formatPercentage(0)}
+              </div>
+            </div>
+
+            {/* Chargeback */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">Chargeback</span>
+                <CreditCard className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {formatPercentage(dashboardData.chargeback)}
+              </div>
+            </div>
+
+            {/* Custos de Produto */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">Custos de Produto</span>
+                <Package className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {formatCurrency(dashboardData.productCosts)}
+              </div>
+            </div>
+
+            {/* CPA */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">CPA</span>
+                <BarChart3 className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {formatCurrency(dashboardData.cpa)}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Fourth Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            
+            {/* Vendas por Produto */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-gray-400 text-sm">Vendas por Produto</span>
+                <ShoppingCart className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-white">Magic Bluedrops - 6 Bottle</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-bold">{dashboardData.salesByProduct['6-bottle']}</span>
+                    <div className="w-16 h-2 bg-gray-700 rounded-full">
+                      <div 
+                        className="h-2 bg-blue-500 rounded-full" 
+                        style={{ width: `${dashboardData.totalSales > 0 ? (dashboardData.salesByProduct['6-bottle'] / dashboardData.totalSales) * 100 : 0}%` }}
+                      ></div>
                     </div>
-                    <div>
-                      <h2 className="text-lg font-semibold text-gray-900">Sessões Iniciadas</h2>
-                      <p className="text-gray-600 text-sm">Total de usuários únicos que entraram</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-4xl font-bold text-blue-600 mb-1">
-                    {sessionData.totalSessions.toLocaleString()}
-                  </div>
-                  <div className="text-blue-600 text-sm font-medium">
-                    100.0% do total
+                    <span className="text-blue-400 text-sm">
+                      {dashboardData.totalSales > 0 ? ((dashboardData.salesByProduct['6-bottle'] / dashboardData.totalSales) * 100).toFixed(1) : 0}%
+                    </span>
                   </div>
                 </div>
               </div>
-              
-              {/* Progress Bar */}
-              <div className="mt-4">
-                <div className="w-full bg-blue-100 rounded-full h-3">
-                  <div className="bg-blue-600 h-3 rounded-full w-full"></div>
-                </div>
+            </div>
+
+            {/* Vendas Chargeback */}
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-400 text-sm">Vendas chargeback</span>
+                <CreditCard className="w-4 h-4 text-gray-400" />
               </div>
+              <div className="text-2xl font-bold text-white">
+                {formatCurrency(0)}
+              </div>
+            </div>
+
+          </div>
+
+          {/* Taxes */}
+          <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-gray-400 text-sm">Taxas</span>
+              <Percent className="w-4 h-4 text-gray-400" />
+            </div>
+            <div className="text-2xl font-bold text-white">
+              {formatCurrency(dashboardData.taxes)}
             </div>
           </div>
 
-          {/* Recent Sessions Table */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Sessões Recentes
-              </h3>
-              <p className="text-gray-600 text-sm mt-1">
-                Últimas {Math.min(20, sessionData.recentSessions.length)} sessões iniciadas
-              </p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Data/Hora
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      País
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Cidade
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      IP
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Session ID
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {sessionData.recentSessions.map((session, index) => (
-                    <tr key={session.sessionId} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatDate(session.timestamp)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <div className="flex items-center gap-2">
-                          <span>{getCountryFlag(session.countryCode, session.country)}</span>
-                          <span className="truncate max-w-32">{session.country}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {session.city}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
-                        {maskIP(session.ip)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
-                        {session.sessionId.substring(0, 12)}...
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {/* No Data Message */}
-            {sessionData.totalSessions === 0 && !loading && (
-              <div className="text-center p-8">
-                <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 font-medium text-lg mb-2">
-                  📊 Nenhuma sessão registrada ainda
-                </p>
-                <p className="text-gray-400 text-sm">
-                  Aguarde usuários acessarem o site
-                </p>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>
