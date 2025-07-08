@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { supabase } from '../lib/supabase';
 import { RefreshCw, Calendar, TrendingDown, Users, Target, ShoppingCart, CreditCard, ChevronDown } from 'lucide-react';
 
@@ -36,16 +35,96 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
   const fetchFunnelData = async (date: string) => {
     setLoading(true);
     try {
-      // ✅ ZEROED: Return zero data regardless of database content
-      console.log('📊 Funnel in ZERO mode - all metrics set to 0');
-      
+      // ✅ FIXED: Filter out Brazilian IPs from the start
+      const { data: allEvents, error } = await supabase
+        .from('vsl_analytics')
+        .select('*')
+        .neq('country_code', 'BR')
+        .neq('country_name', 'Brazil')
+        .gte('created_at', `${date}T00:00:00.000Z`)
+        .lt('created_at', `${date}T23:59:59.999Z`)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!allEvents) {
+        setFunnelData({
+          totalSessions: 0,
+          videoPlayed: 0,
+          leadReached: 0,
+          pitchReached: 0,
+          offerClicked: 0,
+          purchased: 0,
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Group events by session (already filtered, no Brazilian IPs)
+      const sessionGroups = allEvents.reduce((acc, event) => {
+        if (!acc[event.session_id]) {
+          acc[event.session_id] = [];
+        }
+        acc[event.session_id].push(event);
+        return acc;
+      }, {} as Record<string, any[]>);
+
+      const sessions = Object.values(sessionGroups);
+      const totalSessions = sessions.length;
+
+      // Calculate funnel metrics
+      let videoPlayed = 0;
+      let leadReached = 0;
+      let pitchReached = 0;
+      let offerClicked = 0;
+      let purchased = 0;
+
+      sessions.forEach(session => {
+        // Check if video was played
+        const hasVideoPlay = session.some(event => event.event_type === 'video_play');
+        if (hasVideoPlay) videoPlayed++;
+
+        // Check if lead was reached (7:45 = 465 seconds)
+        const hasLeadReached = session.some(event => 
+          event.event_type === 'video_progress' && 
+          (event.event_data?.current_time >= 465 || event.event_data?.milestone === 'lead_reached')
+        );
+        if (hasLeadReached) leadReached++;
+
+        // Check if pitch was reached (35:55 = 2155 seconds)
+        const hasPitchReached = session.some(event => 
+          event.event_type === 'video_progress' && 
+          (event.event_data?.current_time >= 2155 || event.event_data?.milestone === 'pitch_reached')
+        );
+        if (hasPitchReached) pitchReached++;
+
+        // ✅ FIXED: Only count real offer clicks (not upsells)
+        const hasOfferClick = session.some(event => 
+          event.event_type === 'offer_click' && 
+          event.event_data?.offer_type &&
+          ['1-bottle', '3-bottle', '6-bottle'].includes(event.event_data.offer_type)
+        );
+        if (hasOfferClick) {
+          offerClicked++;
+          
+          // ✅ FIXED: Count purchases as upsell accepts only
+          const hasPurchase = session.some(event => 
+            event.event_type === 'offer_click' && 
+            event.event_data?.offer_type &&
+            event.event_data.offer_type.includes('upsell') &&
+            event.event_data.offer_type.includes('accept')
+          );
+          if (hasPurchase) purchased++;
+        }
+      });
+
       setFunnelData({
-        totalSessions: 0,
-        videoPlayed: 0,
-        leadReached: 0,
-        pitchReached: 0,
-        offerClicked: 0,
-        purchased: 0,
+        totalSessions,
+        videoPlayed,
+        leadReached,
+        pitchReached,
+        offerClicked,
+        purchased,
       });
 
       setLastUpdated(new Date());
@@ -199,10 +278,13 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
             <div>
               <p className="text-sm font-medium text-gray-600">Taxa de Conversão Geral</p>
               <p className="text-2xl font-bold text-gray-900">
-                0.00%
+                {funnelData.totalSessions > 0 
+                  ? ((funnelData.purchased / funnelData.totalSessions) * 100).toFixed(2)
+                  : '0.00'
+                }%
               </p>
               <p className="text-xs text-gray-500">
-                0 compras de 0 sessões
+                {funnelData.purchased} compras de {funnelData.totalSessions} sessões
               </p>
             </div>
             <div className="text-right">
@@ -252,7 +334,7 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
 
                       {/* Right Side - Numbers */}
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-gray-900">0</p>
+                        <p className="text-2xl font-bold text-gray-900">{step.value.toLocaleString()}</p>
                         <p className={`text-sm font-medium ${step.textColor}`}>
                           {step.percentage.toFixed(1)}% do total
                         </p>
@@ -264,7 +346,7 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
                           className={`${step.color} h-2 rounded-full transition-all duration-500 ease-out`}
-                          style={{ width: `0%` }}
+                          style={{ width: `${step.percentage}%` }}
                         ></div>
                       </div>
                     </div>
@@ -287,7 +369,7 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
           <div className="bg-gray-50 p-4 rounded-lg">
             <h5 className="font-semibold text-gray-700 mb-2">Melhor Conversão</h5>
             <p className="text-lg font-bold text-green-600">
-              0.0%
+              {Math.max(...funnelSteps.filter(s => s.conversionRate !== null).map(s => s.conversionRate || 0)).toFixed(1)}%
             </p>
             <p className="text-xs text-gray-500">Entre estágios consecutivos</p>
           </div>
@@ -295,7 +377,7 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
           <div className="bg-gray-50 p-4 rounded-lg">
             <h5 className="font-semibold text-gray-700 mb-2">Maior Perda</h5>
             <p className="text-lg font-bold text-red-600">
-              0.0%
+              {Math.min(...funnelSteps.filter(s => s.conversionRate !== null).map(s => s.conversionRate || 100)).toFixed(1)}%
             </p>
             <p className="text-xs text-gray-500">Entre estágios consecutivos</p>
           </div>
@@ -308,15 +390,17 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
         </div>
 
         {/* No Data Message */}
-        <div className="text-center mt-8 p-8 bg-blue-50 rounded-lg border border-blue-200">
-          <TrendingDown className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-          <p className="text-blue-700 font-medium text-lg mb-2">
-            📊 Nenhuma sessão registrada para esta data
-          </p>
-          <p className="text-blue-600 text-sm">
-            Selecione uma data diferente ou aguarde novas sessões
-          </p>
-        </div>
+        {funnelData.totalSessions === 0 && !loading && (
+          <div className="text-center mt-8 p-8 bg-blue-50 rounded-lg border border-blue-200">
+            <TrendingDown className="w-12 h-12 text-blue-400 mx-auto mb-4" />
+            <p className="text-blue-700 font-medium text-lg mb-2">
+              📊 Nenhuma sessão registrada para esta data
+            </p>
+            <p className="text-blue-600 text-sm">
+              Selecione uma data diferente ou aguarde novas sessões
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
