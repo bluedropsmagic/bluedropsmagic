@@ -36,6 +36,38 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const [cartParams, setCartParams] = useState<string>('');
   const [showPurchaseSection, setShowPurchaseSection] = useState(false);
 
+  // ✅ NEW: Inject Hotjar for upsell pages
+  useEffect(() => {
+    // Remove existing Hotjar script if any
+    const existingHotjar = document.querySelector('script[src*="hotjar"]');
+    if (existingHotjar) {
+      existingHotjar.remove();
+    }
+
+    // Inject Hotjar script for upsells
+    const hotjarScript = document.createElement('script');
+    hotjarScript.innerHTML = `
+      (function(h,o,t,j,a,r){
+          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+          h._hjSettings={hjid:6457424,hjsv:6};
+          a=o.getElementsByTagName('head')[0];
+          r=o.createElement('script');r.async=1;
+          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+          a.appendChild(r);
+      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+    `;
+    
+    document.head.appendChild(hotjarScript);
+    console.log('🔥 Hotjar upsell tracking loaded (ID: 6457424)');
+
+    // Cleanup on unmount
+    return () => {
+      const scriptToRemove = document.querySelector('script[src*="hotjar"]');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, []);
   // Preserve CartPanda parameters
   useEffect(() => {
     const params = new URLSearchParams();
