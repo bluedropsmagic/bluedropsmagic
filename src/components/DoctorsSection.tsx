@@ -595,28 +595,6 @@ const DoctorCard: React.FC<{
         </div>
       </div>
 
-      {/* Scroll to Purchase Button */}
-      <div className="mt-8 text-center">
-        <button
-          onClick={() => {
-            const purchaseSection = document.getElementById('six-bottle-package') || 
-                                  document.getElementById('final-purchase-section') ||
-                                  document.querySelector('[data-purchase-section="true"]');
-            if (purchaseSection) {
-              purchaseSection.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center',
-                inline: 'nearest'
-              });
-              console.log('📍 Scrolled to purchase section from doctors');
-            }
-          }}
-          className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg border-2 border-white/40 backdrop-blur-sm"
-        >
-          👨‍⚕️ If doctors trust it, I trust it too — start my treatment now
-        </button>
-      </div>
-
       {/* Doctor Testimonial Quote */}
       <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 mb-4 border border-blue-100">
         <p className="text-sm sm:text-base text-blue-800 leading-relaxed italic">
