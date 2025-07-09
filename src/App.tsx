@@ -796,71 +796,6 @@ function App() {
           )}
         </div>
 
-        {/* Testimonials Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin) && (
-        <TestimonialsSection />
-        )}
-
-        {/* Success Story Button - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin) && (
-          <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1300">
-            <div className="text-center">
-              {/* Pulsing wrapper */}
-              <div className="relative">
-                {/* Pulsing ring effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl blur-sm opacity-75 animate-pulse"></div>
-                <div className="absolute -inset-2 bg-gradient-to-r from-green-300 to-emerald-400 rounded-xl sm:rounded-2xl blur-md opacity-50 animate-pulse animation-delay-500"></div>
-                
-              <button
-                onClick={() => {
-                  const purchaseSection = document.getElementById('six-bottle-package') || 
-                                        document.querySelector('[data-purchase-section="true"]') ||
-                                        document.querySelector('.purchase-button-main');
-                  
-                  if (purchaseSection) {
-                    purchaseSection.scrollIntoView({ 
-                      behavior: 'smooth', 
-                      block: 'center',
-                      inline: 'nearest'
-                    });
-                    
-                    // Add highlight effect
-                    purchaseSection.style.transition = 'all 0.8s ease';
-                    purchaseSection.style.transform = 'scale(1.02)';
-                    purchaseSection.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
-                    
-                    // Remove highlight after 3 seconds
-                    setTimeout(() => {
-                      purchaseSection.style.transform = 'scale(1)';
-                      purchaseSection.style.boxShadow = '';
-                    }, 3000);
-                  }
-                }}
-                  className="relative w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm animate-pulse"
-                style={{ touchAction: 'manipulation' }}
-              >
-                  {/* Inner glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl sm:rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                <div className="flex items-center justify-center gap-2 sm:gap-3">
-                  <span className="text-xl sm:text-2xl">🚀</span>
-                    <span className="leading-tight relative z-10">I'm ready to be the next success story!</span>
-                </div>
-              </button>
-              </div>
-              
-              {/* Enhanced call-to-action text */}
-              <div className="mt-4 space-y-1">
-                <p className="text-green-600 text-sm sm:text-base font-bold animate-pulse">
-                  👆 Click here to secure your transformation
-                </p>
-                <p className="text-blue-600 text-xs sm:text-sm font-medium">
-                  Join 50,000+ men who chose BlueDrops for lasting results
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
         {/* Doctors Section - Only show after 35:55 or admin override */}
         {(showRestOfContent || isAdmin) && (
         <DoctorsSection />
@@ -927,6 +862,71 @@ function App() {
           </div>
         )}
 
+        {/* Testimonials Section - Only show after 35:55 or admin override */}
+        {(showRestOfContent || isAdmin) && (
+        <TestimonialsSection />
+        )}
+
+        {/* Success Story Button - Only show after 35:55 or admin override */}
+        {(showRestOfContent || isAdmin) && (
+          <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1300">
+            <div className="text-center">
+              {/* Pulsing wrapper */}
+              <div className="relative">
+                {/* Pulsing ring effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl blur-sm opacity-75 animate-pulse"></div>
+                <div className="absolute -inset-2 bg-gradient-to-r from-green-300 to-emerald-400 rounded-xl sm:rounded-2xl blur-md opacity-50 animate-pulse animation-delay-500"></div>
+                
+              <button
+                onClick={() => {
+                  const purchaseSection = document.getElementById('six-bottle-package') || 
+                                        document.querySelector('[data-purchase-section="true"]') ||
+                                        document.querySelector('.purchase-button-main');
+                  
+                  if (purchaseSection) {
+                    purchaseSection.scrollIntoView({ 
+                      behavior: 'smooth', 
+                      block: 'center',
+                      inline: 'nearest'
+                    });
+                    
+                    // Add highlight effect
+                    purchaseSection.style.transition = 'all 0.8s ease';
+                    purchaseSection.style.transform = 'scale(1.02)';
+                    purchaseSection.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+                    
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                      purchaseSection.style.transform = 'scale(1)';
+                      purchaseSection.style.boxShadow = '';
+                    }, 3000);
+                  }
+                }}
+                  className="relative w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm animate-pulse"
+                style={{ touchAction: 'manipulation' }}
+              >
+                  {/* Inner glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl sm:rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                <div className="flex items-center justify-center gap-2 sm:gap-3">
+                  <span className="text-xl sm:text-2xl">🚀</span>
+                    <span className="leading-tight relative z-10">I'm ready to be the next success story!</span>
+                </div>
+              </button>
+              </div>
+              
+              {/* Enhanced call-to-action text */}
+              <div className="mt-4 space-y-1">
+                <p className="text-green-600 text-sm sm:text-base font-bold animate-pulse">
+                  👆 Click here to secure your transformation
+                </p>
+                <p className="text-blue-600 text-xs sm:text-sm font-medium">
+                  Join 50,000+ men who chose BlueDrops for lasting results
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         {/* News Section - Only show after 35:55 or admin override */}
         {(showRestOfContent || isAdmin) && (
         <NewsSection />
