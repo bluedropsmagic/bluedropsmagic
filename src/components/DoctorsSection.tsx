@@ -509,28 +509,6 @@ export const DoctorsSection: React.FC = () => {
             />
           </div>
         ))}
-      </div>
-
-      {/* Navigation Controls */}
-      <div className="flex items-center justify-center mb-4">
-        <div className="flex items-center gap-3">
-          {doctors.map((doctor, index) => (
-            <button
-              key={doctor.id}
-              onClick={() => goToDoctor(index)}
-              disabled={isTransitioning || isDragging}
-              className={`w-10 h-10 rounded-full font-bold text-sm transition-all duration-300 disabled:cursor-not-allowed ${
-                index === currentDoctor
-                  ? 'bg-blue-600 text-white shadow-lg scale-110'
-                  : 'bg-blue-100 text-blue-600 hover:bg-blue-200 hover:scale-105'
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Trust Badge */}
       <div className="text-center">
         <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-blue-200 inline-block">

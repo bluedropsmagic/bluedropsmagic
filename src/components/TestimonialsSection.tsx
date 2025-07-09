@@ -340,28 +340,6 @@ export const TestimonialsSection: React.FC = () => {
           perspective: '800px',
           touchAction: 'manipulation'
         }}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Testimonial Cards */}
-        {testimonials.map((testimonial, index) => (
-          <div
-            key={testimonial.id}
-            className="absolute inset-0 flex items-center justify-center select-none"
-            style={getCardStyle(index)}
-          >
-            <TestimonialCard 
-              testimonial={testimonial} 
-              isActive={index === currentTestimonial}
-              isDragging={isDragging}
-              pageType={pageType}
-            />
-          </div>
-        ))}
-      </div>
-
       {/* Navigation Controls */}
       <div className="flex items-center justify-center">
         <div className="flex items-center gap-3">

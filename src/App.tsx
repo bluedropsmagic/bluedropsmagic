@@ -801,9 +801,57 @@ function App() {
         <TestimonialsSection />
         )}
 
+        {/* Button after Testimonials */}
+        {(showRestOfContent || isAdmin) && (
+        <div className="mt-8 text-center w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1250">
+          <button
+            onClick={() => {
+              const purchaseSection = document.getElementById('six-bottle-package') || 
+                                    document.getElementById('final-purchase-section') ||
+                                    document.querySelector('[data-purchase-section="true"]');
+              if (purchaseSection) {
+                purchaseSection.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'center',
+                  inline: 'nearest'
+                });
+                console.log('📍 Scrolled to purchase section from testimonials');
+              }
+            }}
+            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm"
+          >
+            🚀 I'm ready to be the next success story!
+          </button>
+        </div>
+        )}
+
         {/* Doctors Section - Only show after 35:55 or admin override */}
         {(showRestOfContent || isAdmin) && (
         <DoctorsSection />
+        )}
+
+        {/* Button after Doctors */}
+        {(showRestOfContent || isAdmin) && (
+        <div className="mt-8 text-center w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1450">
+          <button
+            onClick={() => {
+              const purchaseSection = document.getElementById('six-bottle-package') || 
+                                    document.getElementById('final-purchase-section') ||
+                                    document.querySelector('[data-purchase-section="true"]');
+              if (purchaseSection) {
+                purchaseSection.scrollIntoView({ 
+                  behavior: 'smooth', 
+                  block: 'center',
+                  inline: 'nearest'
+                });
+                console.log('📍 Scrolled to purchase section from doctors');
+              }
+            }}
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm"
+          >
+            👨‍⚕️ If doctors trust it, I trust it too — start my treatment now
+          </button>
+        </div>
         )}
 
         {/* News Section - Only show after 35:55 or admin override */}
