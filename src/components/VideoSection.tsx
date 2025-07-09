@@ -314,32 +314,6 @@ export const VideoSection: React.FC = () => {
             Watch now before it's removed from the internet
           </p>
         </div>
-
-        {/* ✅ NEW: Scroll to Purchase Button - Only show after content is revealed */}
-        {(typeof window !== 'undefined' && 
-          (sessionStorage.getItem('admin_authenticated') === 'true' || 
-           (window as any).showRestOfContentAfterDelay)) && (
-          <div className="mt-4">
-            <button
-              onClick={() => {
-                const purchaseSection = document.getElementById('six-bottle-package') || 
-                                      document.getElementById('final-purchase-section') ||
-                                      document.querySelector('[data-purchase-section="true"]');
-                if (purchaseSection) {
-                  purchaseSection.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center',
-                    inline: 'nearest'
-                  });
-                  console.log('📍 Scrolled to purchase section from video');
-                }
-              }}
-              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-base border-2 border-white/40 backdrop-blur-sm"
-            >
-              🚀 I'm ready to be the next success story!
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
