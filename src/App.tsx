@@ -858,7 +858,6 @@ function App() {
                   Join 50,000+ men who chose BlueDrops for lasting results
                 </p>
               </div>
-              </p>
             </div>
           </div>
         )}
@@ -924,7 +923,6 @@ function App() {
                   Clinically reviewed • MD verified • 180-day guarantee
                 </p>
               </div>
-              </p>
             </div>
           </div>
         )}
