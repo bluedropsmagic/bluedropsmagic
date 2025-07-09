@@ -803,8 +803,14 @@ function App() {
 
         {/* Success Story Button - Only show after 35:55 or admin override */}
         {(showRestOfContent || isAdmin) && (
-          <div className="mt-12 sm:mt-16 w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1300">
+          <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1300">
             <div className="text-center">
+              {/* Pulsing wrapper */}
+              <div className="relative">
+                {/* Pulsing ring effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl blur-sm opacity-75 animate-pulse"></div>
+                <div className="absolute -inset-2 bg-gradient-to-r from-green-300 to-emerald-400 rounded-xl sm:rounded-2xl blur-md opacity-50 animate-pulse animation-delay-500"></div>
+                
               <button
                 onClick={() => {
                   const purchaseSection = document.getElementById('six-bottle-package') || 
@@ -830,18 +836,28 @@ function App() {
                     }, 3000);
                   }
                 }}
-                className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-base sm:text-lg border-2 border-white/30 backdrop-blur-sm"
+                  className="relative w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm animate-pulse"
                 style={{ touchAction: 'manipulation' }}
               >
+                  {/* Inner glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl sm:rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   <span className="text-xl sm:text-2xl">🚀</span>
-                  <span className="leading-tight">I'm ready to be the next success story!</span>
+                    <span className="leading-tight relative z-10">I'm ready to be the next success story!</span>
                 </div>
               </button>
+              </div>
               
-              {/* Subtle call-to-action text */}
-              <p className="text-blue-600 text-xs sm:text-sm mt-3 font-medium">
-                Join thousands who transformed their lives with BlueDrops
+              {/* Enhanced call-to-action text */}
+              <div className="mt-4 space-y-1">
+                <p className="text-green-600 text-sm sm:text-base font-bold animate-pulse">
+                  👆 Click here to secure your transformation
+                </p>
+                <p className="text-blue-600 text-xs sm:text-sm font-medium">
+                  Join 50,000+ men who chose BlueDrops for lasting results
+                </p>
+              </div>
               </p>
             </div>
           </div>
@@ -853,8 +869,14 @@ function App() {
 
         {/* Doctors Trust Button - Only show after 35:55 or admin override */}
         {(showRestOfContent || isAdmin) && (
-          <div className="mt-12 sm:mt-16 w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1500">
+          <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1500">
             <div className="text-center">
+              {/* Pulsing wrapper */}
+              <div className="relative">
+                {/* Pulsing ring effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-xl sm:rounded-2xl blur-sm opacity-75 animate-pulse animation-delay-300"></div>
+                <div className="absolute -inset-2 bg-gradient-to-r from-blue-300 to-indigo-400 rounded-xl sm:rounded-2xl blur-md opacity-50 animate-pulse animation-delay-800"></div>
+                
               <button
                 onClick={() => {
                   const purchaseSection = document.getElementById('six-bottle-package') || 
@@ -880,18 +902,28 @@ function App() {
                     }, 3000);
                   }
                 }}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-base sm:text-lg border-2 border-white/30 backdrop-blur-sm"
+                  className="relative w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm animate-pulse"
                 style={{ touchAction: 'manipulation' }}
               >
+                  {/* Inner glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl sm:rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  
                 <div className="flex items-center justify-center gap-2 sm:gap-3">
                   <span className="text-xl sm:text-2xl">👨‍⚕️</span>
-                  <span className="leading-tight text-center">If doctors trust it, I trust it too — start my treatment now</span>
+                    <span className="leading-tight text-center relative z-10">If doctors trust it, I trust it too — start my treatment now</span>
                 </div>
               </button>
+              </div>
               
-              {/* Subtle call-to-action text */}
-              <p className="text-blue-600 text-xs sm:text-sm mt-3 font-medium">
-                Clinically reviewed and doctor approved formula
+              {/* Enhanced call-to-action text */}
+              <div className="mt-4 space-y-1">
+                <p className="text-blue-600 text-sm sm:text-base font-bold animate-pulse">
+                  👆 Tap to start your doctor-approved treatment
+                </p>
+                <p className="text-indigo-600 text-xs sm:text-sm font-medium">
+                  Clinically reviewed • MD verified • 180-day guarantee
+                </p>
+              </div>
               </p>
             </div>
           </div>
