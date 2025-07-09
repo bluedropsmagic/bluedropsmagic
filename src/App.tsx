@@ -851,6 +851,52 @@ function App() {
         <DoctorsSection />
         )}
 
+        {/* Doctors Trust Button - Only show after 35:55 or admin override */}
+        {(showRestOfContent || isAdmin) && (
+          <div className="mt-12 sm:mt-16 w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1500">
+            <div className="text-center">
+              <button
+                onClick={() => {
+                  const purchaseSection = document.getElementById('six-bottle-package') || 
+                                        document.querySelector('[data-purchase-section="true"]') ||
+                                        document.querySelector('.purchase-button-main');
+                  
+                  if (purchaseSection) {
+                    purchaseSection.scrollIntoView({ 
+                      behavior: 'smooth', 
+                      block: 'center',
+                      inline: 'nearest'
+                    });
+                    
+                    // Add highlight effect
+                    purchaseSection.style.transition = 'all 0.8s ease';
+                    purchaseSection.style.transform = 'scale(1.02)';
+                    purchaseSection.style.boxShadow = '0 0 40px rgba(16, 185, 129, 0.4)';
+                    
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                      purchaseSection.style.transform = 'scale(1)';
+                      purchaseSection.style.boxShadow = '';
+                    }, 3000);
+                  }
+                }}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-base sm:text-lg border-2 border-white/30 backdrop-blur-sm"
+                style={{ touchAction: 'manipulation' }}
+              >
+                <div className="flex items-center justify-center gap-2 sm:gap-3">
+                  <span className="text-xl sm:text-2xl">👨‍⚕️</span>
+                  <span className="leading-tight text-center">If doctors trust it, I trust it too — start my treatment now</span>
+                </div>
+              </button>
+              
+              {/* Subtle call-to-action text */}
+              <p className="text-blue-600 text-xs sm:text-sm mt-3 font-medium">
+                Clinically reviewed and doctor approved formula
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* News Section - Only show after 35:55 or admin override */}
         {(showRestOfContent || isAdmin) && (
         <NewsSection />
