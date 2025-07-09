@@ -543,52 +543,6 @@ export const DoctorsSection: React.FC = () => {
         </div>
       </div>
     </section>
-
-    {/* ✅ NEW: Scroll to Purchase Button after Doctors */}
-    <div className="mt-8 sm:mt-12 w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1500">
-      <button
-        onClick={() => {
-          const purchaseSection = document.getElementById('six-bottle-package') || 
-                                document.getElementById('final-purchase-section') ||
-                                document.querySelector('[data-purchase-section="true"]') ||
-                                document.querySelector('.purchase-button-main');
-          
-          if (purchaseSection) {
-            purchaseSection.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center',
-              inline: 'nearest'
-            });
-            
-            // Add highlight effect
-            purchaseSection.style.transition = 'all 0.8s ease';
-            purchaseSection.style.transform = 'scale(1.02)';
-            purchaseSection.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
-            
-            setTimeout(() => {
-              purchaseSection.style.transform = 'scale(1)';
-              purchaseSection.style.boxShadow = '';
-            }, 3000);
-            
-            console.log('📍 Scrolled to purchase section from doctors');
-          } else {
-            console.log('⚠️ Purchase section not found');
-          }
-        }}
-        className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-base sm:text-lg border-2 border-white/30 backdrop-blur-sm"
-        style={{ touchAction: 'manipulation' }}
-      >
-        <div className="flex items-center justify-center gap-2">
-          <span>👨‍⚕️</span>
-          <span>If doctors trust it, I trust it too — start my treatment now</span>
-        </div>
-      </button>
-      
-      {/* Subtitle */}
-      <p className="text-center text-blue-600 text-sm mt-3 font-medium">
-        👆 Join the thousands who trusted medical expertise
-      </p>
-    </div>
   );
 };
 
