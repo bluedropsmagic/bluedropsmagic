@@ -19,8 +19,6 @@ export const GuaranteeSection: React.FC = () => {
                   <div className="w-full h-full rounded-full bg-gradient-to-br from-gray-900 to-black flex flex-col items-center justify-center text-white">
                     <div className="text-xs font-bold text-yellow-400">180</div>
                     <div className="text-xs font-bold">DAYS</div>
-                    <div className="text-xs font-bold text-yellow-400">90</div>
-                    <div className="text-xs font-bold">DAYS</div>
                   </div>
                 </div>
               </div>
@@ -32,7 +30,7 @@ export const GuaranteeSection: React.FC = () => {
             <div className="flex-1 min-w-0">
               <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-1">
                 <span className="bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent">
-                  90 Days Guarantee
+                  180 Days Guarantee
                 </span>
               </h3>
               <p className="text-xs sm:text-sm text-blue-700">
@@ -57,10 +55,10 @@ export const GuaranteeSection: React.FC = () => {
         }`}>
           <div className="border-t border-blue-300 pt-4 sm:pt-6">
             <p className="text-xs sm:text-sm text-blue-800 leading-relaxed mb-4">
-              Your order today is protected by our iron-clad 90-day 100% money-back guarantee. 
+              Your order today is protected by our iron-clad 180-day 100% money-back guarantee. 
               If you're not amazed by how well BlueDrops enhances your vitality and performance, helping 
               you overcome the challenges of performance problems, or if you don't feel more 
-              confident and satisfied, just let us know at any time within the next 90 days, 
+              confident and satisfied, just let us know at any time within the next 180 days, 
               and we'll refund every penny of your investment. No questions asked.
             </p>
             

@@ -376,7 +376,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         <div className="mt-8 flex justify-center items-center gap-8 flex-wrap">
           <div className="flex items-center gap-2 text-gray-600">
             <Shield className="w-5 h-5 text-green-600" />
-            <span className="text-sm font-medium">90-Day Guarantee</span>
+            <span className="text-sm font-medium">180-Day Guarantee</span>
           </div>
           <div className="flex items-center gap-2 text-gray-600">
             <Truck className="w-5 h-5 text-blue-600" />
