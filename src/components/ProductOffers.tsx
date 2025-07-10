@@ -147,7 +147,7 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
               <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded-md px-1 sm:px-1.5 py-1 sm:py-1.5 border border-blue-300/40 flex-1">
                 <div className="flex items-center justify-center gap-0.5 text-xs text-white">
                   <Shield className="w-3 sm:w-4 h-3 sm:h-4 text-yellow-400 flex-shrink-0" />
-                  <span className="text-center font-semibold text-xs">180-Day</span>
+                  <span className="text-center font-semibold text-xs">90-Day</span>
                 </div>
               </div>
               <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded-md px-1 sm:px-1.5 py-1 sm:py-1.5 border border-blue-300/40 flex-1">
@@ -233,7 +233,7 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
               <div className="bg-gradient-to-r from-blue-300/30 to-blue-500/30 backdrop-blur-sm rounded px-1 py-0.5 border border-blue-200/40 flex-1">
                 <div className="flex items-center justify-center gap-0.5 text-white">
                   <Shield className="w-2.5 h-2.5 text-yellow-400 flex-shrink-0" />
-                  <span className="text-center font-semibold text-xs">180d</span>
+                  <span className="text-center font-semibold text-xs">90d</span>
                 </div>
               </div>
               <div className="bg-gradient-to-r from-blue-300/30 to-blue-500/30 backdrop-blur-sm rounded px-1 py-0.5 border border-blue-200/40 flex-1">
@@ -304,7 +304,7 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
               <div className="bg-gradient-to-r from-blue-200/30 to-blue-400/30 backdrop-blur-sm rounded px-1 py-0.5 border border-blue-100/40 flex-1">
                 <div className="flex items-center justify-center gap-0.5 text-white">
                   <Shield className="w-2.5 h-2.5 text-yellow-400 flex-shrink-0" />
-                  <span className="text-center font-semibold text-xs">180d</span>
+                  <span className="text-center font-semibold text-xs">90d</span>
                 </div>
               </div>
               <div className="bg-gradient-to-r from-blue-200/30 to-blue-400/30 backdrop-blur-sm rounded px-1 py-0.5 border border-blue-100/40 flex-1">
