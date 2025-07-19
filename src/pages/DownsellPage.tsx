@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { AlertTriangle, Mail, Star, Shield, CheckCircle } from 'lucide-react';
+import { AlertTriangle, Mail, Star, Shield, CheckCircle, Clock, Truck } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 import { BoltNavigation } from '../components/BoltNavigation';
 
@@ -109,84 +109,115 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
       {/* Bolt Navigation */}
       <BoltNavigation />
       
+      {/* Fixed Red Alert Banner - Same as upsell */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 shadow-lg">
+        <div className="flex items-center justify-center gap-2">
+          <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5" />
+          <span className="font-black text-xs sm:text-sm md:text-base tracking-wide">⚠️ FINAL CHANCE - DON'T MISS OUT</span>
+          <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5" />
+        </div>
+      </div>
+
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="pt-16 px-4 py-6 sm:py-8">
+        <div className="max-w-md mx-auto">
         
         {/* Header */}
-        <header className="text-center mb-16">
+        <header className="mb-6 sm:mb-8 text-center animate-fadeInDown animation-delay-200">
           <img 
             src="https://i.imgur.com/QJxTIcN.png" 
             alt="Blue Drops Logo"
-            className="h-12 w-auto mx-auto"
+            className="h-6 sm:h-8 w-auto mx-auto"
           />
         </header>
 
         {/* Main Headline */}
-        <section className="text-center mb-16">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-8">
-            Maybe you still haven't realized this...
+        <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-3">
+            <span className="text-blue-900 block mb-1">Maybe you still</span>
+            <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
+              haven't realized this...
+            </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-gray-700 leading-relaxed mb-8">
-            But flushing out <strong>100% of the toxic plaque</strong> from your penile veins is the <strong>ONLY way</strong> to permanently eliminate erectile dysfunction.
+          <p className="text-sm sm:text-base text-blue-800 font-semibold px-2 mb-6">
+            But flushing out 100% of the toxic plaque from your penile veins is the ONLY way to permanently eliminate erectile dysfunction.
           </p>
-        </section>
+        </div>
 
-        {/* Warning Section */}
-        <section className="mb-16">
-          <div className="bg-red-50 border-l-4 border-red-500 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold mb-6" style={{ color: '#B22222', fontSize: '1.75rem' }}>
-              ⚠️ If you don't <strong>COMPLETELY EXTERMINATE</strong> that toxic junk from your system...
+        {/* Warning Section - Same style as upsell */}
+        <div className="mb-6 animate-fadeInUp animation-delay-500">
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <AlertTriangle className="w-4 h-4 text-red-600" />
+              <span className="text-red-800 font-semibold text-sm">
+                Critical Warning
+              </span>
+            </div>
+            <p className="text-red-600 text-xs">
+              If you don't completely EXTERMINATE that toxic junk from your system...
+            </p>
+          </div>
+        </div>
+
+        {/* Main Warning Content */}
+        <section className="mb-6 animate-fadeInUp animation-delay-600">
+          <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200">
+            <h2 className="text-xl sm:text-2xl font-black text-red-600 mb-4 text-center">
+              ⚠️ Your ED issues WILL come back.
             </h2>
             
-            <div className="space-y-4 text-gray-700 text-lg leading-relaxed">
-              <p className="font-bold" style={{ color: '#B22222', fontSize: '1.25rem' }}>
-                ⚠️ Your ED issues <strong>WILL come back.</strong>
-              </p>
+            <div className="space-y-3 text-sm sm:text-base text-gray-700 leading-relaxed">
               <p>Even if you've started to feel the incredible benefits within the first few weeks…</p>
-              <p className="font-bold" style={{ color: '#B22222' }}>
+              <p className="font-bold text-red-600">
                 ⚠️ If you stop using Blue Drops before all the plaque is gone, <strong>the nightmare can return to haunt you.</strong>
               </p>
-              <p className="font-bold" style={{ color: '#B22222' }}>
+              <p className="font-bold text-red-600">
                 ⚠️ That dreaded softness right at the crucial moment can strike again…
               </p>
-              <p className="font-bold" style={{ color: '#B22222' }}>
+              <p className="font-bold text-red-600">
                 ⚠️ The anxiety before sex will creep back in…
               </p>
               <p>Your relationship could go back to square one...</p>
-              <p className="font-bold text-xl" style={{ color: '#B22222' }}>
+              <p className="font-bold text-xl text-red-600">
                 ⚠️ And worst of all — your erectile problems might become <strong>irreversible.</strong>
               </p>
             </div>
           </div>
         </section>
 
-        {/* Help Section */}
-        <section className="text-center mb-16">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            But I made a decision:
-          </h2>
-          <p className="text-xl text-gray-700 mb-4">
-            I'm going to help you as much as I can — so you never have to go through that again.
-          </p>
-          <p className="text-xl text-gray-700 mb-4">You might not know this…</p>
-          <p className="text-xl text-gray-700 mb-8">But I get emails like this almost every day:</p>
+        {/* Help Decision */}
+        <section className="text-center mb-6 animate-fadeInUp animation-delay-700">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-2">
+              But I made a decision:
+            </h2>
+            <p className="text-blue-800 text-sm sm:text-base">
+              I'm going to help you as much as I can — so you never have to go through that again.
+            </p>
+          </div>
         </section>
 
-        {/* Email Section */}
-        <section className="mb-16">
-          <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden max-w-3xl mx-auto">
+        {/* Email Section - Same card style as upsell */}
+        <section className="mb-6 animate-fadeInUp animation-delay-800">
+          <div className="text-center mb-4">
+            <p className="text-blue-800 text-sm sm:text-base font-semibold">
+              You might not know this… But I get emails like this almost every day:
+            </p>
+          </div>
+          
+          <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200 shadow-lg">
             {/* Email Header */}
-            <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center gap-3 mb-3">
-                <Mail className="w-5 h-5 text-blue-600" />
-                <span className="font-semibold text-gray-900">Email Received</span>
+            <div className="bg-gray-100 rounded-lg p-3 mb-4 border border-gray-200">
+              <div className="flex items-center gap-2 mb-2">
+                <Mail className="w-4 h-4 text-blue-600" />
+                <span className="font-semibold text-gray-900 text-sm">Email Received</span>
               </div>
-              <div className="text-sm text-gray-600 space-y-1">
+              <div className="text-xs text-gray-600 space-y-1">
                 <p><strong>From:</strong> James C.</p>
                 <p><strong>To:</strong> contact@bluedrops.com</p>
                 <p><strong>Subject:</strong> New Order Request</p>
@@ -194,250 +225,339 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
             </div>
             
             {/* Email Content */}
-            <div className="p-6">
-              <div className="space-y-4 text-gray-700 leading-relaxed">
-                <p>I need your help.</p>
-                <p>I recently finished my 6 bottles of Blue Drops, and honestly — I don't want to stop.</p>
-                <p>I don't worry about sex anymore, and my wife has never been so satisfied with my performance.</p>
-                <p>On top of that, I've noticed an increase in penis size — and so has my wife.</p>
-                <p><strong>I think I gained around 2 inches, it's insane!!!</strong></p>
-                <p>I feel more energetic and have way more stamina in everyday life.</p>
-                <p>I wanted to order another 6-month supply, but I saw the site says it's out of stock.</p>
-                <p>Please let me know when it's back — I'm willing to pay more if needed.</p>
-                <p>Sincerely,<br/>James C.</p>
-              </div>
+            <div className="space-y-3 text-xs sm:text-sm text-gray-700 leading-relaxed">
+              <p>I need your help.</p>
+              <p>I recently finished my 6 bottles of Blue Drops, and honestly — I don't want to stop.</p>
+              <p>I don't worry about sex anymore, and my wife has never been so satisfied with my performance.</p>
+              <p>On top of that, I've noticed an increase in penis size — and so has my wife.</p>
+              <p><strong>I think I gained around 2 inches, it's insane!!!</strong></p>
+              <p>I feel more energetic and have way more stamina in everyday life.</p>
+              <p>I wanted to order another 6-month supply, but I saw the site says it's out of stock.</p>
+              <p>Please let me know when it's back — I'm willing to pay more if needed.</p>
+              <p>Sincerely,<br/>James C.</p>
             </div>
           </div>
         </section>
 
         {/* Proof Section */}
-        <section className="text-center mb-16">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
-            This only proves one thing:
-          </h2>
-          <p className="text-xl text-gray-700 mb-8">
-            The benefits of Blue Drops go far beyond fixing erectile dysfunction.
-          </p>
-          <p className="text-xl font-bold mb-12" style={{ color: '#1E90FF', fontSize: '1.5rem' }}>
-            Over 14,365 men have reported that Blue Drops helped them:
-          </p>
+        <section className="text-center mb-6 animate-fadeInUp animation-delay-900">
+          <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
+            <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
+              This only proves one thing:
+            </h2>
+            <p className="text-blue-800 text-sm sm:text-base mb-3">
+              The benefits of Blue Drops go far beyond fixing erectile dysfunction.
+            </p>
+            <p className="text-blue-600 font-bold text-sm sm:text-base">
+              Over 14,365 men have reported that Blue Drops helped them:
+            </p>
+          </div>
+        </section>
 
-          {/* Benefits Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
-            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
-                <span className="text-2xl">🍆</span>
+        {/* Benefits Grid - Same style as upsell */}
+        <section className="mb-6 animate-fadeInUp animation-delay-1000">
+          <div className="grid grid-cols-1 gap-3">
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
+              <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <span className="text-lg">🍆</span>
                 <span>Increase penis size and girth</span>
               </p>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
-                <span className="text-2xl">💪</span>
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
+              <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <span className="text-lg">💪</span>
                 <span>Triple their performance time in bed</span>
               </p>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
-                <span className="text-2xl">🧠</span>
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
+              <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <span className="text-lg">🧠</span>
                 <span>Sharpen mental focus</span>
               </p>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
-                <span className="text-2xl">💪</span>
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
+              <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <span className="text-lg">💪</span>
                 <span>Build more muscle and strength</span>
               </p>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
-                <span className="text-2xl">🔥</span>
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
+              <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <span className="text-lg">🔥</span>
                 <span>Burn off stubborn fat</span>
               </p>
             </div>
-            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
-                <span className="text-2xl">✨</span>
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
+              <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <span className="text-lg">✨</span>
                 <span>Regrow hair and improve appearance</span>
               </p>
             </div>
           </div>
-
-          <p className="text-xl text-gray-700 mb-4">
-            That's why <strong>NONE</strong> of them want to stop taking Blue Drops — even after beating ED.
-          </p>
-          <p className="text-xl text-gray-700 mb-8">
-            They would do anything to get this exclusive discount I'm offering you right now.
-          </p>
         </section>
 
-        {/* Offer Section */}
-        <section className="text-center mb-16">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
-            And that's why I'm giving you one more shot…
-          </h2>
-          <p className="text-xl text-gray-700 mb-8">
-            This time, an even better deal.
-          </p>
-          <p className="text-xl text-gray-700 mb-8">
-            Right here, on this page — and <strong>ONLY</strong> while supplies last...
-          </p>
+        {/* Continuation */}
+        <section className="text-center mb-6 animate-fadeInUp animation-delay-1100">
+          <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
+            <p className="text-blue-800 text-sm sm:text-base mb-3">
+              That's why <strong>NONE</strong> of them want to stop taking Blue Drops — even after beating ED.
+            </p>
+            <p className="text-blue-800 text-sm sm:text-base">
+              They would do anything to get this exclusive discount I'm offering you right now.
+            </p>
+          </div>
+        </section>
 
-          {/* Price Highlight */}
-          <div className="bg-white rounded-xl shadow-xl border-2 border-green-500 p-8 mb-12 max-w-2xl mx-auto relative">
-            {/* Badge */}
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-              <div className="bg-green-500 text-white px-6 py-2 rounded-full font-bold text-sm">
-                ✅ TODAY ONLY — WHILE SUPPLIES LAST
+        {/* Final Offer Setup */}
+        <section className="text-center mb-6 animate-fadeInUp animation-delay-1200">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-2">
+              And that's why I'm giving you one more shot…
+            </h2>
+            <p className="text-blue-800 text-sm sm:text-base mb-2">
+              This time, an even better deal.
+            </p>
+            <p className="text-blue-800 text-sm sm:text-base">
+              Right here, on this page — and <strong>ONLY</strong> while supplies last...
+            </p>
+          </div>
+        </section>
+
+        {/* Main Offer - Same style as upsell */}
+        <div className="mb-6 relative animate-fadeInUp animation-delay-1300">
+          {/* TODAY ONLY Tag */}
+          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
+            <div className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
+                <span className="tracking-wide">TODAY ONLY</span>
               </div>
             </div>
+          </div>
+
+          {/* Card Container */}
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-green-400 via-green-500 to-green-600 rounded-2xl sm:rounded-3xl blur-lg opacity-60 animate-pulse"></div>
             
-            <div className="pt-4">
-              <p className="text-4xl md:text-5xl font-black mb-4" style={{ color: '#1E90FF' }}>
-                US$23 per bottle
-              </p>
-              <p className="text-xl text-gray-700 mb-6">
-                (When you buy a 6-bottle supply of Blue Drops)
-              </p>
-              <p className="text-lg font-bold mb-8" style={{ color: '#B22222' }}>
-                You will <strong>NOT</strong> see this offer again.<br/>
-                Not tomorrow. Not ever.
-              </p>
-              <p className="text-lg text-gray-600 mb-8">
-                Click the button below to claim your kit.
-              </p>
+            <div className="relative bg-gradient-to-br from-green-500/95 to-green-700/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 pt-6 sm:pt-8 border-2 border-white/30 shadow-2xl">
               
-              <div className="mb-6">
-                <p className="text-2xl font-bold mb-4" style={{ color: '#1E90FF' }}>
-                  👉 6 Bottles – $29/Bottle
+              {/* Product Image */}
+              <div className="flex justify-center mb-3 sm:mb-4">
+                <img 
+                  src="https://i.imgur.com/hsfqxVP.png" 
+                  alt="BlueDrops 6 Bottle Pack"
+                  className="w-full h-auto object-contain drop-shadow-2xl max-h-32 sm:max-h-40 md:max-h-48"
+                />
+              </div>
+
+              {/* Product Name */}
+              <div className="text-center mb-3 sm:mb-4">
+                <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-none">
+                  BLUEDROPS
+                </h3>
+                <p className="text-white/80 text-sm sm:text-base font-bold tracking-wide -mt-1">
+                  6 BOTTLE PACKAGE
                 </p>
               </div>
-              
-              <button 
-                onClick={handleAccept}
-                className="w-full text-white font-bold py-4 px-8 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg checkout-button mb-4"
-                style={{ backgroundColor: '#28a745' }}
-              >
-                YES, I WANT THIS DEAL
-              </button>
-              
-              <p className="text-lg font-bold" style={{ color: '#1E90FF' }}>
-                This is the <strong>BIGGEST</strong> discount ever offered by the lab — because we don't want you to suffer from ED ever again.
-              </p>
+
+              {/* Price */}
+              <div className="text-center mb-4">
+                <div className="bg-white/20 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/30 mb-3">
+                  <p className="text-2xl sm:text-3xl font-black text-white mb-1">
+                    $29 per bottle
+                  </p>
+                  <p className="text-white/90 text-xs sm:text-sm">
+                    When you buy a 6-month kit
+                  </p>
+                </div>
+                
+                <p className="text-yellow-300 font-bold text-sm sm:text-base">
+                  You will NOT see this offer again.
+                </p>
+                <p className="text-yellow-300 font-bold text-xs sm:text-sm">
+                  Not tomorrow. Not ever.
+                </p>
+              </div>
+
+              {/* CTA Button */}
+              <div className="relative mb-4">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-xl blur opacity-75 animate-pulse"></div>
+                <button 
+                  onClick={handleAccept}
+                  className="relative w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                >
+                  <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
+                  <span className="relative z-10">CLAIM MY DISCOUNT</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+              </div>
+
+              {/* Benefits Icons */}
+              <div className="flex justify-center items-center gap-1 mb-3">
+                <div className="bg-gradient-to-r from-green-600/30 to-green-800/30 backdrop-blur-sm rounded px-2 py-1 border border-green-300/40 flex-1">
+                  <div className="flex items-center justify-center gap-1 text-white">
+                    <Shield className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                    <span className="text-center font-semibold text-xs">180-Day</span>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-r from-green-600/30 to-green-800/30 backdrop-blur-sm rounded px-2 py-1 border border-green-300/40 flex-1">
+                  <div className="flex items-center justify-center gap-1 text-white">
+                    <Truck className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                    <span className="text-center font-semibold text-xs">Free Ship</span>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-r from-green-600/30 to-green-800/30 backdrop-blur-sm rounded px-2 py-1 border border-green-300/40 flex-1">
+                  <div className="flex items-center justify-center gap-1 text-white">
+                    <Clock className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                    <span className="text-center font-semibold text-xs">Limited</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Benefits Image */}
+              <div>
+                <div className="bg-white rounded p-1 shadow-sm">
+                  <img 
+                    src="https://i.imgur.com/1in1oo5.png" 
+                    alt="Product Benefits"
+                    className="w-full h-auto object-contain max-h-8 sm:max-h-10"
+                  />
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
+
+        {/* Lab Discount Message */}
+        <section className="text-center mb-6 animate-fadeInUp animation-delay-1400">
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <p className="text-blue-800 font-bold text-sm sm:text-base">
+              This is the <strong>BIGGEST</strong> discount ever offered by the lab — because we don't want you to suffer from ED ever again.
+            </p>
           </div>
         </section>
 
-        {/* Extra Benefits */}
-        <section className="mb-16">
-          <p className="text-lg text-gray-700 mb-8 text-center">
-            And don't miss out on the <strong>EXTRA</strong> benefits this formula can bring you.
-          </p>
+        {/* Extra Benefits Intro */}
+        <section className="text-center mb-6 animate-fadeInUp animation-delay-1500">
+          <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
+            <p className="text-blue-800 text-sm sm:text-base">
+              And don't miss out on the <strong>EXTRA</strong> benefits this formula can bring you.
+            </p>
+          </div>
+        </section>
 
-          {/* Testimonial 1 */}
-          <div className="rounded-lg p-6 shadow-md border border-gray-200 mb-6 max-w-3xl mx-auto" style={{ backgroundColor: '#f4f4f4' }}>
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-blue-600 font-bold text-xl">T</span>
+        {/* Testimonials - Same style as upsell */}
+        <section className="mb-6 animate-fadeInUp animation-delay-1600">
+          {/* Tristan Hayes */}
+          <div className="bg-white backdrop-blur-sm rounded-2xl p-4 border border-blue-200 shadow-lg mb-4">
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-blue-600 font-bold">T</span>
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <h4 className="font-bold text-gray-900">Tristan Hayes</h4>
-                  <span className="text-gray-500">•</span>
-                  <span className="text-gray-600">Charleston, SC</span>
+                  <h4 className="font-bold text-gray-900 text-sm">Tristan Hayes</h4>
+                  <span className="text-gray-500 text-xs">•</span>
+                  <span className="text-gray-600 text-xs">Charleston, SC</span>
                 </div>
-                <div className="flex gap-1 mb-3">
+                <div className="flex gap-1 mb-2">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
+                    <Star key={i} className="w-3 h-3 text-yellow-500 fill-current" />
                   ))}
                 </div>
-                <blockquote className="text-gray-700 leading-relaxed italic text-lg">
-                  <span className="text-4xl text-gray-400 leading-none">"</span>
-                  I can't thank you enough for introducing me to Blue Drops! I thought I'd never feel like a real man again. My self-esteem is back. Thank you!
+                <blockquote className="text-gray-700 leading-relaxed italic text-xs sm:text-sm">
+                  "I can't thank you enough for introducing me to Blue Drops! I thought I'd never feel like a real man again. My self-esteem is back. Thank you!"
                 </blockquote>
               </div>
             </div>
           </div>
 
-          {/* Testimonial 2 */}
-          <div className="rounded-lg p-6 shadow-md border border-gray-200 mb-8 max-w-3xl mx-auto" style={{ backgroundColor: '#f4f4f4' }}>
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-blue-600 font-bold text-xl">L</span>
+          {/* Landon Bishop */}
+          <div className="bg-white backdrop-blur-sm rounded-2xl p-4 border border-blue-200 shadow-lg">
+            <div className="flex items-start gap-3">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-blue-600 font-bold">L</span>
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <h4 className="font-bold text-gray-900">Landon Bishop</h4>
-                  <span className="text-gray-500">•</span>
-                  <span className="text-gray-600">Tucson, AZ</span>
+                  <h4 className="font-bold text-gray-900 text-sm">Landon Bishop</h4>
+                  <span className="text-gray-500 text-xs">•</span>
+                  <span className="text-gray-600 text-xs">Tucson, AZ</span>
                 </div>
-                <div className="flex gap-1 mb-3">
+                <div className="flex gap-1 mb-2">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
+                    <Star key={i} className="w-3 h-3 text-yellow-500 fill-current" />
                   ))}
                 </div>
-                <blockquote className="text-gray-700 leading-relaxed italic text-lg">
-                  <span className="text-4xl text-gray-400 leading-none">"</span>
-                  This is exactly what I needed! Damn — it feels so good to be confident in bed again. Thanks a ton! Young guys don't stand a chance against me now, haha. Blue Drops is now part of my daily routine.
+                <blockquote className="text-gray-700 leading-relaxed italic text-xs sm:text-sm">
+                  "This is exactly what I needed! Damn — it feels so good to be confident in bed again. Thanks a ton! Young guys don't stand a chance against me now, haha. Blue Drops is now part of my daily routine."
                 </blockquote>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Final CTA Section */}
-        <section className="text-center mb-16">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            Take advantage of this one-time-only offer...
-          </h2>
-          <p className="text-xl text-gray-700 mb-8">
-            And like them — start living with the sexual power and confidence you deserve.
-          </p>
-          <p className="text-xl font-bold mb-12" style={{ color: '#B22222', fontSize: '1.5rem' }}>
-            Remember: This deal will <strong>NEVER</strong> appear again for you.
-          </p>
-
-          {/* Final Offer Box */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8 max-w-2xl mx-auto">
-            <div className="mb-6">
-              <p className="text-2xl font-bold mb-4" style={{ color: '#1E90FF' }}>
-                👉 6 Bottles – $29/Bottle
-              </p>
-            </div>
-            
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Shield className="w-8 h-8 text-green-500" />
-              <span className="text-2xl font-bold text-gray-900">✔ 100% Satisfaction Guarantee</span>
-            </div>
-            
-            <button 
-              onClick={handleAccept}
-              className="w-full text-white font-bold py-4 px-8 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg checkout-button mb-6"
-              style={{ backgroundColor: '#28a745' }}
-            >
-              YES, I WANT THIS DEAL
-            </button>
+        {/* Final Call to Action */}
+        <section className="text-center mb-6 animate-fadeInUp animation-delay-1700">
+          <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
+            <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
+              Take advantage of this one-time-only offer...
+            </h2>
+            <p className="text-blue-800 text-sm sm:text-base mb-3">
+              And like them — start living with the sexual power and confidence you deserve.
+            </p>
+            <p className="text-red-600 font-bold text-sm sm:text-base">
+              Remember: This deal will <strong>NEVER</strong> appear again for you.
+            </p>
           </div>
         </section>
+
+        {/* Final Offer Repeat - Same style as main offer */}
+        <div className="mb-6 relative animate-fadeInUp animation-delay-1800">
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 rounded-2xl blur-lg opacity-60 animate-pulse"></div>
+            
+            <div className="relative bg-gradient-to-br from-blue-600/95 to-blue-800/95 backdrop-blur-xl rounded-2xl p-4 border-2 border-white/30 shadow-2xl">
+              <div className="text-center">
+                <p className="text-2xl sm:text-3xl font-black text-white mb-2">
+                  👉 6 Bottles – $29/Bottle
+                </p>
+                
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <Shield className="w-6 h-6 text-green-400" />
+                  <span className="text-white font-bold text-sm sm:text-base">✔ 100% Satisfaction Guarantee</span>
+                </div>
+                
+                <button 
+                  onClick={handleAccept}
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg checkout-button"
+                >
+                  YES, I WANT THIS DEAL
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Closing Message */}
-        <section className="text-center mb-12">
-          <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 max-w-md mx-auto">
-            <p className="text-lg text-gray-700 mb-2">I'll leave it here.</p>
-            <p className="text-lg font-medium text-blue-600">Take care!</p>
+        <section className="text-center mb-6 animate-fadeInUp animation-delay-1900">
+          <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
+            <p className="text-blue-800 text-sm sm:text-base mb-1">I'll leave it here.</p>
+            <p className="text-blue-600 font-medium text-sm sm:text-base">Take care!</p>
           </div>
         </section>
 
-        {/* Reject Button */}
-        <section className="text-center">
+        {/* Reject Button - Same style as upsell */}
+        <div className="mb-6 animate-fadeInUp animation-delay-2000">
           <button 
             onClick={handleReject}
-            className="text-white px-6 py-3 rounded-lg text-lg transition-colors checkout-button"
-            style={{ backgroundColor: '#555' }}
+            className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
           >
-            No, thanks. I'll miss out.
+            <span className="text-xs sm:text-sm font-medium">❌ No, thanks. I'll miss out.</span>
           </button>
-        </section>
+        </div>
 
+        </div>
       </div>
     </div>
   );
