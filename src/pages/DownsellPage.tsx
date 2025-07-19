@@ -582,7 +582,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               <div className="relative bg-gradient-to-br from-blue-600/95 to-blue-800/95 backdrop-blur-xl rounded-2xl p-4 border-2 border-white/30 shadow-2xl">
                 <div className="text-center">
                   <p className="text-2xl sm:text-3xl font-black text-white mb-2">
-                    {content.finalOfferText}
+                    👉 6 Bottles – $23/Bottle
                   </p>
                   
                   <div className="flex items-center justify-center gap-2 mb-4">
