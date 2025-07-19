@@ -61,7 +61,7 @@ export const BoltNavigation: React.FC = () => {
   ];
 
   return (
-    <div className="fixed top-4 left-4 z-50">
+    <div className="fixed top-4 left-4 z-[9999]">
       <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         {/* Header - Always visible */}
         <div 

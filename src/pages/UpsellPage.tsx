@@ -302,7 +302,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       <BoltNavigation />
       
       {/* Fixed Red Alert Banner */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 shadow-lg">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 shadow-lg">
         <div className="flex items-center justify-center gap-2">
           <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5" />
           <span className="font-black text-xs sm:text-sm md:text-base tracking-wide">⚠️ WAIT! YOUR ORDER IS NOT COMPLETE</span>
