@@ -87,16 +87,16 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       },
       'dws2': {
         productType: '6 BOTTLE PACKAGE',
-        priceText: '$29 per bottle',
+        priceText: '$24 per bottle',
         subscriptionText: 'When you buy a 6-bottle kit',
         productImage: 'https://i.postimg.cc/XqFzZmRd/6-bottle.png',
-        savings: 'Save $300 total',
+        savings: 'Save $65 per bottle',
         description: 'Complete 6-bottle treatment',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=no',
-        finalOfferText: '👉 6 Bottles – $29/Bottle',
+        finalOfferText: '👉 6 Bottles – $24/Bottle',
         bottleCount: '6 bottles',
-        pricePerBottle: '$29'
+        pricePerBottle: '$24'
       },
       'dw3': {
         productType: '3 BOTTLE PACKAGE',
@@ -359,7 +359,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           <section className="text-center mb-6 animate-fadeInUp animation-delay-1250">
             <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-xl p-4">
               <p className="text-lg sm:text-xl font-bold mb-2">
-                You'll pay just <span className="text-yellow-300">{content.pricePerBottle} per bottle</span>
+                You'll pay just <span className="text-yellow-300">${content.pricePerBottle} per bottle</span>
               </p>
               <p className="text-sm sm:text-base">
                 on a 6-bottle supply of Blue Drops.
@@ -582,7 +582,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               <div className="relative bg-gradient-to-br from-blue-600/95 to-blue-800/95 backdrop-blur-xl rounded-2xl p-4 border-2 border-white/30 shadow-2xl">
                 <div className="text-center">
                   <p className="text-2xl sm:text-3xl font-black text-white mb-2">
-                    👉 6 Bottles – $23/Bottle
+                    {content.finalOfferText}
                   </p>
                   
                   <div className="flex items-center justify-center gap-2 mb-4">
