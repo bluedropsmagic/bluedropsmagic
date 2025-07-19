@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { AlertTriangle, Mail, Star } from 'lucide-react';
+import { AlertTriangle, Mail, Star, Shield, CheckCircle } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 import { BoltNavigation } from '../components/BoltNavigation';
 
@@ -114,312 +114,282 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50">
+    <div className="min-h-screen bg-gray-50" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Bolt Navigation */}
       <BoltNavigation />
       
-      {/* Fixed Alert Banner */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 shadow-lg">
-        <div className="flex items-center justify-center gap-2">
-          <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5 animate-pulse" />
-          <span className="font-black text-xs sm:text-sm md:text-base tracking-wide">
-            ⚠️ WAIT! YOUR ORDER IS INCOMPLETE
-          </span>
-          <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5 animate-pulse" />
-        </div>
-      </div>
-
       {/* Main Content */}
-      <div className="pt-16 px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        
+        {/* Header */}
+        <header className="text-center mb-16">
+          <img 
+            src="https://i.imgur.com/QJxTIcN.png" 
+            alt="Blue Drops Logo"
+            className="h-12 w-auto mx-auto"
+          />
+        </header>
+
+        {/* Main Headline */}
+        <section className="text-center mb-16">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-8">
+            Maybe you didn't realize it yet…
+          </h1>
           
-          {/* Header */}
-          <header className="mb-8 text-center animate-fadeInDown animation-delay-200">
-            <img 
-              src="https://i.imgur.com/QJxTIcN.png" 
-              alt="Blue Drops Logo"
-              className="h-8 w-auto mx-auto mb-4"
-            />
-          </header>
+          <p className="text-xl md:text-2xl text-gray-700 leading-relaxed mb-8">
+            But eliminating <strong>100% of the toxic plaque</strong> from your penile veins is the <strong>ONLY way</strong> to never suffer from erectile dysfunction again.
+          </p>
+        </section>
 
-          {/* Main Headline - EXACT COPY */}
-          <div className="text-center mb-12 animate-fadeInUp animation-delay-400">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-tight mb-6 text-gray-900">
-              Maybe you didn't understand that eliminating 100% of the toxin plaques from your penile veins is the ONLY way to never suffer from erectile dysfunction again
-            </h1>
+        {/* Warning Section */}
+        <section className="mb-16">
+          <div className="bg-red-50 border-l-4 border-red-500 p-8 rounded-lg">
+            <h2 className="text-2xl font-bold text-red-800 mb-6">
+              If you don't completely EXTERMINATE these toxic buildups…
+            </h2>
             
-            <div className="bg-red-100 border-l-4 border-red-500 p-6 rounded-lg mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-red-800 mb-4">
-                If you don't COMPLETELY EXTERMINATE these damn toxin plaques...
-              </h2>
+            <div className="space-y-4 text-gray-700 text-lg leading-relaxed">
+              <p><strong>Your ED problems will come back.</strong></p>
+              <p>Even if you start feeling amazing results in the first few weeks…</p>
+              <p>If you stop using Blue Drops before eliminating all the toxic plaque, all the torment might return to haunt you.</p>
+              <p>The dreaded flaccidity might surprise you again at the crucial moment…</p>
+              <p>The anxiety before sex could creep back in…</p>
+              <p>And your relationship could fall back to square one.</p>
+              <p><strong>Worse yet — your erectile issues might become irreversible.</strong></p>
+            </div>
+          </div>
+        </section>
+
+        {/* Help Section */}
+        <section className="text-center mb-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+            But I decided to help you as much as possible — so you'll never have to go through that again.
+          </h2>
+          <p className="text-xl text-gray-700 mb-4">You might not know this…</p>
+          <p className="text-xl text-gray-700 mb-8">But I get emails like this almost every day:</p>
+        </section>
+
+        {/* Email Section */}
+        <section className="mb-16">
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden max-w-3xl mx-auto">
+            {/* Email Header */}
+            <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center gap-3 mb-3">
+                <Mail className="w-5 h-5 text-blue-600" />
+                <span className="font-semibold text-gray-900">Email Received</span>
+              </div>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p><strong>From:</strong> James C.</p>
+                <p><strong>To:</strong> contact@bluedrops.com</p>
+                <p><strong>Subject:</strong> New Order Request</p>
+              </div>
+            </div>
+            
+            {/* Email Content */}
+            <div className="p-6">
+              <div className="space-y-4 text-gray-700 leading-relaxed">
+                <p>I need your help.</p>
+                <p>I've just finished my six bottles of Blue Drops and honestly, I don't want to stop.</p>
+                <p>No more anxiety during sex — and my wife has never been more satisfied in bed.</p>
+                <p>On top of that, I noticed a size increase — my partner did too.</p>
+                <p><strong>I think I've gained about 2 inches… it's incredible!</strong></p>
+                <p>I feel more energetic and my endurance is on another level.</p>
+                <p>I'd like to order another 6-bottle pack, but I saw on the website it's out of stock.</p>
+                <p>Please let me know when it's restocked. I'm even willing to pay more.</p>
+                <p>Looking forward to your reply.</p>
+                <p>Sincerely,<br/>James C.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Proof Section */}
+        <section className="text-center mb-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
+            That proves one thing:
+          </h2>
+          <p className="text-xl text-gray-700 mb-8">
+            The benefits of Blue Drops go way beyond fixing erectile dysfunction.
+          </p>
+          <p className="text-xl font-bold text-blue-600 mb-12">
+            Over 14,365 men have reported:
+          </p>
+
+          {/* Benefits Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
+            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+              <p className="text-gray-800 font-medium text-lg">Increased size and girth</p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+              <p className="text-gray-800 font-medium text-lg">Triple the erection duration</p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+              <p className="text-gray-800 font-medium text-lg">Sharper thinking</p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+              <p className="text-gray-800 font-medium text-lg">Boosted strength and muscle mass</p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+              <p className="text-gray-800 font-medium text-lg">Fat-burning acceleration</p>
+            </div>
+            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+              <p className="text-gray-800 font-medium text-lg">Hair improvement and skin glow</p>
+            </div>
+          </div>
+
+          <p className="text-xl text-gray-700 mb-4">
+            All of them would give anything to have access to this exclusive discount — just for you.
+          </p>
+        </section>
+
+        {/* Offer Section */}
+        <section className="text-center mb-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
+            So here's one more chance…
+          </h2>
+          <p className="text-xl text-gray-700 mb-8">
+            But it's the best one yet:
+          </p>
+
+          {/* Price Highlight */}
+          <div className="bg-white rounded-xl shadow-xl border-2 border-green-500 p-8 mb-12 max-w-2xl mx-auto relative">
+            {/* Badge */}
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+              <div className="bg-green-500 text-white px-6 py-2 rounded-full font-bold text-sm">
+                TODAY ONLY — WHILE SUPPLIES LAST
+              </div>
+            </div>
+            
+            <div className="pt-4">
+              <p className="text-4xl md:text-5xl font-black text-green-600 mb-4">
+                US$29 per bottle
+              </p>
+              <p className="text-xl text-gray-700 mb-6">
+                (When you buy a 6-month kit)
+              </p>
+              <p className="text-lg text-gray-600 mb-8">
+                You won't find this offer anywhere else.
+              </p>
               
-              <div className="space-y-3 text-gray-700 text-left">
-                <p className="text-sm sm:text-base leading-relaxed">
-                  Your erectile dysfunction problems will return.
-                </p>
-                <p className="text-sm sm:text-base leading-relaxed">
-                  That's because, even if you start feeling the incredible benefits in the first few weeks.
-                </p>
-                <p className="text-sm sm:text-base leading-relaxed">
-                  If you stop using BlueDrops before completely eliminating the toxin plaques, ALL the torment can come back to haunt you.
-                </p>
-                <p className="text-sm sm:text-base leading-relaxed">
-                  The flaccidity at the crucial moment can catch you off guard again...
-                </p>
-                <p className="text-sm sm:text-base leading-relaxed">
-                  The insecurity before sex will worry you once more...
-                </p>
-                <p className="text-sm sm:text-base leading-relaxed">
-                  Your relationship with your partner will go back to square one...
-                </p>
-                <p className="text-sm sm:text-base leading-relaxed">
-                  And worst of all, your flaccidity problem may become irreversible.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* But I decided to help you section */}
-          <div className="mb-12 animate-fadeInUp animation-delay-600">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-                But I decided to help you as much as possible, and you will never have to go through all this again.
-              </h3>
-              <p className="text-lg text-gray-700">
-                Maybe you don't know...
-              </p>
-              <p className="text-lg text-gray-700 mb-6">
-                But I receive emails like this almost every day:
-              </p>
-            </div>
-
-            {/* Email Section - EXACT COPY */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden mb-8">
-              {/* Email Header */}
-              <div className="bg-gray-100 px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center gap-3 mb-2">
-                  <Mail className="w-5 h-5 text-blue-600" />
-                  <span className="font-semibold text-gray-900">Email Received</span>
-                </div>
-                <div className="text-sm text-gray-600">
-                  <strong>From:</strong> James C.<br/>
-                  <strong>To:</strong> contact@bluedrops.com<br/>
-                  <strong>Subject:</strong> New Order Request
-                </div>
-              </div>
-              
-              {/* Email Content - EXACT COPY */}
-              <div className="p-6">
-                <div className="space-y-3 text-gray-700">
-                  <p>I need your help.</p>
-                  <p>I recently finished using the six bottles of BlueDrops and, honestly, I don't want to stop.</p>
-                  <p>I no longer have those worries during sex, and my wife has never been so satisfied with my performance in bed.</p>
-                  <p>Additionally, I noticed an increase in the size of my penis, which my partner also noticed.</p>
-                  <p>I think I gained about 2 inches, it's incredible!!!</p>
-                  <p>I feel more energetic and have much more stamina in my daily life.</p>
-                  <p>I would like to buy another six-bottle package, but I saw on the website that the product is out of stock.</p>
-                  <p>I would like to know when it will be restocked. I'm willing to pay more if necessary.</p>
-                  <p>Awaiting your response.</p>
-                  <p>Sincerely,</p>
-                  <p>James C.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* This only proves one thing section */}
-          <div className="mb-12 animate-fadeInUp animation-delay-800">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-                This only proves one thing:
-              </h3>
-              <p className="text-lg text-gray-700 mb-6">
-                The benefits that BlueDrops provides go beyond just eliminating flaccidity.
-              </p>
-              <p className="text-xl font-bold text-blue-600 mb-8">
-                More than 14,365 men reported that BlueDrops:
-              </p>
-            </div>
-
-            {/* Benefits List - EXACT COPY */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-                <p className="text-gray-800 font-medium">Increased penis size and thickness</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-                <p className="text-gray-800 font-medium">Tripled erection time in bed</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-                <p className="text-gray-800 font-medium">Accelerated reasoning</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-                <p className="text-gray-800 font-medium">Increased strength and muscle mass</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-                <p className="text-gray-800 font-medium">Burned excess fat</p>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-                <p className="text-gray-800 font-medium">Improvement in hair loss and appearance</p>
-              </div>
-            </div>
-
-            <div className="text-center">
-              <p className="text-lg text-gray-700 mb-4">
-                All of this makes none of them want to stop taking BlueDrops, even after overcoming erectile dysfunction.
-              </p>
-              <p className="text-xl font-bold text-red-600">
-                All of them would give anything to have access to this exclusive discount that I'm offering only to you.
-              </p>
-            </div>
-          </div>
-
-          {/* That's why I'm giving you one more chance section */}
-          <div className="mb-12 animate-fadeInUp animation-delay-1000">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-                That's why I'm giving you one more chance... And this time, it's even better.
-              </h3>
-              <p className="text-lg text-gray-700 mb-6">
-                Only here, on this page, and while our stocks last...
-              </p>
-              <p className="text-xl font-bold text-blue-600 mb-8">
-                You will pay only $23 per bottle in a 3-month BlueDrops kit.
-              </p>
-              <p className="text-lg text-gray-700 mb-6">
-                You won't see anything like this at any other time...
-              </p>
-            </div>
-
-            {/* Product Offer - Simple button as per copy */}
-            <div className="text-center mb-8">
               <button 
                 onClick={handleAccept}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black py-4 px-8 rounded-xl text-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg border-2 border-white/40 checkout-button mb-6"
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg checkout-button mb-4"
               >
-                Click the button below to order your kit
+                Claim My Discount
               </button>
-            </div>
-
-            <div className="text-center mb-8">
-              <p className="text-lg text-gray-700 mb-4">
-                6 bt-$29/bottle
-              </p>
-              <p className="text-lg text-gray-700 mb-6">
-                This is the BEST and BIGGEST discount the laboratory has ever offered, all so you don't have to suffer from erectile dysfunction again.
-              </p>
-              <p className="text-lg text-gray-700">
-                And don't miss the countless EXTRA benefits that this powerful BlueDrops formula can provide you.
+              
+              <p className="text-sm text-gray-600">
+                This is the BIGGEST discount the lab has ever offered — so you never have to suffer from ED again.
               </p>
             </div>
           </div>
+        </section>
 
-          {/* Testimonials Section - EXACT COPY */}
-          <div className="mb-12 animate-fadeInUp animation-delay-1200">
-            <div className="text-lg text-gray-700 mb-6">
-              Benefits that Tristan Hayes, from Charleston, SC, shared with us:
-            </div>
-            
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 mb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-bold text-lg">T</span>
-                </div>
-                <div>
+        {/* Testimonials Section */}
+        <section className="mb-16">
+          <p className="text-lg text-gray-700 mb-8 text-center">
+            And don't miss out on the EXTRA benefits of this potent formula.
+          </p>
+
+          {/* Testimonial 1 */}
+          <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 mb-6 max-w-3xl mx-auto">
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-blue-600 font-bold text-xl">T</span>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
                   <h4 className="font-bold text-gray-900">Tristan Hayes</h4>
-                  <p className="text-sm text-gray-600">Charleston, SC</p>
+                  <span className="text-gray-500">•</span>
+                  <span className="text-gray-600">Charleston, SC</span>
                 </div>
-                <div className="ml-auto">
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
-                    ))}
-                  </div>
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
+                  ))}
                 </div>
+                <blockquote className="text-gray-700 leading-relaxed italic">
+                  "I can't thank you enough for showing me Blue Drops! I thought I'd never feel like a real man again. My confidence is back — thank you so much!"
+                </blockquote>
               </div>
-              
-              <blockquote className="text-gray-700 italic leading-relaxed">
-                "I don't even know how to thank you for introducing me to BlueDrops! I thought I'd never feel like a real man again. My self-esteem reignited, thank you so much!"
-              </blockquote>
             </div>
+          </div>
 
-            <div className="text-lg text-gray-700 mb-6">
-              Or what Landon Bishop, from Tucson, AZ, told us:
-            </div>
-
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span className="text-blue-600 font-bold text-lg">L</span>
-                </div>
-                <div>
+          {/* Testimonial 2 */}
+          <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 mb-8 max-w-3xl mx-auto">
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-blue-600 font-bold text-xl">L</span>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
                   <h4 className="font-bold text-gray-900">Landon Bishop</h4>
-                  <p className="text-sm text-gray-600">Tucson, AZ</p>
+                  <span className="text-gray-500">•</span>
+                  <span className="text-gray-600">Tucson, AZ</span>
                 </div>
-                <div className="ml-auto">
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
-                    ))}
-                  </div>
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
+                  ))}
                 </div>
-              </div>
-              
-              <blockquote className="text-gray-700 italic leading-relaxed">
-                "This is all I needed! Damn! It feels so good to be confident in bed again... Thank you for this! Now the younger guys don't stand a chance against me, haha. BlueDrops is now part of my routine."
-              </blockquote>
-            </div>
-          </div>
-
-          {/* Take advantage section */}
-          <div className="mb-12 animate-fadeInUp animation-delay-1400">
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Take advantage of this unique opportunity
-              </h3>
-              <p className="text-lg text-gray-700 mb-6">
-                And, like them, start enjoying a vibrant and powerful sex life.
-              </p>
-              <p className="text-xl font-bold text-red-600 mb-8">
-                Remember: this discount will never appear for you again.
-              </p>
-
-              {/* Final CTA Button */}
-              <button 
-                onClick={handleAccept}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black py-4 px-8 rounded-xl text-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg border-2 border-white/40 checkout-button mb-6"
-              >
-                6 bt-$29/bottle
-              </button>
-
-              <div className="mb-6">
-                <p className="text-sm text-gray-600">100% Satisfaction Guarantee</p>
+                <blockquote className="text-gray-700 leading-relaxed italic">
+                  "This is exactly what I needed! Damn, it feels good to be confident in bed again… Thanks! Now the younger guys don't stand a chance against me, haha. Blue Drops is part of my routine now."
+                </blockquote>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Final Message - EXACT COPY */}
-          <div className="text-center mb-8 animate-fadeInUp animation-delay-1600">
-            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-              <p className="text-lg font-medium text-gray-800 mb-4">
-                I'll leave it here.
-              </p>
-              <p className="text-lg font-medium text-blue-600">
-                Take care!
-              </p>
+        {/* Final CTA Section */}
+        <section className="text-center mb-16">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+            Don't miss this unique opportunity.
+          </h2>
+          <p className="text-xl text-gray-700 mb-8">
+            Just like them, you can start enjoying a vibrant and powerful sex life again.
+          </p>
+          <p className="text-xl font-bold text-red-600 mb-12">
+            This discount won't show up again for you.
+          </p>
+
+          {/* Final Offer Box */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8 max-w-2xl mx-auto">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Shield className="w-8 h-8 text-green-500" />
+              <span className="text-2xl font-bold text-gray-900">100% Satisfaction Guarantee</span>
             </div>
-          </div>
-
-          {/* Reject Button - EXACT COPY */}
-          <div className="text-center animate-fadeInUp animation-delay-1800">
+            
             <button 
-              onClick={handleReject}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-3 px-6 rounded-xl transition-colors border border-gray-300 checkout-button"
+              onClick={handleAccept}
+              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg checkout-button mb-6"
             >
-              No, thanks
+              Claim My Discount
             </button>
+            
+            <p className="text-lg font-semibold text-gray-800">
+              6 bottles - $29/bottle
+            </p>
           </div>
+        </section>
 
-        </div>
+        {/* Closing Message */}
+        <section className="text-center mb-12">
+          <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 max-w-md mx-auto">
+            <p className="text-lg text-gray-700 mb-2">I'll leave it here.</p>
+            <p className="text-lg font-medium text-blue-600">Take care!</p>
+          </div>
+        </section>
+
+        {/* Reject Button */}
+        <section className="text-center">
+          <button 
+            onClick={handleReject}
+            className="text-gray-500 hover:text-gray-700 underline text-lg transition-colors checkout-button"
+          >
+            No, thanks. I'll miss out.
+          </button>
+        </section>
+
       </div>
     </div>
   );
