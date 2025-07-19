@@ -362,7 +362,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
                 You'll pay just <span className="text-yellow-300">{content.pricePerBottle} per bottle</span>
               </p>
               <p className="text-sm sm:text-base">
-                on a {content.bottleCount} supply of Blue Drops.
+                on a 6-bottle supply of Blue Drops.
               </p>
             </div>
           </section>
