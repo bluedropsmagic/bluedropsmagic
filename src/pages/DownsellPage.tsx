@@ -14,13 +14,11 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
 
-  // ✅ NEW: Ensure no Hotjar on downsell pages
+  // ✅ Ensure no Hotjar on downsell pages
   useEffect(() => {
-    // Remove ALL Hotjar scripts from downsell pages
     const existingHotjar = document.querySelectorAll('script[src*="hotjar"]');
     existingHotjar.forEach(script => script.remove());
     
-    // Clean up Hotjar globals
     if ((window as any).hj) {
       delete (window as any).hj;
     }
@@ -35,7 +33,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   useEffect(() => {
     const params = new URLSearchParams();
     
-    // Common CartPanda parameters to preserve
     const cartPandaParams = [
       'order_id', 'customer_id', 'transaction_id', 'email', 'phone',
       'first_name', 'last_name', 'address', 'city', 'state', 'zip',
@@ -50,7 +47,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       }
     });
 
-    // Also preserve any other parameters that might be present
     searchParams.forEach((value, key) => {
       if (!cartPandaParams.includes(key)) {
         params.append(key, value);
@@ -60,7 +56,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     setCartParams(params.toString());
   }, [searchParams]);
 
-  // URLs based on variant - keeping original URLs
   const getUrls = () => {
     const urls = {
       'dws1': {
@@ -133,29 +128,39 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         {/* Main Headline */}
         <section className="text-center mb-16">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-8">
-            Maybe you didn't realize it yet…
+            Maybe you still haven't realized this...
           </h1>
           
           <p className="text-xl md:text-2xl text-gray-700 leading-relaxed mb-8">
-            But eliminating <strong>100% of the toxic plaque</strong> from your penile veins is the <strong>ONLY way</strong> to never suffer from erectile dysfunction again.
+            But flushing out <strong>100% of the toxic plaque</strong> from your penile veins is the <strong>ONLY way</strong> to permanently eliminate erectile dysfunction.
           </p>
         </section>
 
         {/* Warning Section */}
         <section className="mb-16">
           <div className="bg-red-50 border-l-4 border-red-500 p-8 rounded-lg">
-            <h2 className="text-2xl font-bold text-red-800 mb-6">
-              If you don't completely EXTERMINATE these toxic buildups…
+            <h2 className="text-2xl font-bold mb-6" style={{ color: '#B22222', fontSize: '1.75rem' }}>
+              ⚠️ If you don't <strong>COMPLETELY EXTERMINATE</strong> that toxic junk from your system...
             </h2>
             
             <div className="space-y-4 text-gray-700 text-lg leading-relaxed">
-              <p><strong>Your ED problems will come back.</strong></p>
-              <p>Even if you start feeling amazing results in the first few weeks…</p>
-              <p>If you stop using Blue Drops before eliminating all the toxic plaque, all the torment might return to haunt you.</p>
-              <p>The dreaded flaccidity might surprise you again at the crucial moment…</p>
-              <p>The anxiety before sex could creep back in…</p>
-              <p>And your relationship could fall back to square one.</p>
-              <p><strong>Worse yet — your erectile issues might become irreversible.</strong></p>
+              <p className="font-bold" style={{ color: '#B22222', fontSize: '1.25rem' }}>
+                ⚠️ Your ED issues <strong>WILL come back.</strong>
+              </p>
+              <p>Even if you've started to feel the incredible benefits within the first few weeks…</p>
+              <p className="font-bold" style={{ color: '#B22222' }}>
+                ⚠️ If you stop using Blue Drops before all the plaque is gone, <strong>the nightmare can return to haunt you.</strong>
+              </p>
+              <p className="font-bold" style={{ color: '#B22222' }}>
+                ⚠️ That dreaded softness right at the crucial moment can strike again…
+              </p>
+              <p className="font-bold" style={{ color: '#B22222' }}>
+                ⚠️ The anxiety before sex will creep back in…
+              </p>
+              <p>Your relationship could go back to square one...</p>
+              <p className="font-bold text-xl" style={{ color: '#B22222' }}>
+                ⚠️ And worst of all — your erectile problems might become <strong>irreversible.</strong>
+              </p>
             </div>
           </div>
         </section>
@@ -163,8 +168,11 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         {/* Help Section */}
         <section className="text-center mb-16">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            But I decided to help you as much as possible — so you'll never have to go through that again.
+            But I made a decision:
           </h2>
+          <p className="text-xl text-gray-700 mb-4">
+            I'm going to help you as much as I can — so you never have to go through that again.
+          </p>
           <p className="text-xl text-gray-700 mb-4">You might not know this…</p>
           <p className="text-xl text-gray-700 mb-8">But I get emails like this almost every day:</p>
         </section>
@@ -189,14 +197,13 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
             <div className="p-6">
               <div className="space-y-4 text-gray-700 leading-relaxed">
                 <p>I need your help.</p>
-                <p>I've just finished my six bottles of Blue Drops and honestly, I don't want to stop.</p>
-                <p>No more anxiety during sex — and my wife has never been more satisfied in bed.</p>
-                <p>On top of that, I noticed a size increase — my partner did too.</p>
-                <p><strong>I think I've gained about 2 inches… it's incredible!</strong></p>
-                <p>I feel more energetic and my endurance is on another level.</p>
-                <p>I'd like to order another 6-bottle pack, but I saw on the website it's out of stock.</p>
-                <p>Please let me know when it's restocked. I'm even willing to pay more.</p>
-                <p>Looking forward to your reply.</p>
+                <p>I recently finished my 6 bottles of Blue Drops, and honestly — I don't want to stop.</p>
+                <p>I don't worry about sex anymore, and my wife has never been so satisfied with my performance.</p>
+                <p>On top of that, I've noticed an increase in penis size — and so has my wife.</p>
+                <p><strong>I think I gained around 2 inches, it's insane!!!</strong></p>
+                <p>I feel more energetic and have way more stamina in everyday life.</p>
+                <p>I wanted to order another 6-month supply, but I saw the site says it's out of stock.</p>
+                <p>Please let me know when it's back — I'm willing to pay more if needed.</p>
                 <p>Sincerely,<br/>James C.</p>
               </div>
             </div>
@@ -206,49 +213,73 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         {/* Proof Section */}
         <section className="text-center mb-16">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
-            That proves one thing:
+            This only proves one thing:
           </h2>
           <p className="text-xl text-gray-700 mb-8">
-            The benefits of Blue Drops go way beyond fixing erectile dysfunction.
+            The benefits of Blue Drops go far beyond fixing erectile dysfunction.
           </p>
-          <p className="text-xl font-bold text-blue-600 mb-12">
-            Over 14,365 men have reported:
+          <p className="text-xl font-bold mb-12" style={{ color: '#1E90FF', fontSize: '1.5rem' }}>
+            Over 14,365 men have reported that Blue Drops helped them:
           </p>
 
           {/* Benefits Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
             <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="text-gray-800 font-medium text-lg">Increased size and girth</p>
+              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
+                <span className="text-2xl">🍆</span>
+                <span>Increase penis size and girth</span>
+              </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="text-gray-800 font-medium text-lg">Triple the erection duration</p>
+              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
+                <span className="text-2xl">💪</span>
+                <span>Triple their performance time in bed</span>
+              </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="text-gray-800 font-medium text-lg">Sharper thinking</p>
+              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
+                <span className="text-2xl">🧠</span>
+                <span>Sharpen mental focus</span>
+              </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="text-gray-800 font-medium text-lg">Boosted strength and muscle mass</p>
+              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
+                <span className="text-2xl">💪</span>
+                <span>Build more muscle and strength</span>
+              </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="text-gray-800 font-medium text-lg">Fat-burning acceleration</p>
+              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
+                <span className="text-2xl">🔥</span>
+                <span>Burn off stubborn fat</span>
+              </p>
             </div>
             <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
-              <p className="text-gray-800 font-medium text-lg">Hair improvement and skin glow</p>
+              <p className="font-bold text-lg flex items-center gap-3" style={{ color: '#228B22' }}>
+                <span className="text-2xl">✨</span>
+                <span>Regrow hair and improve appearance</span>
+              </p>
             </div>
           </div>
 
           <p className="text-xl text-gray-700 mb-4">
-            All of them would give anything to have access to this exclusive discount — just for you.
+            That's why <strong>NONE</strong> of them want to stop taking Blue Drops — even after beating ED.
+          </p>
+          <p className="text-xl text-gray-700 mb-8">
+            They would do anything to get this exclusive discount I'm offering you right now.
           </p>
         </section>
 
         {/* Offer Section */}
         <section className="text-center mb-16">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
-            So here's one more chance…
+            And that's why I'm giving you one more shot…
           </h2>
           <p className="text-xl text-gray-700 mb-8">
-            But it's the best one yet:
+            This time, an even better deal.
+          </p>
+          <p className="text-xl text-gray-700 mb-8">
+            Right here, on this page — and <strong>ONLY</strong> while supplies last...
           </p>
 
           {/* Price Highlight */}
@@ -256,43 +287,54 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
             {/* Badge */}
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
               <div className="bg-green-500 text-white px-6 py-2 rounded-full font-bold text-sm">
-                TODAY ONLY — WHILE SUPPLIES LAST
+                ✅ TODAY ONLY — WHILE SUPPLIES LAST
               </div>
             </div>
             
             <div className="pt-4">
-              <p className="text-4xl md:text-5xl font-black text-green-600 mb-4">
-                US$29 per bottle
+              <p className="text-4xl md:text-5xl font-black mb-4" style={{ color: '#1E90FF' }}>
+                US$23 per bottle
               </p>
               <p className="text-xl text-gray-700 mb-6">
-                (When you buy a 6-month kit)
+                (When you buy a 6-bottle supply of Blue Drops)
+              </p>
+              <p className="text-lg font-bold mb-8" style={{ color: '#B22222' }}>
+                You will <strong>NOT</strong> see this offer again.<br/>
+                Not tomorrow. Not ever.
               </p>
               <p className="text-lg text-gray-600 mb-8">
-                You won't find this offer anywhere else.
+                Click the button below to claim your kit.
               </p>
+              
+              <div className="mb-6">
+                <p className="text-2xl font-bold mb-4" style={{ color: '#1E90FF' }}>
+                  👉 6 Bottles – $29/Bottle
+                </p>
+              </div>
               
               <button 
                 onClick={handleAccept}
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg checkout-button mb-4"
+                className="w-full text-white font-bold py-4 px-8 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg checkout-button mb-4"
+                style={{ backgroundColor: '#28a745' }}
               >
-                Claim My Discount
+                YES, I WANT THIS DEAL
               </button>
               
-              <p className="text-sm text-gray-600">
-                This is the BIGGEST discount the lab has ever offered — so you never have to suffer from ED again.
+              <p className="text-lg font-bold" style={{ color: '#1E90FF' }}>
+                This is the <strong>BIGGEST</strong> discount ever offered by the lab — because we don't want you to suffer from ED ever again.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Testimonials Section */}
+        {/* Extra Benefits */}
         <section className="mb-16">
           <p className="text-lg text-gray-700 mb-8 text-center">
-            And don't miss out on the EXTRA benefits of this potent formula.
+            And don't miss out on the <strong>EXTRA</strong> benefits this formula can bring you.
           </p>
 
           {/* Testimonial 1 */}
-          <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 mb-6 max-w-3xl mx-auto">
+          <div className="rounded-lg p-6 shadow-md border border-gray-200 mb-6 max-w-3xl mx-auto" style={{ backgroundColor: '#f4f4f4' }}>
             <div className="flex items-start gap-4">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-blue-600 font-bold text-xl">T</span>
@@ -308,15 +350,16 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
                     <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
                   ))}
                 </div>
-                <blockquote className="text-gray-700 leading-relaxed italic">
-                  "I can't thank you enough for showing me Blue Drops! I thought I'd never feel like a real man again. My confidence is back — thank you so much!"
+                <blockquote className="text-gray-700 leading-relaxed italic text-lg">
+                  <span className="text-4xl text-gray-400 leading-none">"</span>
+                  I can't thank you enough for introducing me to Blue Drops! I thought I'd never feel like a real man again. My self-esteem is back. Thank you!
                 </blockquote>
               </div>
             </div>
           </div>
 
           {/* Testimonial 2 */}
-          <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200 mb-8 max-w-3xl mx-auto">
+          <div className="rounded-lg p-6 shadow-md border border-gray-200 mb-8 max-w-3xl mx-auto" style={{ backgroundColor: '#f4f4f4' }}>
             <div className="flex items-start gap-4">
               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-blue-600 font-bold text-xl">L</span>
@@ -332,8 +375,9 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
                     <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
                   ))}
                 </div>
-                <blockquote className="text-gray-700 leading-relaxed italic">
-                  "This is exactly what I needed! Damn, it feels good to be confident in bed again… Thanks! Now the younger guys don't stand a chance against me, haha. Blue Drops is part of my routine now."
+                <blockquote className="text-gray-700 leading-relaxed italic text-lg">
+                  <span className="text-4xl text-gray-400 leading-none">"</span>
+                  This is exactly what I needed! Damn — it feels so good to be confident in bed again. Thanks a ton! Young guys don't stand a chance against me now, haha. Blue Drops is now part of my daily routine.
                 </blockquote>
               </div>
             </div>
@@ -343,32 +387,35 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         {/* Final CTA Section */}
         <section className="text-center mb-16">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-            Don't miss this unique opportunity.
+            Take advantage of this one-time-only offer...
           </h2>
           <p className="text-xl text-gray-700 mb-8">
-            Just like them, you can start enjoying a vibrant and powerful sex life again.
+            And like them — start living with the sexual power and confidence you deserve.
           </p>
-          <p className="text-xl font-bold text-red-600 mb-12">
-            This discount won't show up again for you.
+          <p className="text-xl font-bold mb-12" style={{ color: '#B22222', fontSize: '1.5rem' }}>
+            Remember: This deal will <strong>NEVER</strong> appear again for you.
           </p>
 
           {/* Final Offer Box */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 mb-8 max-w-2xl mx-auto">
+            <div className="mb-6">
+              <p className="text-2xl font-bold mb-4" style={{ color: '#1E90FF' }}>
+                👉 6 Bottles – $29/Bottle
+              </p>
+            </div>
+            
             <div className="flex items-center justify-center gap-3 mb-6">
               <Shield className="w-8 h-8 text-green-500" />
-              <span className="text-2xl font-bold text-gray-900">100% Satisfaction Guarantee</span>
+              <span className="text-2xl font-bold text-gray-900">✔ 100% Satisfaction Guarantee</span>
             </div>
             
             <button 
               onClick={handleAccept}
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg checkout-button mb-6"
+              className="w-full text-white font-bold py-4 px-8 rounded-lg text-xl transition-all duration-300 transform hover:scale-105 shadow-lg checkout-button mb-6"
+              style={{ backgroundColor: '#28a745' }}
             >
-              Claim My Discount
+              YES, I WANT THIS DEAL
             </button>
-            
-            <p className="text-lg font-semibold text-gray-800">
-              6 bottles - $29/bottle
-            </p>
           </div>
         </section>
 
@@ -384,7 +431,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         <section className="text-center">
           <button 
             onClick={handleReject}
-            className="text-gray-500 hover:text-gray-700 underline text-lg transition-colors checkout-button"
+            className="text-white px-6 py-3 rounded-lg text-lg transition-colors checkout-button"
+            style={{ backgroundColor: '#555' }}
           >
             No, thanks. I'll miss out.
           </button>
