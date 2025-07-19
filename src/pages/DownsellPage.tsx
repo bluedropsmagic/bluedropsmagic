@@ -75,6 +75,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         accept: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=yes',
         reject: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=no'
         subscriptionText: 'When you buy a 6-bottle kit',
+      }
       'dw3': {
         savings: 'Save $300 total',
         description: 'Complete 6-bottle treatment'
@@ -90,6 +91,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     };
     return urls[variant];
     return contents[variant as keyof typeof contents] || contents['dws1'];
+  }
 
   const urls = getUrls();
 
@@ -452,7 +454,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         <section className="text-center mb-6 animate-fadeInUp animation-delay-1400">
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <p className="text-blue-800 font-bold text-sm sm:text-base">
-              This is the <strong>BIGGEST</strong> discount ever offered by the lab — because we don't want you to suffer from ED ever again.
+              This is the <strong>BIGGEST</strong> discount ever offered by the lab — {variant === 'dws1' ? 'with convenient monthly delivery' : 'because we don\'t want you to suffer from ED ever again'}.
             </p>
           </div>
         </section>
