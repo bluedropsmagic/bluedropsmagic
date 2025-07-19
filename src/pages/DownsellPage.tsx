@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { AlertTriangle, CheckCircle, Shield, Truck, Clock } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
+import { BoltNavigation } from '../components/BoltNavigation';
 
 interface DownsellPageProps {
   variant: 'dws1' | 'dws2' | 'dw3';
@@ -210,6 +211,9 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Bolt Navigation */}
+      <BoltNavigation />
+      
       {/* Header - Orange Banner */}
       <div className="bg-orange-600 text-white text-center py-3 px-4">
         <h1 className="text-lg sm:text-xl font-bold tracking-wide">

@@ -7,6 +7,7 @@ import { ConversionHeatmap } from './ConversionHeatmap';
 import { TrackingTestPanel } from './TrackingTestPanel';
 import { ManelChart } from './ManelChart';
 import { RedTrackTestPanel } from './RedTrackTestPanel';
+import { BoltNavigation } from './BoltNavigation';
 import { AdminTestingEnvironment } from './AdminTestingEnvironment';
 import { 
   BarChart3, 
@@ -711,6 +712,9 @@ export const AdminDashboard: React.FC = () => {
   // Main dashboard content (authenticated)
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Bolt Navigation */}
+      <BoltNavigation />
+      
       {/* Mobile-optimized layout */}
       <div className="p-2 sm:p-4 lg:p-8">
         <div className="max-w-7xl mx-auto">

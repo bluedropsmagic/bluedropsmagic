@@ -4,6 +4,9 @@ import { useAnalytics } from './hooks/useAnalytics';
 import { initializeRedTrack } from './utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
 
+// Import BoltNavigation
+import { BoltNavigation } from './components/BoltNavigation';
+
 // Import all components
 import { Header } from './components/Header';
 import { HeroSection } from './components/HeroSection';
@@ -779,84 +782,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50 overflow-x-hidden">
-      {/* ✅ NEW: Bolt Environment Navigation - Only in Bolt */}
-      {isBoltEnvironment && (
-        <div className="fixed top-4 left-4 z-50">
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-gray-200 max-w-xs">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-bold text-gray-800">🔧 Bolt Navigation</span>
-            </div>
-            
-            {/* Upsell Pages */}
-            <div className="mb-3">
-              <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Upsell Pages:</p>
-              <div className="space-y-1">
-                <a
-                  href="/up1bt?cid=bolt_test_1bt"
-                  className="block bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                >
-                  📦 1-Bottle Upsell
-                </a>
-                <a
-                  href="/up3bt?cid=bolt_test_3bt"
-                  className="block bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                >
-                  📦 3-Bottle Upsell
-                </a>
-                <a
-                  href="/up6bt?cid=bolt_test_6bt"
-                  className="block bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                >
-                  📦 6-Bottle Upsell
-                </a>
-              </div>
-            </div>
-            
-            {/* Downsell Pages */}
-            <div className="mb-3">
-              <p className="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Downsell Pages:</p>
-              <div className="space-y-1">
-                <a
-                  href="/dws1?cid=bolt_test_dws1"
-                  className="block bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                >
-                  💰 Downsell 1
-                </a>
-                <a
-                  href="/dws2?cid=bolt_test_dws2"
-                  className="block bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                >
-                  💰 Downsell 2
-                </a>
-                <a
-                  href="/dw3?cid=bolt_test_dw3"
-                  className="block bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                >
-                  💰 Downsell 3
-                </a>
-              </div>
-            </div>
-            
-            {/* Admin Dashboard */}
-            <div>
-              <a
-                href="/admin"
-                className="block bg-purple-500 hover:bg-purple-600 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-              >
-                👨‍💼 Admin Dashboard
-              </a>
-            </div>
-            
-            {/* Info */}
-            <div className="mt-3 pt-3 border-t border-gray-200">
-              <p className="text-xs text-gray-500">
-                🔧 Navegação disponível apenas no ambiente Bolt
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Bolt Navigation */}
+      <BoltNavigation />
 
       {/* ✅ NEW: Admin DTC Button - For content override */}
       {isAdmin && (

@@ -4,6 +4,7 @@ import { useAnalytics } from '../hooks/useAnalytics';
 import { AlertTriangle, CheckCircle, Shield, Truck, Clock } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 import { TestimonialsSection } from '../components/TestimonialsSection';
+import { BoltNavigation } from '../components/BoltNavigation';
 
 interface UpsellPageProps {
   variant: '1-bottle' | '3-bottle' | '6-bottle';
@@ -297,6 +298,9 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
+      {/* Bolt Navigation */}
+      <BoltNavigation />
+      
       {/* Fixed Red Alert Banner */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 shadow-lg">
         <div className="flex items-center justify-center gap-2">
