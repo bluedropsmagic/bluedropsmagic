@@ -19,6 +19,8 @@ interface DownsellContent {
   acceptUrl: string;
   rejectUrl: string;
   finalOfferText: string;
+  bottleCount: string;
+  pricePerBottle: string;
 }
 
 export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
@@ -79,7 +81,9 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         description: 'Get 1 bottle delivered monthly',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws1?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws1?accepted=no',
-        finalOfferText: '👉 1 Bottle Monthly – $23/Bottle'
+        finalOfferText: '👉 1 Bottle Monthly – $23/Bottle',
+        bottleCount: '1 bottle',
+        pricePerBottle: '$23'
       },
       'dws2': {
         productType: '6 BOTTLE PACKAGE',
@@ -90,7 +94,9 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         description: 'Complete 6-bottle treatment',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=no',
-        finalOfferText: '👉 6 Bottles – $29/Bottle'
+        finalOfferText: '👉 6 Bottles – $29/Bottle',
+        bottleCount: '6 bottles',
+        pricePerBottle: '$29'
       },
       'dw3': {
         productType: '3 BOTTLE PACKAGE',
@@ -101,7 +107,9 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         description: 'Complete 3-bottle treatment',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dw3?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dw3?accepted=no',
-        finalOfferText: '👉 3 Bottles – $33/Bottle'
+        finalOfferText: '👉 3 Bottles – $33/Bottle',
+        bottleCount: '3 bottles',
+        pricePerBottle: '$33'
       }
     };
 
@@ -171,24 +179,23 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
 
           {/* Main Headline */}
           <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-3">
-              <span className="text-red-600 block mb-1">⚠️ Maybe you still</span>
-              <span className="text-red-600 block">haven't realized this...</span>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black leading-tight mb-4 text-red-700">
+              <span className="block mb-2">⚠️ <strong>Maybe you didn't realize it yet...</strong></span>
             </h1>
             
             <p className="text-sm sm:text-base text-red-700 font-bold px-2 mb-6">
-              ⚠️ But flushing out <strong>100%</strong> of the toxic plaque from your penile veins is the <strong>ONLY</strong> way to permanently eliminate erectile dysfunction.
+              ⚠️ But eliminating <strong>100%</strong> of the toxic plaque from your penile veins is the <strong>ONLY</strong> way to never suffer from erectile dysfunction again.
             </p>
           </div>
 
           {/* Warning Section */}
           <div className="mb-6 animate-fadeInUp animation-delay-500">
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
-              <h2 className="text-lg sm:text-xl font-black text-red-600 mb-3">
-                ⚠️ If you don't completely EXTERMINATE that toxic junk from your system...
+              <h2 className="text-lg sm:text-xl font-black text-red-700 mb-3">
+                ⚠️ <strong>If you don't completely EXTERMINATE that toxic junk from your system...</strong>
               </h2>
               <p className="text-red-700 font-bold text-sm sm:text-base mb-2">
-                ⚠️ Your ED issues WILL come back.
+                ⚠️ <strong>Your ED issues WILL come back.</strong>
               </p>
             </div>
           </div>
@@ -198,18 +205,18 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200">
               <div className="space-y-3 text-sm sm:text-base text-gray-700 leading-relaxed">
                 <p>Even if you've started to feel the incredible benefits within the first few weeks…</p>
-                <p className="font-bold text-red-600">
-                  ⚠️ If you stop using Blue Drops before all the plaque is gone, <strong>the nightmare can return to haunt you.</strong>
+                <p className="font-bold text-red-700">
+                  ⚠️ <strong>If you stop using Blue Drops before all the plaque is gone, the nightmare can return to haunt you.</strong>
                 </p>
-                <p className="font-bold text-red-600">
-                  ⚠️ That dreaded softness right at the crucial moment can strike again…
+                <p className="font-bold text-red-700">
+                  ⚠️ <strong>That dreaded softness right at the crucial moment can strike again…</strong>
                 </p>
-                <p className="font-bold text-red-600">
-                  ⚠️ The anxiety before sex will creep back in…
+                <p className="font-bold text-red-700">
+                  ⚠️ <strong>The anxiety before sex will creep back in…</strong>
                 </p>
                 <p>Your relationship could go back to square one...</p>
-                <p className="font-bold text-xl text-red-600">
-                  ⚠️ And worst of all — your erectile problems might become <strong>irreversible.</strong>
+                <p className="font-bold text-xl text-red-700">
+                  ⚠️ <strong>And worst of all — your erectile problems might become irreversible.</strong>
                 </p>
               </div>
             </div>
@@ -348,6 +355,39 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
             </div>
           </section>
 
+          {/* Price Announcement */}
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1250">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-xl p-4">
+              <p className="text-lg sm:text-xl font-bold mb-2">
+                You'll pay just <span className="text-yellow-300">{content.pricePerBottle} per bottle</span>
+              </p>
+              <p className="text-sm sm:text-base">
+                on a {content.bottleCount} supply of Blue Drops.
+              </p>
+            </div>
+          </section>
+
+          {/* Never Again Warning */}
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1275">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <p className="text-red-700 font-bold text-base sm:text-lg mb-1">
+                ⚠️ <strong>You will NOT see this offer again.</strong>
+              </p>
+              <p className="text-red-600 font-bold text-sm sm:text-base">
+                Not tomorrow. Not ever.
+              </p>
+            </div>
+          </section>
+
+          {/* CTA Instruction */}
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1280">
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
+              <p className="text-blue-800 text-sm sm:text-base font-semibold">
+                Click the button below to claim your kit.
+              </p>
+            </div>
+          </section>
+
           {/* Main Offer */}
           <div className="mb-6 relative animate-fadeInUp animation-delay-1300">
             {/* TODAY ONLY Tag */}
@@ -398,12 +438,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
                   
                   <p className="text-yellow-300 font-bold text-sm sm:text-base mb-2">
                     {content.savings}
-                  </p>
-                  <p className="text-yellow-300 font-bold text-sm sm:text-base">
-                    You will NOT see this offer again.
-                  </p>
-                  <p className="text-yellow-300 font-bold text-xs sm:text-sm">
-                    Not tomorrow. Not ever.
                   </p>
                 </div>
 
