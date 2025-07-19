@@ -59,20 +59,37 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const getUrls = () => {
     const urls = {
       'dws1': {
+        productType: '1 bottle subscription',
+        priceText: '$23 per bottle',
+        subscriptionText: 'Monthly subscription',
+        productImage: 'https://i.imgur.com/iWs7wy7.png', // 1 bottle image
+        savings: 'Save $66 per bottle',
+        description: 'Get 1 bottle delivered monthly'
+      },
+      'dws2': {
+        productType: '6 bottle package',
         accept: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws1?accepted=yes',
         reject: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws1?accepted=no'
       },
       'dws2': {
         accept: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=yes',
         reject: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=no'
+        subscriptionText: 'When you buy a 6-bottle kit',
+      'dw3': {
+        savings: 'Save $300 total',
+        description: 'Complete 6-bottle treatment'
       },
       'dw3': {
-        accept: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dw3?accepted=yes',
-        reject: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dw3?accepted=no'
+        productType: '3 bottle package',
+        priceText: '$33 per bottle',
+        subscriptionText: 'When you buy a 3-bottle kit',
+        productImage: 'https://i.imgur.com/eXYnjhm.png',
+        savings: 'Save $150 total',
+        description: 'Complete 3-bottle treatment'
       }
     };
     return urls[variant];
-  };
+    return contents[variant as keyof typeof contents] || contents['dws1'];
 
   const urls = getUrls();
 
@@ -344,8 +361,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               {/* Product Image */}
               <div className="flex justify-center mb-3 sm:mb-4">
                 <img 
-                  src="https://i.imgur.com/hsfqxVP.png" 
-                  alt="BlueDrops 6 Bottle Pack"
+                  src={content.productImage} 
+                  alt={`BlueDrops ${content.productType}`}
                   className="w-full h-auto object-contain drop-shadow-2xl max-h-32 sm:max-h-40 md:max-h-48"
                 />
               </div>
@@ -356,7 +373,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
                   BLUEDROPS
                 </h3>
                 <p className="text-white/80 text-sm sm:text-base font-bold tracking-wide -mt-1">
-                  6 BOTTLE PACKAGE
+                  {content.productType.toUpperCase()}
                 </p>
               </div>
 
@@ -364,13 +381,16 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               <div className="text-center mb-4">
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/30 mb-3">
                   <p className="text-2xl sm:text-3xl font-black text-white mb-1">
-                    $29 per bottle
+                    {content.priceText}
                   </p>
                   <p className="text-white/90 text-xs sm:text-sm">
-                    When you buy a 6-month kit
+                    {content.subscriptionText}
                   </p>
                 </div>
                 
+                <p className="text-yellow-300 font-bold text-sm sm:text-base mb-2">
+                  {content.savings}
+                </p>
                 <p className="text-yellow-300 font-bold text-sm sm:text-base">
                   You will NOT see this offer again.
                 </p>
