@@ -73,16 +73,16 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const getDownsellContent = (variant: string): DownsellContent => {
     const contents = {
       'dws1': {
-        productType: '1 BOTTLE SUBSCRIPTION',
+        productType: '6 BOTTLE PACKAGE',
         priceText: '$23 per bottle',
-        subscriptionText: 'Monthly subscription',
-        productImage: 'https://i.imgur.com/iWs7wy7.png',
+        subscriptionText: 'When you buy a 6-bottle kit',
+        productImage: 'https://i.postimg.cc/XqFzZmRd/6-bottle.png',
         savings: 'Save $66 per bottle',
-        description: 'Get 1 bottle delivered monthly',
+        description: 'Complete 6-bottle treatment',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws1?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws1?accepted=no',
-        finalOfferText: '👉 1 Bottle Monthly – $23/Bottle',
-        bottleCount: '1 bottle',
+        finalOfferText: '👉 6 Bottles – $23/Bottle',
+        bottleCount: '6 bottles',
         pricePerBottle: '$23'
       },
       'dws2': {
