@@ -79,8 +79,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         productImage: 'https://i.postimg.cc/XqFzZmRd/6-bottle.png',
         savings: 'Save $66 per bottle',
         description: 'Complete 6-bottle treatment',
-        acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws1?accepted=yes',
-        rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws1?accepted=no',
+        acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=yes',
+        rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=no',
         finalOfferText: '👉 6 Bottles – $23/Bottle',
         bottleCount: '6 bottles',
         pricePerBottle: '$23'
