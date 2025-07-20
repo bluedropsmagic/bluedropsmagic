@@ -30,8 +30,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
   const [showEmailSection, setShowEmailSection] = useState(false);
   const [showSecondVideo, setShowSecondVideo] = useState(false);
-  const [showPurchaseButtons, setShowPurchaseButtons] = useState(false);
-  const [showRestOfContent, setShowRestOfContent] = useState(false); // ✅ NEW: Control rest of content
 
   // ✅ NEW: Detect Bolt environment
   useEffect(() => {
@@ -48,43 +46,29 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       console.log('🔧 Bolt environment detected on downsell page - all content visible');
       setShowEmailSection(true);
       setShowSecondVideo(true);
-      setShowPurchaseButtons(true);
-      setShowRestOfContent(true);
     }
   }, []);
 
-  // ✅ NEW: Show rest of content after 1min30s (90 seconds)
+  // ✅ NEW: Show email section after 1min32s (92 seconds)
   useEffect(() => {
-    if (isBoltEnvironment) return; // Skip timer in Bolt environment
+    if (isBoltEnvironment) {
+      return; // Skip timer in Bolt environment
+    }
     
-    const contentTimer = setTimeout(() => {
-      console.log('⏰ 1min30s elapsed - showing rest of downsell content');
-      setShowRestOfContent(true);
+    const emailTimer = setTimeout(() => {
+      console.log('⏰ 1min32s elapsed - showing email section');
       setShowEmailSection(true);
-      setShowPurchaseButtons(true);
       
-      // Show second video 10 seconds after content appears
+      // Show second video 10 seconds after email appears
       setTimeout(() => {
-        console.log('⏰ Showing second video after content');
+        console.log('⏰ Showing second video after email');
         setShowSecondVideo(true);
       }, 10000);
       
-    }, 90000); // 1min30s = 90 seconds
+    }, 92000); // 1min32s = 92 seconds
     
-    return () => clearTimeout(contentTimer);
+    return () => clearTimeout(emailTimer);
   }, [isBoltEnvironment]);
-
-  // ✅ NEW: Show email section after 1min32s (92 seconds)
-  useEffect(() => {
-    // ✅ REMOVED: Email timing now controlled by showRestOfContent
-    return () => {}; // Empty cleanup
-  }, []);
-
-  // ✅ NEW: Show purchase buttons after 1min13s (73 seconds) 
-  useEffect(() => {
-    // ✅ REMOVED: Button timing now controlled by showRestOfContent
-    return () => {}; // Empty cleanup
-  }, []);
 
   // ✅ NEW: Inject VTurb script for downsell video
   useEffect(() => {
@@ -367,16 +351,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </header>
 
           {/* Main Headline */}
-          <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-3">
-              <span className="text-red-600 block mb-1">So you're really just going to</span>
-              <span className="bg-gradient-to-r from-red-500 via-orange-500 to-red-600 bg-clip-text text-transparent block">
-                give up and walk away
-              </span>
-              <span className="text-blue-900 block">like nothing's at stake?</span>
-            </h1>
-          </div>
-
           {/* VTurb Video Section */}
           <div className="mb-6 animate-fadeInUp animation-delay-400">
             <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
@@ -394,10 +368,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
             </div>
           </div>
 
-          {/* ✅ REST OF CONTENT - Only show after 1min30s */}
-          {(showRestOfContent || isBoltEnvironment) && (
-          <>
-          {/* Email Section */}
+          {/* Email Section - Only show after 1min32s */}
+          {showEmailSection && (
           <section className="mb-6 animate-fadeInUp">
             <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200 shadow-lg">
               {/* Email Header */}
@@ -427,8 +399,9 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </section>
+          )}
 
-          {/* Second VTurb Video Section */}
+          {/* Second VTurb Video Section - Only show after email appears */}
           {showSecondVideo && (
           <div className="mb-6 animate-fadeInUp">
             <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
@@ -677,8 +650,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               <span className="text-xs sm:text-sm font-medium">No, thanks. I'll miss out.</span>
             </button>
           </div>
-          </>
-          )}
 
         </div>
       </div>
