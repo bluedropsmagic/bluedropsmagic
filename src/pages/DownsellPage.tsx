@@ -30,6 +30,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
   const [showEmailSection, setShowEmailSection] = useState(false);
   const [showSecondVideo, setShowSecondVideo] = useState(false);
+  const [showPurchaseButtons, setShowPurchaseButtons] = useState(false);
 
   // ✅ NEW: Detect Bolt environment
   useEffect(() => {
@@ -46,6 +47,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       console.log('🔧 Bolt environment detected on downsell page - all content visible');
       setShowEmailSection(true);
       setShowSecondVideo(true);
+      setShowPurchaseButtons(true);
     }
   }, []);
 
@@ -63,6 +65,13 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       setTimeout(() => {
         console.log('⏰ Showing second video after email');
         setShowSecondVideo(true);
+        
+        // Show purchase buttons 1min13s after second video appears
+        setTimeout(() => {
+          console.log('⏰ 1min13s after second video - showing purchase buttons');
+          setShowPurchaseButtons(true);
+        }, 73000); // 1min13s = 73 seconds
+        
       }, 10000);
       
     }, 92000); // 1min32s = 92 seconds
