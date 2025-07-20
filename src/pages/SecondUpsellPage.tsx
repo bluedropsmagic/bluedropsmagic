@@ -6,7 +6,7 @@ import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 import { BoltNavigation } from '../components/BoltNavigation';
 
 interface SecondUpsellPageProps {
-  variant: 'up2-1bt' | 'up2-3bt' | 'up2-6bt';
+  variant: 'upig1bt' | 'upig3bt' | 'upig6bt';
 }
 
 interface SecondUpsellContent {
@@ -294,7 +294,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
   const getSecondUpsellContent = (variant: string): SecondUpsellContent => {
     const contents = {
-      'up2-1bt': {
+      'upig1bt': {
         offer: {
           title: 'RECOMMENDED SUPPORT PACKAGE',
           subtitle: '🔹 Complete your recovery with essential testosterone support',
@@ -307,14 +307,14 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
           freeBottles: '',
           paidBottles: 'TESTOSTERONE SUPPORT PACKAGE'
         },
-        acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/second-offer/up2-1bt?accepted=yes',
-        rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176654642:1/thank-you',
+        acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=yes',
+        rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=no',
         productImage: 'https://i.imgur.com/MKvvyGH.png',
         acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
         videoId: '687c8357a159330096eff21e' // Placeholder video ID
       },
-      'up2-3bt': {
+      'upig3bt': {
         offer: {
           title: 'RECOMMENDED SUPPORT PACKAGE',
           subtitle: '🔹 Complete your recovery with essential testosterone support',
@@ -327,14 +327,14 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
           freeBottles: '',
           paidBottles: 'TESTOSTERONE SUPPORT PACKAGE'
         },
-        acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/second-offer/up2-3bt?accepted=yes',
-        rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176845818:1/thank-you',
+        acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=yes',
+        rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/qJjMdRwYNl?accepted=yes',
         productImage: 'https://i.imgur.com/MKvvyGH.png',
         acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
         videoId: '687c7e662a38c6be43a1fc6e' // Placeholder video ID
       },
-      'up2-6bt': {
+      'upig6bt': {
         offer: {
           title: 'RECOMMENDED SUPPORT PACKAGE',
           subtitle: '🔹 Complete your recovery with essential testosterone support',
@@ -348,7 +348,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
           paidBottles: 'TESTOSTERONE SUPPORT PACKAGE'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
-        rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176849703:1/thank-you',
+        rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=no',
         productImage: 'https://i.imgur.com/MKvvyGH.png',
         acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
