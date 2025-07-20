@@ -313,39 +313,39 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
 
           {/* Benefits Grid */}
           <section className="mb-6 animate-fadeInUp animation-delay-1000">
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
                   <span className="text-lg">🍆</span>
                   <span>Increase penis size and girth</span>
                 </p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
                   <span className="text-lg">💪</span>
                   <span>Triple their performance time in bed</span>
                 </p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
                   <span className="text-lg">🧠</span>
                   <span>Sharpen mental focus</span>
                 </p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
                   <span className="text-lg">💪</span>
                   <span>Build more muscle and strength</span>
                 </p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
                   <span className="text-lg">🔥</span>
                   <span>Burn off stubborn fat</span>
                 </p>
               </div>
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-sm flex items-center gap-2 text-green-700">
+                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
                   <span className="text-lg">✨</span>
                   <span>Regrow hair and improve appearance</span>
                 </p>
