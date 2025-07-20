@@ -30,6 +30,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
   const [showEmailSection, setShowEmailSection] = useState(false);
   const [showSecondVideo, setShowSecondVideo] = useState(false);
+  const [showPurchaseButtons, setShowPurchaseButtons] = useState(false);
 
   // ✅ NEW: Detect Bolt environment
   useEffect(() => {
@@ -46,14 +47,13 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       console.log('🔧 Bolt environment detected on downsell page - all content visible');
       setShowEmailSection(true);
       setShowSecondVideo(true);
+      setShowPurchaseButtons(true);
     }
   }, []);
 
   // ✅ NEW: Show email section after 1min32s (92 seconds)
   useEffect(() => {
-    if (isBoltEnvironment) {
-      return; // Skip timer in Bolt environment
-    }
+    if (isBoltEnvironment) return; // Skip timer in Bolt environment
     
     const emailTimer = setTimeout(() => {
       console.log('⏰ 1min32s elapsed - showing email section');
@@ -68,6 +68,18 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     }, 92000); // 1min32s = 92 seconds
     
     return () => clearTimeout(emailTimer);
+  }, [isBoltEnvironment]);
+
+  // ✅ NEW: Show purchase buttons after 1min13s (73 seconds)
+  useEffect(() => {
+    if (isBoltEnvironment) return; // Skip timer in Bolt environment
+    
+    const buttonTimer = setTimeout(() => {
+      console.log('⏰ 1min13s elapsed - showing purchase buttons');
+      setShowPurchaseButtons(true);
+    }, 73000); // 1min13s = 73 seconds
+    
+    return () => clearTimeout(buttonTimer);
   }, [isBoltEnvironment]);
 
   // ✅ NEW: Inject VTurb script for downsell video
