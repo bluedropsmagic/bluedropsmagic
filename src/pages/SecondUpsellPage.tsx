@@ -276,7 +276,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
           freeBottles: '',
           paidBottles: 'TESTOSTERONE SUPPORT PACKAGE'
         },
-        acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/second-offer/up2-6bt?accepted=yes',
+        acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176849703:1/thank-you',
         productImage: 'https://i.imgur.com/MKvvyGH.png',
         acceptButtonText: 'YES — ADD IGNITEMEN TO MY ORDER',
@@ -556,7 +556,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                 {/* Product Image */}
                 <div className="flex justify-center mb-3">
                   <img 
-                    src="https://i.imgur.com/k7IpZud.png" 
+                    src="https://i.imgur.com/zDB7vWu.png" 
                     alt="High Testosterone Warning"
                     className="w-full h-auto object-contain drop-shadow-2xl max-h-24 sm:max-h-32"
                   />
