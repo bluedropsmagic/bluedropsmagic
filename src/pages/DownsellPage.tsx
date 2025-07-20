@@ -81,7 +81,17 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
 
   // ✅ NEW: Inject VTurb script for downsell video
   useEffect(() => {
-    const videoId = '687c72f603cd186056ea5d15';
+    // ✅ UPDATED: Use specific video ID based on variant
+    const getVideoId = (variant: string) => {
+      switch (variant) {
+        case 'dws1': return '687c8357a159330096eff21e'; // For 1-bottle buyers
+        case 'dws2': return '687c72f603cd186056ea5d15'; // For 3-bottle buyers  
+        case 'dw3': return '687c72f603cd186056ea5d15';  // For 6-bottle buyers
+        default: return '687c72f603cd186056ea5d15';
+      }
+    };
+    
+    const videoId = getVideoId(variant);
     
     console.log('🎬 Injecting VTurb for downsell video:', videoId);
     
@@ -246,17 +256,17 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const getDownsellContent = (variant: string): DownsellContent => {
     const contents = {
       'dws1': {
-        productType: '6 BOTTLE PACKAGE',
-        priceText: '$23 per bottle',
-        subscriptionText: 'When you buy a 6-bottle kit',
-        productImage: 'https://i.postimg.cc/XqFzZmRd/6-bottle.png',
-        savings: 'Save $66 per bottle',
-        description: 'Complete 6-bottle treatment',
+        productType: 'COMPLETE YOUR TREATMENT',
+        priceText: '$39 per bottle',
+        subscriptionText: 'Add 8 more bottles to your order',
+        productImage: 'https://i.imgur.com/2YU6i8f.png', // Same as up1bt
+        savings: 'Save $585 instantly',
+        description: 'Complete 9-month treatment protocol',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=no',
-        finalOfferText: '👉 6 Bottles – $23/Bottle',
-        bottleCount: '6 bottles',
-        pricePerBottle: '$23'
+        finalOfferText: '👉 Add 8 More Bottles – $39/Bottle',
+        bottleCount: '8 more bottles',
+        pricePerBottle: '$39'
       },
       'dws2': {
         productType: '6 BOTTLE PACKAGE',
