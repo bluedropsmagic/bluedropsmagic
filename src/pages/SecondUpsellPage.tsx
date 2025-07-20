@@ -571,19 +571,14 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                   
                   <button 
                     onClick={handleAccept}
-                    className="relative w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-2xl text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button animate-bounce"
-                    style={{ 
-                      animationDuration: '2s',
-                      animationIterationCount: 'infinite',
-                      animationTimingFunction: 'ease-in-out'
-                    }}
+                    className="relative w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-2xl text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
                   >
                     <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
                     
                     {/* Shimmer effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-shimmer"></div>
                     
-                    <span className="relative z-10 animate-pulse">{content.acceptButtonText}</span>
+                    <span className="relative z-10">{content.acceptButtonText}</span>
                     
                     {/* Glow effect on hover */}
                     <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
@@ -701,8 +696,11 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                       window.location.href = url;
                     }, 150);
                   }}
-                  className="w-full bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                  className="relative w-full bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
                 >
+                  {/* Shimmer effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-shimmer"></div>
+                  
                   <span className="relative z-10">⚠️ I ACCEPT THE RISK — GIVE ME MAXIMUM POWER</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
