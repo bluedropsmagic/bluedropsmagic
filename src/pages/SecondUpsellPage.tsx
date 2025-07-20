@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { AlertTriangle, CheckCircle, Shield, Truck, Clock } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
-import { TestimonialsSection } from '../components/TestimonialsSection';
 import { BoltNavigation } from '../components/BoltNavigation';
 
 interface SecondUpsellPageProps {
@@ -630,13 +629,6 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
             >
               <span className="text-xs sm:text-sm font-medium">❌ {content.rejectButtonText}</span>
             </button>
-          </div>
-          )}
-
-          {/* Testimonials Section - Only show after purchase section appears */}
-          {(showPurchaseSection || isBoltEnvironment) && (
-          <div className="mb-6 animate-fadeInUp animation-delay-1100">
-            <TestimonialsSection />
           </div>
           )}
 
