@@ -361,15 +361,14 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
           {/* Hero Section */}
           <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-3">
-              <span className="text-orange-900 block mb-1">You've already fixed the problem.</span>
+              <span className="text-blue-900 block mb-1">You've already fixed the problem.</span>
               <span className="bg-gradient-to-r from-orange-600 via-red-500 to-orange-800 bg-clip-text text-transparent block">
                 Now it's time to reclaim your power.
               </span>
             </h1>
             
-            <p className="text-sm sm:text-base text-orange-800 font-semibold px-2 mb-6">
-              Your recovery is underway — but your presence, your energy, and your dominance?<br/>
-              That's a choice you make right now.
+            <p className="text-xs sm:text-sm text-orange-800 font-medium px-2 mb-6">
+              Your recovery is underway — but your presence, your energy, and your dominance? That's a choice you make right now.
             </p>
           </div>
 
