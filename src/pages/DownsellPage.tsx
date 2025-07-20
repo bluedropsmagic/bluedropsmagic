@@ -203,14 +203,21 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </header>
 
           {/* Main Headline */}
-          <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-black leading-tight mb-4 text-red-700">
-              <span className="block mb-2">⚠️ <strong>Maybe you didn't realize it yet...</strong></span>
-            </h1>
-            
-            <p className="text-sm sm:text-base text-red-700 font-bold px-2 mb-6">
-              ⚠️ But eliminating <strong>100%</strong> of the toxic plaque from your penile veins is the <strong>ONLY</strong> way to never suffer from erectile dysfunction again.
-            </p>
+          {/* VTurb Video Section */}
+          <div className="mb-6 animate-fadeInUp animation-delay-400">
+            <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
+              <div
+                id="downsell-video-container"
+                className="w-full h-full"
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%'
+                }}
+              >
+                {/* VTurb player will be injected here */}
+              </div>
+            </div>
           </div>
 
           {/* Email Section */}
