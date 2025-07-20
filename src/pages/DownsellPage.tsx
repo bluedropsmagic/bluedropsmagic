@@ -84,10 +84,10 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     // ✅ UPDATED: Use specific video ID based on variant
     const getVideoId = (variant: string) => {
       switch (variant) {
-        case 'dws1': return '687c8357a159330096eff21e'; // For 1-bottle buyers
-        case 'dws2': return '687c7e662a38c6be43a1fc6e'; // For 3-bottle buyers  
-        case 'dw3': return '687c83476137406f142b1e81';  // For 6-bottle buyers
-        default: return '687c8357a159330096eff21e';
+        case 'dws1': return '687c7957886aa48cc3163f77'; // For 1-bottle buyers - FIRST video
+        case 'dws2': return '687c7957886aa48cc3163f77'; // For 3-bottle buyers - FIRST video
+        case 'dw3': return '687c7957886aa48cc3163f77';  // For 6-bottle buyers - FIRST video
+        default: return '687c7957886aa48cc3163f77';
       }
     };
     
@@ -152,7 +152,17 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   // ✅ NEW: Inject second VTurb video
   useEffect(() => {
     if (showSecondVideo) {
-      const videoId = '687c7957886aa48cc3163f77';
+      // ✅ FIXED: Use the correct second video IDs based on variant
+      const getSecondVideoId = (variant: string) => {
+        switch (variant) {
+          case 'dws1': return '687c8357a159330096eff21e'; // For 1-bottle buyers - SECOND video
+          case 'dws2': return '687c7e662a38c6be43a1fc6e'; // For 3-bottle buyers - SECOND video
+          case 'dw3': return '687c83476137406f142b1e81';  // For 6-bottle buyers - SECOND video
+          default: return '687c8357a159330096eff21e';
+        }
+      };
+      
+      const videoId = getSecondVideoId(variant);
       
       console.log('🎬 Injecting second VTurb video:', videoId);
       
@@ -204,12 +214,21 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
 
     // Cleanup on unmount
     return () => {
-      const scriptToRemove = document.getElementById('scr_687c7957886aa48cc3163f77');
+      const getSecondVideoId = (variant: string) => {
+        switch (variant) {
+          case 'dws1': return '687c8357a159330096eff21e';
+          case 'dws2': return '687c7e662a38c6be43a1fc6e';
+          case 'dw3': return '687c83476137406f142b1e81';
+          default: return '687c8357a159330096eff21e';
+        }
+      };
+      
+      const scriptToRemove = document.getElementById(`scr_${getSecondVideoId(variant)}`);
       if (scriptToRemove) {
         scriptToRemove.remove();
       }
     };
-  }, [showSecondVideo]);
+  }, [showSecondVideo, variant]);
 
   // ✅ Ensure no Hotjar on downsell pages
   useEffect(() => {
