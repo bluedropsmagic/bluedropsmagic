@@ -225,7 +225,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
     const contents = {
       'up2-1bt': {
         offer: {
-          title: 'IGNITEMEN — RECOMMENDED SUPPORT PACKAGE',
+          title: 'RECOMMENDED SUPPORT PACKAGE',
           subtitle: '🔹 Complete your recovery with essential testosterone support',
           description: 'The perfect complement to your BlueDrops protocol'
         },
@@ -239,13 +239,13 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/second-offer/up2-1bt?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176654642:1/thank-you',
         productImage: 'https://i.imgur.com/MKvvyGH.png',
-        acceptButtonText: 'YES — ADD IGNITEMEN TO MY ORDER',
+        acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
         videoId: '687c8357a159330096eff21e' // Placeholder video ID
       },
       'up2-3bt': {
         offer: {
-          title: 'IGNITEMEN — RECOMMENDED SUPPORT PACKAGE',
+          title: 'RECOMMENDED SUPPORT PACKAGE',
           subtitle: '🔹 Complete your recovery with essential testosterone support',
           description: 'The perfect complement to your BlueDrops protocol'
         },
@@ -259,13 +259,13 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/second-offer/up2-3bt?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176845818:1/thank-you',
         productImage: 'https://i.imgur.com/MKvvyGH.png',
-        acceptButtonText: 'YES — ADD IGNITEMEN TO MY ORDER',
+        acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
         videoId: '687c7e662a38c6be43a1fc6e' // Placeholder video ID
       },
       'up2-6bt': {
         offer: {
-          title: 'IGNITEMEN — RECOMMENDED SUPPORT PACKAGE',
+          title: 'RECOMMENDED SUPPORT PACKAGE',
           subtitle: '🔹 Complete your recovery with essential testosterone support',
           description: 'The perfect complement to your BlueDrops protocol'
         },
@@ -279,7 +279,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176849703:1/thank-you',
         productImage: 'https://i.imgur.com/MKvvyGH.png',
-        acceptButtonText: 'YES — ADD IGNITEMEN TO MY ORDER',
+        acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
         videoId: '687c83476137406f142b1e81' // Placeholder video ID
       }
