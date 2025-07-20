@@ -583,7 +583,29 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
                 {/* Extreme CTA Button */}
                 <button 
-                  onClick={handleAccept}
+                  onClick={() => {
+                    // Track high risk offer click
+                    trackInitiateCheckout('https://pagamento.paybluedrops.com/checkout/190510289:1');
+                    trackOfferClick(`second-upsell-${variant}-high-risk`);
+                    
+                    let url = 'https://pagamento.paybluedrops.com/checkout/190510289:1';
+                    
+                    // Add cart params if present
+                    if (cartParams) {
+                      url += (url.includes('?') ? '&' : '?') + cartParams;
+                    }
+                    
+                    // Add CID if present
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const cid = urlParams.get('cid');
+                    if (cid && !url.includes('cid=')) {
+                      url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+                    }
+                    
+                    setTimeout(() => {
+                      window.location.href = url;
+                    }, 150);
+                  }}
                   className="w-full bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
                 >
                   <span className="relative z-10">⚠️ I ACCEPT THE RISK — GIVE ME MAXIMUM POWER</span>
