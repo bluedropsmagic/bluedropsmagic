@@ -1,34 +1,600 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { CheckCircle, Star, Play } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useAnalytics } from '../hooks/useAnalytics';
+import { AlertTriangle, CheckCircle, Shield, Truck, Clock } from 'lucide-react';
+import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
+import { BoltNavigation } from '../components/BoltNavigation';
 
-interface Testimonial {
+interface SecondUpsellPageProps {
+  variant: 'up2-1bt' | 'up2-3bt' | 'up2-6bt';
+}
+
+interface SecondUpsellContent {
+  offer: {
+    title: string;
+    subtitle: string;
+    description: string;
+  };
+  pricing: {
+    pricePerBottle: string;
+    totalPrice: string;
+    savings: string;
+    freeBottles: string;
+    paidBottles: string;
+  };
+  acceptUrl: string;
+  rejectUrl: string;
+  highRiskUrl: string;
+  productImage: string;
+  acceptButtonText: string;
+  rejectButtonText: string;
+  videoId: string;
+}
+
+// ✅ NEW: Ignite testimonials for second upsell page
+interface IgniteTestimonial {
   id: number;
   name: string;
   location: string;
-  profileImage: string;
+  testimonial: string;
   videoId: string;
-  caption: string;
 }
 
-export const TestimonialsSection: React.FC = () => {
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [startX, setStartX] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [velocity, setVelocity] = useState(0);
-  const [lastMoveTime, setLastMoveTime] = useState(0);
-  const [lastMoveX, setLastMoveX] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number>();
-  const [pageType, setPageType] = useState<'main' | 'upsell'>('main');
+const igniteTestimonials: IgniteTestimonial[] = [
+  {
+    id: 1,
+    name: "Daniel Carter",
+    location: "Austin, TX",
+    testimonial: "First week on Ignite and I stopped snoozing my alarm. By week three, my wife thought I'd had work done — turns out I just got my testosterone back.",
+    videoId: "687c9e4e7d725bff283cc099"
+  },
+  {
+    id: 2,
+    name: "Marcus Reed",
+    location: "Atlanta, GA",
+    testimonial: "I wasn't expecting this… but people started treating me differently. More respect, more attention — even my wife noticed I was walking taller.",
+    videoId: "687c9e611dd0489c9a8ab751"
+  },
+  {
+    id: 3,
+    name: "Rick Alvarez",
+    location: "San Diego, CA",
+    testimonial: "I'm 47 and haven't felt this alive in years. The drive is back, the confidence is back… I honestly feel unstoppable again.",
+    videoId: "687c9e49886aa48cc3165615"
+  }
+];
 
-  // ✅ UPDATED: ALL testimonials now have real VTurb video IDs and profile images
-  const testimonials: Testimonial[] = [
-    {
-      id: 1,
-      name: pageType === 'upsell' ? "Carlos M." : "Michael R.",
+export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) => {
+  const [searchParams] = useSearchParams();
+  const { trackOfferClick } = useAnalytics();
+  const [cartParams, setCartParams] = useState<string>('');
+  const [showPurchaseSection, setShowPurchaseSection] = useState(false);
+  const [showTestimonials, setShowTestimonials] = useState(false);
+  const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+
+  // ✅ NEW: Detect Bolt environment
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    const isBolt = hostname.includes('stackblitz') || 
+                   hostname.includes('bolt.new') ||
+                   hostname.includes('webcontainer') ||
+                   hostname.includes('localhost') ||
+                   hostname.includes('127.0.0.1');
+    
+    setIsBoltEnvironment(isBolt);
+    
+    if (isBolt) {
+      console.log('🔧 Bolt environment detected on second upsell page - showing all content immediately');
+      setShowPurchaseSection(true);
+      setShowTestimonials(true);
+    }
+  }, []);
+
+  // ✅ NEW: Show purchase section after 2min41s (161 seconds)
+  useEffect(() => {
+    if (isBoltEnvironment) {
+      return; // Skip timer in Bolt environment
+    }
+    
+    const timer = setTimeout(() => {
+      console.log('⏰ 2min41s elapsed - showing purchase section');
+      setShowPurchaseSection(true);
+      
+      // Show testimonials 30 seconds after purchase section
+      setTimeout(() => {
+        console.log('⏰ Showing testimonials after purchase section');
+        setShowTestimonials(true);
+      }, 30000);
+      
+    }, 161000); // 2min41s = 161 seconds = 161,000 milliseconds
+    
+    return () => clearTimeout(timer);
+  }, [isBoltEnvironment]);
+
+  // ✅ NEW: Inject VTurb script for second upsell video
+  useEffect(() => {
+    const videoId = '687c9e4e7d725bff283cc099'; // Main video for second upsell
+    
+    console.log('🎬 Injecting VTurb for second upsell video:', videoId);
+    
+    // Remove existing script if any
+    const existingScript = document.getElementById(`scr_${videoId}`);
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Create the vturb-smartplayer element
+    const playerContainer = document.getElementById('second-upsell-video');
+    if (playerContainer) {
+      playerContainer.innerHTML = `
+        <vturb-smartplayer 
+          id="vid-${videoId}" 
+          style="display: block; margin: 0 auto; width: 100%;"
+        ></vturb-smartplayer>
+      `;
+
+      // Inject the script
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.id = `scr_${videoId}`;
+      script.async = true;
+      script.innerHTML = `
+        (function() {
+          try {
+            console.log('🎬 Loading second upsell VTurb video: ${videoId}');
+            var s = document.createElement("script");
+            s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
+            s.async = true;
+            s.onload = function() {
+              console.log('✅ Second upsell VTurb video loaded: ${videoId}');
+            };
+            s.onerror = function() {
+              console.error('❌ Failed to load second upsell VTurb video: ${videoId}');
+            };
+            document.head.appendChild(s);
+          } catch (error) {
+            console.error('Error injecting second upsell VTurb script:', error);
+          }
+        })();
+      `;
+      
+      document.head.appendChild(script);
+      console.log('✅ VTurb script injected for second upsell video');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      const scriptToRemove = document.getElementById(`scr_${videoId}`);
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, []);
+
+  // ✅ NEW: Inject testimonial videos when testimonials are shown
+  useEffect(() => {
+    if (showTestimonials) {
+      const currentVideoId = igniteTestimonials[currentTestimonial].videoId;
+      
+      console.log('🎬 Injecting Ignite testimonial video:', currentVideoId);
+      
+      // Remove existing script if any
+      const existingScript = document.getElementById(`scr_testimonial_${currentVideoId}`);
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      // Create the vturb-smartplayer element
+      const playerContainer = document.getElementById('ignite-testimonial-video');
+      if (playerContainer) {
+        playerContainer.innerHTML = `
+          <vturb-smartplayer 
+            id="vid-${currentVideoId}" 
+            style="display: block; margin: 0 auto; width: 100%;"
+          ></vturb-smartplayer>
+        `;
+
+        // Inject the script
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.id = `scr_testimonial_${currentVideoId}`;
+        script.async = true;
+        script.innerHTML = `
+          (function() {
+            try {
+              console.log('🎬 Loading Ignite testimonial video: ${currentVideoId}');
+              var s = document.createElement("script");
+              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${currentVideoId}/v4/player.js";
+              s.async = true;
+              s.onload = function() {
+                console.log('✅ Ignite testimonial video loaded: ${currentVideoId}');
+              };
+              s.onerror = function() {
+                console.error('❌ Failed to load Ignite testimonial video: ${currentVideoId}');
+              };
+              document.head.appendChild(s);
+            } catch (error) {
+              console.error('Error injecting Ignite testimonial script:', error);
+            }
+          })();
+        `;
+        
+        document.head.appendChild(script);
+        console.log('✅ Ignite testimonial VTurb script injected');
+      }
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (showTestimonials) {
+        const currentVideoId = igniteTestimonials[currentTestimonial].videoId;
+        const scriptToRemove = document.getElementById(`scr_testimonial_${currentVideoId}`);
+        if (scriptToRemove) {
+          scriptToRemove.remove();
+        }
+      }
+    };
+  }, [showTestimonials, currentTestimonial]);
+
+  // Preserve CartPanda parameters
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    const cartPandaParams = [
+      'order_id', 'customer_id', 'transaction_id', 'email', 'phone',
+      'first_name', 'last_name', 'address', 'city', 'state', 'zip',
+      'country', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term',
+      'utm_content', 'fbclid', 'gclid', 'affiliate_id', 'sub_id'
+    ];
+
+    cartPandaParams.forEach(param => {
+      const value = searchParams.get(param);
+      if (value) {
+        params.append(param, value);
+      }
+    });
+
+    searchParams.forEach((value, key) => {
+      if (!cartPandaParams.includes(key)) {
+        params.append(key, value);
+      }
+    });
+
+    setCartParams(params.toString());
+  }, [searchParams]);
+
+  const getSecondUpsellContent = (variant: string): SecondUpsellContent => {
+    return {
+      offer: {
+        title: 'RECOMMENDED SUPPORT PACKAGE',
+        subtitle: '✔️ Add Testosterone Support to Your Order',
+        description: 'Complete your transformation with enhanced testosterone support'
+      },
+      pricing: {
+        pricePerBottle: 'Only $39 per bottle',
+        totalPrice: '2 bottles of Ignite',
+        savings: 'Save $60 instantly',
+        freeBottles: '',
+        paidBottles: '2 BOTTLES'
+      },
+      acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
+      rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=no',
+      highRiskUrl: 'https://pagamento.paybluedrops.com/checkout/190510289:1',
+      productImage: 'https://i.imgur.com/2YU6i8f.png',
+      acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
+      rejectButtonText: 'No thanks — I\'ll pass on this opportunity',
+      videoId: '687c9e4e7d725bff283cc099'
+    };
+  };
+
+  const content = getSecondUpsellContent(variant);
+
+  const handleAccept = () => {
+    trackInitiateCheckout(content.acceptUrl);
+    trackOfferClick(`second-upsell-${variant}-accept`);
+    
+    let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
+    const urlParams = new URLSearchParams(window.location.search);
+    const cid = urlParams.get('cid');
+    if (cid && !url.includes('cid=')) {
+      url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    }
+    
+    setTimeout(() => {
+      window.location.href = url;
+    }, 150);
+  };
+
+  const handleReject = () => {
+    trackInitiateCheckout(content.rejectUrl);
+    trackOfferClick(`second-upsell-${variant}-reject`);
+    
+    let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
+    const urlParams = new URLSearchParams(window.location.search);
+    const cid = urlParams.get('cid');
+    if (cid && !url.includes('cid=')) {
+      url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    }
+    
+    setTimeout(() => {
+      window.location.href = url;
+    }, 150);
+  };
+
+  const handleHighRisk = () => {
+    trackInitiateCheckout(content.highRiskUrl);
+    trackOfferClick(`second-upsell-${variant}-high-risk`);
+    
+    let url = cartParams ? `${content.highRiskUrl}&${cartParams}` : content.highRiskUrl;
+    const urlParams = new URLSearchParams(window.location.search);
+    const cid = urlParams.get('cid');
+    if (cid && !url.includes('cid=')) {
+      url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    }
+    
+    setTimeout(() => {
+      window.location.href = url;
+    }, 150);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-white to-orange-50">
+      {/* Bolt Navigation */}
+      <BoltNavigation />
+      
+      {/* ✅ NEW: Bolt Environment Indicator */}
+      {isBoltEnvironment && (
+        <div className="fixed top-4 right-4 z-40">
+          <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
+            🔧 BOLT MODE: All Content Visible
+          </div>
+        </div>
+      )}
+      
+      {/* Fixed Orange Alert Banner */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-3 shadow-lg">
+        <div className="flex items-center justify-center gap-2">
+          <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5" />
+          <span className="font-black text-xs sm:text-sm md:text-base tracking-wide">⚠️ SPECIAL TESTOSTERONE OFFER - LIMITED TIME</span>
+          <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5" />
+        </div>
+      </div>
+
+      {/* Main container */}
+      <div className="pt-16 px-4 py-6 sm:py-8">
+        <div className="max-w-md mx-auto">
+          
+          {/* Header */}
+          <header className="mb-6 sm:mb-8 text-center animate-fadeInDown animation-delay-200">
+            <img 
+              src="https://i.imgur.com/QJxTIcN.png" 
+              alt="Blue Drops Logo"
+              className="h-6 sm:h-8 w-auto mx-auto"
+            />
+          </header>
+
+          {/* Hero Section */}
+          <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-3">
+              <span className="text-orange-900 block mb-1">Wait! One More Thing</span>
+              <span className="bg-gradient-to-r from-orange-600 via-red-500 to-orange-800 bg-clip-text text-transparent block">
+                For Maximum Results
+              </span>
+            </h1>
+            
+            <p className="text-sm sm:text-base text-orange-800 font-semibold px-2 mb-6">
+              Before you complete your order, there's one final addition that could amplify your results dramatically.
+            </p>
+          </div>
+
+          {/* ✅ NEW: VTurb Video Section */}
+          <div className="mb-6 animate-fadeInUp animation-delay-500">
+            <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
+              <div
+                id="second-upsell-video"
+                className="w-full h-full"
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%'
+                }}
+              >
+                {/* VTurb player will be injected here */}
+              </div>
+            </div>
+          </div>
+
+          {/* ✅ NEW: Sound Warning */}
+          <div className="mb-4 animate-fadeInUp animation-delay-600">
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-lg">🔊</span>
+                <span className="text-orange-800 font-semibold text-sm">
+                  Please make sure your sound is on
+                </span>
+              </div>
+              <p className="text-orange-600 text-xs">
+                This video contains important audio information
+              </p>
+            </div>
+          </div>
+
+          {/* ✅ Purchase Section - Only show after 2min41s */}
+          {(showPurchaseSection || isBoltEnvironment) && (
+          <div 
+            id="purchase-section"
+            className="mb-6 relative animate-fadeInUp animation-delay-800"
+          >
+            {/* TESTOSTERONE BOOST Tag */}
+            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
+              <div className="bg-gradient-to-r from-orange-400 via-red-500 to-orange-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <span className="text-xl sm:text-2xl">🔥</span>
+                  <span className="tracking-wide">TESTOSTERONE BOOST</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card Container */}
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-orange-400 via-red-400 to-orange-500 rounded-2xl sm:rounded-3xl blur-lg opacity-60 animate-pulse"></div>
+              
+              <div className="relative bg-gradient-to-br from-orange-600/95 to-red-700/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 pt-6 sm:pt-8 border-2 border-white/30 shadow-2xl">
+                
+                {/* Product Image */}
+                <div className="flex justify-center mb-3 sm:mb-4">
+                  <img 
+                    src={content.productImage} 
+                    alt="Ignite Testosterone Support"
+                    className="w-full h-auto object-contain drop-shadow-2xl max-h-32 sm:max-h-40 md:max-h-48"
+                  />
+                </div>
+
+                {/* Product Name */}
+                <div className="text-center mb-3 sm:mb-4">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-none">
+                    {content.offer.title}
+                  </h3>
+                  <p className="text-white/80 text-sm sm:text-base font-bold tracking-wide -mt-1">
+                    {content.offer.subtitle}
+                  </p>
+                </div>
+
+                {/* Offer Details */}
+                <div className="text-center mb-4">
+                  <div className="bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm shadow-lg mb-3">
+                    {content.pricing.totalPrice}
+                  </div>
+                  
+                  {/* Benefits List */}
+                  <div className="space-y-1.5 sm:space-y-2 bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20 mb-4">
+                    <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-yellow-400 flex-shrink-0" />
+                      <span>{content.pricing.pricePerBottle}</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-yellow-400 flex-shrink-0" />
+                      <span>Enhanced testosterone support</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-yellow-400 flex-shrink-0" />
+                      <span>Increased energy and drive</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-yellow-400 flex-shrink-0" />
+                      <span>Perfect complement to BlueDrops</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA Button */}
+                <div className="relative mb-4">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-600 rounded-xl blur opacity-75 animate-pulse"></div>
+                  <button 
+                    onClick={handleAccept}
+                    className="relative w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                  >
+                    <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
+                    <span className="relative z-10">{content.acceptButtonText}</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  </button>
+                </div>
+
+                {/* High Risk Option */}
+                <div className="mb-4">
+                  <div className="bg-red-600/20 border border-red-400/30 rounded-lg p-3 mb-3">
+                    <div className="text-center">
+                      <div className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold mb-2 inline-block">
+                        🔥 6 BOTTLES — $49 per bottle
+                      </div>
+                      <p className="text-white text-sm font-bold">
+                        $294 total — Maximum testosterone support
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-red-600/20 border border-red-400/30 rounded-lg p-3 mb-3">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <img 
+                        src="https://i.imgur.com/zDB7vWu.png" 
+                        alt="High Risk Warning"
+                        className="w-8 h-8"
+                      />
+                      <span className="text-red-200 font-bold text-sm">
+                        HIGH TESTOSTERONE RISK
+                      </span>
+                    </div>
+                    <p className="text-red-200 text-xs text-center">
+                      Maximum strength formula - Use with caution
+                    </p>
+                  </div>
+                  
+                  <button 
+                    onClick={handleHighRisk}
+                    className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-sm border border-white/30 checkout-button"
+                  >
+                    ⚠️ I ACCEPT THE HIGH TESTOSTERONE RISK
+                  </button>
+                  
+                  <div className="mt-2 text-center">
+                    <p className="text-red-200 text-xs">
+                      ⚠️ ATENÇÃO: Esta opção pode causar aumento excessivo de testosterona
+                    </p>
+                  </div>
+                </div>
+
+                {/* Benefits Icons */}
+                <div className="flex justify-center items-center gap-1 mb-3">
+                  <div className="bg-gradient-to-r from-orange-500/30 to-red-500/30 backdrop-blur-sm rounded px-2 py-1 border border-orange-300/40 flex-1">
+                    <div className="flex items-center justify-center gap-1 text-white">
+                      <Shield className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                      <span className="text-center font-semibold text-xs">180-Day</span>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-r from-orange-500/30 to-red-500/30 backdrop-blur-sm rounded px-2 py-1 border border-orange-300/40 flex-1">
+                    <div className="flex items-center justify-center gap-1 text-white">
+                      <Truck className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                      <span className="text-center font-semibold text-xs">Free Ship</span>
+                    </div>
+                  </div>
+                  <div className="bg-gradient-to-r from-orange-500/30 to-red-500/30 backdrop-blur-sm rounded px-2 py-1 border border-orange-300/40 flex-1">
+                    <div className="flex items-center justify-center gap-1 text-white">
+                      <Clock className="w-3 h-3 text-red-400 flex-shrink-0" />
+                      <span className="text-center font-semibold text-xs">Limited</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Benefits Image */}
+                <div>
+                  <div className="bg-white rounded p-1 shadow-sm">
+                    <img 
+                      src="https://i.imgur.com/1in1oo5.png" 
+                      alt="Product Benefits"
+                      className="w-full h-auto object-contain max-h-8 sm:max-h-10"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          )}
+
+          {/* ✅ Reject Button - Only show after 2min41s */}
+          {(showPurchaseSection || isBoltEnvironment) && (
+          <div className="mb-6 animate-fadeInUp animation-delay-900">
+            <button 
+              onClick={handleReject}
+              className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
+            >
+              <span className="text-xs sm:text-sm font-medium">❌ {content.rejectButtonText}</span>
+            </button>
+          </div>
+          )}
+
+          {/* ✅ NEW: Ignite Testimonials Section - Only show after purchase section appears */}
+          {(showTestimonials || isBoltEnvironment) && (
           <section className="mb-6 animate-fadeInUp animation-delay-1100">
             {/* Section Header */}
             <div className="text-center mb-4">
@@ -103,660 +669,26 @@ export const TestimonialsSection: React.FC = () => {
               ))}
             </div>
           </section>
-      caption: pageType === 'upsell' ? "I followed the full 9-month protocol — and let me tell you… I feel like a new man." : "BlueDrops completely changed my life. I felt the difference in just 2 weeks!"
-    },
-    {
-      id: 2,
-      name: pageType === 'upsell' ? "Marcus W." : "Robert S.",
-      location: pageType === 'upsell' ? "Georgia" : "California",
-      profileImage: pageType === 'upsell' ? "https://i.imgur.com/Ob6Vy9q.png" : "https://i.imgur.com/d1raEIm.png",
-      videoId: pageType === 'upsell' ? "686b8e7d15fc4aa5f81acc7e" : "6867816a78c1d68a675981f1",
-      caption: pageType === 'upsell' ? "It's not just about stronger performance… it gave me my confidence back." : "After 50, I thought there was no hope. BlueDrops proved me wrong!"
-    },
-    {
-      id: 3,
-      name: pageType === 'upsell' ? "Lisa G." : "John O.",
-      location: pageType === 'upsell' ? "Texas" : "Florida",
-      profileImage: pageType === 'upsell' ? "https://i.imgur.com/EWjVWtx.png" : "https://i.imgur.com/UJ0L2tZ.png",
-      videoId: pageType === 'upsell' ? "686b93df199e54169b0f7652" : "68678320c5ab1e6abe6e5b6f", // ✅ UPDATED: Lisa G. now has her own video
-      caption: pageType === 'upsell' ? "My husband is back. Emotionally, physically, in every way. Thank you, BlueDrops." : "My wife noticed the difference before I even told her about BlueDrops!"
-    }
-  ];
+          )}
 
-  // ✅ NEW: Detect if we're on an upsell page
-  useEffect(() => {
-    const path = window.location.pathname;
-    if (path.includes('/up1bt') || path.includes('/up3bt') || path.includes('/up6bt')) {
-      setPageType('upsell');
-      console.log('🎬 TestimonialsSection: Detected upsell page, using upsell video injection');
-    } else {
-      setPageType('main');
-      console.log('🎬 TestimonialsSection: Detected main page, using main video injection');
-    }
-  }, []);
-
-  // Intersection Observer for lazy loading
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Better animation for mobile
-  const animateDragOffset = (targetOffset: number, duration: number = 150) => {
-    const startOffset = dragOffset;
-    const startTime = performance.now();
-
-    const animate = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      
-      const easeOut = 1 - Math.pow(1 - progress, 2);
-      const currentOffset = startOffset + (targetOffset - startOffset) * easeOut;
-      setDragOffset(currentOffset);
-
-      if (progress < 1) {
-        animationRef.current = requestAnimationFrame(animate);
-      } else {
-        setDragOffset(targetOffset);
-        if (targetOffset === 0) {
-          setIsTransitioning(false);
-        }
-      }
-    };
-
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-    }
-    animationRef.current = requestAnimationFrame(animate);
-  };
-
-  // Better velocity calculation
-  const calculateVelocity = (clientX: number) => {
-    const now = performance.now();
-    if (lastMoveTime > 0) {
-      const timeDiff = now - lastMoveTime;
-      const distanceDiff = clientX - lastMoveX;
-      if (timeDiff > 0) {
-        setVelocity(distanceDiff / timeDiff);
-      }
-    }
-    setLastMoveTime(now);
-    setLastMoveX(clientX);
-  };
-
-  // Improved drag handlers for mobile
-  const handleDragStart = (clientX: number) => {
-    if (isTransitioning) return;
-    
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-    }
-    
-    setIsDragging(true);
-    setStartX(clientX);
-    setDragOffset(0);
-    setVelocity(0);
-    setLastMoveTime(performance.now());
-    setLastMoveX(clientX);
-  };
-
-  const handleDragMove = (clientX: number) => {
-    if (!isDragging || isTransitioning) return;
-    
-    const diff = clientX - startX;
-    const maxDrag = 120;
-    
-    let clampedDiff = Math.max(-maxDrag * 1.2, Math.min(maxDrag * 1.2, diff));
-    
-    setDragOffset(clampedDiff);
-    calculateVelocity(clientX);
-  };
-
-  const handleDragEnd = () => {
-    if (!isDragging || isTransitioning) return;
-    
-    setIsDragging(false);
-    setIsTransitioning(true);
-    
-    const threshold = 40;
-    const velocityThreshold = 0.3;
-    
-    let shouldChange = false;
-    let direction = 0;
-    
-    if (Math.abs(dragOffset) > threshold || Math.abs(velocity) > velocityThreshold) {
-      if (dragOffset > 0 || velocity > velocityThreshold) {
-        direction = -1;
-        shouldChange = true;
-      } else if (dragOffset < 0 || velocity < -velocityThreshold) {
-        direction = 1;
-        shouldChange = true;
-      }
-    }
-    
-    if (shouldChange) {
-      if (direction > 0) {
-        setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
-      } else {
-        setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-      }
-    }
-    
-    animateDragOffset(0, 100);
-    
-    setVelocity(0);
-    setLastMoveTime(0);
-    setLastMoveX(0);
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    handleDragStart(e.clientX);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
-      handleDragStart(e.touches[0].clientX);
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 1 && isDragging && Math.abs(dragOffset) > 10) {
-      e.preventDefault();
-      handleDragMove(e.touches[0].clientX);
-    } else if (e.touches.length === 1) {
-      handleDragMove(e.touches[0].clientX);
-    }
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    handleDragEnd();
-  };
-
-  // Better global mouse events
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
-        handleDragMove(e.clientX);
-      }
-    };
-
-    const handleGlobalMouseUp = () => {
-      if (isDragging) {
-        handleDragEnd();
-      }
-    };
-
-    if (isDragging) {
-      document.addEventListener('mousemove', handleGlobalMouseMove, { passive: true });
-      document.addEventListener('mouseup', handleGlobalMouseUp, { passive: true });
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove);
-      document.removeEventListener('mouseup', handleGlobalMouseUp);
-    };
-  }, [isDragging, startX, dragOffset, velocity]);
-
-  // Cleanup animation on unmount
-  useEffect(() => {
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, []);
-
-  const goToTestimonial = (index: number) => {
-    if (isTransitioning || isDragging || index === currentTestimonial) return;
-    setIsTransitioning(true);
-    setCurrentTestimonial(index);
-    setTimeout(() => setIsTransitioning(false), 200);
-  };
-
-  // Better card styling for mobile
-  const getCardStyle = (index: number) => {
-    const position = index - currentTestimonial;
-    const dragInfluence = dragOffset * 0.2;
-    
-    let translateX = 0;
-    let scale = 1;
-    let opacity = 1;
-    let zIndex = 1;
-    
-    if (position === 0) {
-      translateX = dragOffset;
-      scale = 1 - Math.abs(dragOffset) * 0.0002;
-      opacity = 1 - Math.abs(dragOffset) * 0.001;
-      zIndex = 10;
-    } else if (position === 1 || (position === -2 && testimonials.length === 3)) {
-      translateX = 220 + dragInfluence;
-      scale = 0.95;
-      opacity = 0.8;
-      zIndex = 5;
-    } else if (position === -1 || (position === 2 && testimonials.length === 3)) {
-      translateX = -220 + dragInfluence;
-      scale = 0.95;
-      opacity = 0.8;
-      zIndex = 5;
-    } else {
-      translateX = position > 0 ? 300 : -300;
-      scale = 0.9;
-      opacity = 0.6;
-      zIndex = 1;
-    }
-    
-    return {
-      transform: `translateX(${translateX}px) scale(${scale})`,
-      opacity: Math.max(0.3, opacity),
-      zIndex,
-      transition: isDragging ? 'none' : 'all 0.25s ease-out',
-    };
-  };
-
-  if (!isVisible) {
-    return (
-      <section 
-        ref={sectionRef}
-        className="mt-16 sm:mt-20 w-full max-w-5xl mx-auto px-4 h-96"
-      >
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center text-gray-500">
-            <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-2"></div>
-            <p className="text-sm">Carregando depoimentos...</p>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className="mt-16 sm:mt-20 w-full max-w-5xl mx-auto px-4 animate-fadeInUp animation-delay-1200">
-      {/* Section Header */}
-      <div className="text-center mb-4">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-2">
-          <span className="block">No Filters.</span>
-          <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
-            Just Real Results.
-          </span>
-        </h2>
-        <p className="text-lg sm:text-xl text-blue-700 font-semibold">
-          What Real Men Are Saying About BlueDrops
-        </p>
-      </div>
-
-      {/* Drag Instructions */}
-      <div className="text-center mb-4">
-        <p className="text-sm text-blue-600 font-medium">
-          👆 Drag to navigate between testimonials
-        </p>
-      </div>
-
-      {/* Slideshow Container - Better mobile support */}
-      <div 
-        className="relative h-[500px] mb-3"
-        style={{ 
-          perspective: '800px',
-          touchAction: 'manipulation'
-        }}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Testimonial Cards */}
-        {testimonials.map((testimonial, index) => (
-          <div
-            key={testimonial.id}
-            className="absolute inset-0 flex items-center justify-center select-none"
-            style={getCardStyle(index)}
-          >
-            <TestimonialCard 
-              testimonial={testimonial} 
-              isActive={index === currentTestimonial}
-              isDragging={isDragging}
-              pageType={pageType}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Navigation Controls */}
-      <div className="flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          {testimonials.map((testimonial, index) => (
-            <button
-              key={testimonial.id}
-              onClick={() => goToTestimonial(index)}
-              disabled={isTransitioning || isDragging}
-              className={`w-10 h-10 rounded-full font-bold text-sm transition-all duration-300 disabled:cursor-not-allowed ${
-                index === currentTestimonial
-                  ? 'bg-blue-600 text-white shadow-lg scale-110'
-                  : 'bg-blue-100 text-blue-600 hover:bg-blue-200 hover:scale-105'
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// ✅ COMPLETELY REIMPLEMENTED: TestimonialCard with EXACT SAME structure as DoctorsSection
-const TestimonialCard: React.FC<{ 
-  testimonial: any; 
-  isActive: boolean; 
-  isDragging: boolean;
-  pageType?: 'main' | 'upsell';
-}> = ({ 
-  testimonial, 
-  isActive, 
-  isDragging,
-  pageType = 'main'
-}) => {
-  const [videoLoaded, setVideoLoaded] = useState(false);
-
-  // ✅ FIXED: Use EXACT SAME injection method as DoctorsSection
-  useEffect(() => {
-    if (isActive) {
-      console.log('🎬 Injecting TESTIMONIAL VTurb for:', testimonial.name, 'VideoID:', testimonial.videoId);
-      
-      const injectTestimonialVideo = () => {
-        // ✅ UPDATED: Different logic for upsell pages
-        if (pageType === 'main' && !window.vslVideoLoaded) {
-          console.log('⏳ Waiting for main video to load before injecting testimonial video');
-          setTimeout(injectTestimonialVideo, 2000);
-          return;
-        } else if (pageType === 'upsell') {
-          // ✅ NEW: For upsell pages, wait a bit longer to avoid conflicts
-          console.log('🎬 Upsell page: Injecting testimonial video with delay');
-        }
-
-        // Remove any existing script first
-        const scriptId = `scr_testimonial_${testimonial.videoId}_${pageType}`;
-        const existingScript = document.getElementById(scriptId);
-        if (existingScript) {
-          try {
-            existingScript.remove();
-          } catch (error) {
-            console.error('Error removing existing testimonial script:', error);
-          }
-        }
-
-        // ✅ CRITICAL: Ensure container exists and is properly isolated BEFORE injecting script
-        const containerId = `vid-${testimonial.videoId}-${pageType}`;
-        const targetContainer = document.getElementById(containerId);
-        if (!targetContainer) {
-          console.error('❌ Target container not found for video:', containerId);
-          return;
-        }
-
-        // ✅ Setup container isolation and positioning - EXACT SAME as DoctorsSection
-        targetContainer.style.position = 'absolute';
-        targetContainer.style.top = '0';
-        targetContainer.style.left = '0';
-        targetContainer.style.width = '100%';
-        targetContainer.style.height = '100%';
-        targetContainer.style.zIndex = '20';
-        targetContainer.style.overflow = 'hidden';
-        targetContainer.style.borderRadius = '0.75rem';
-        targetContainer.style.isolation = 'isolate';
-        targetContainer.innerHTML = ''; // ✅ Clear any existing content
-
-        // ✅ EXACT SAME HTML structure as DoctorsSection
-        targetContainer.innerHTML = `
-          <div id="vid_${testimonial.videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
-            <img id="thumb_${testimonial.videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${testimonial.videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
-            <div id="backdrop_${testimonial.videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
-          </div>
-          <style>
-            .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0;}
-          </style>
-        `;
-
-        // ✅ EXACT SAME script injection as DoctorsSection
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.id = `scr_testimonial_${testimonial.videoId}`;
-        script.async = true;
-        script.defer = true;
-        
-        // ✅ EXACT SAME script content as DoctorsSection
-        script.innerHTML = `
-          (function() {
-            try {
-              console.log('🎬 Loading testimonial video: ${testimonial.videoId}');
-              
-              var s = document.createElement("script");
-              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${testimonial.videoId}/player.js";
-              s.async = true;
-              
-              s.onload = function() {
-                console.log('✅ VTurb testimonial video loaded: ${testimonial.videoId}');
-                
-                // ✅ NEW: Auto-play video after load with multiple fallbacks
-                setTimeout(function() {
-                  try {
-                    // Method 1: Try smartplayer instance
-                    if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances['${testimonial.videoId}']) {
-                      var player = window.smartplayer.instances['${testimonial.videoId}'];
-                      if (player && player.play) {
-                        player.play();
-                        console.log('✅ Auto-play via smartplayer for testimonial: ${testimonial.videoId}');
-                        return;
-                      }
-                    }
-                    
-                    // Method 2: Try video element directly
-                    var videoElement = document.querySelector('#vid_${testimonial.videoId} video');
-                    if (videoElement && videoElement.play) {
-                      videoElement.play().then(function() {
-                        console.log('✅ Auto-play via video element for testimonial: ${testimonial.videoId}');
-                      }).catch(function(error) {
-                        console.log('⚠️ Auto-play blocked by browser for testimonial: ${testimonial.videoId}', error);
-                        
-                        // Method 3: Try clicking the container as fallback
-                        var container = document.getElementById('vid_${testimonial.videoId}');
-                        if (container) {
-                          container.click();
-                          console.log('✅ Auto-play via container click for testimonial: ${testimonial.videoId}');
-                        }
-                      });
-                    } else {
-                      // Method 4: Try clicking the container directly
-                      var container = document.getElementById('vid_${testimonial.videoId}');
-                      if (container) {
-                        container.click();
-                        console.log('✅ Auto-play via direct container click for testimonial: ${testimonial.videoId}');
-                      }
-                    }
-                  } catch (error) {
-                    console.log('⚠️ Auto-play failed for testimonial: ${testimonial.videoId}', error);
-                  }
-                }, 3000); // Wait 3 seconds for video to fully load
-                
-                // ✅ FIXED: Ensure video elements stay in correct container
-                setTimeout(function() {
-                  // ✅ CRITICAL: Prevent video from appearing in main video container
-                  var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
-                  var testimonialContainer = document.getElementById('vid-${testimonial.videoId}');
-                  
-                  if (mainVideoContainer && testimonialContainer) {
-                    // ✅ Move any testimonial video elements that ended up in main container
-                    var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${testimonial.videoId}"], [data-video-id="${testimonial.videoId}"]');
-                    orphanedElements.forEach(function(element) {
-                      if (element.parentNode === mainVideoContainer) {
-                        testimonialContainer.appendChild(element);
-                        console.log('🔄 Moved testimonial video element back to correct container');
-                      }
-                    });
-                  }
-                  
-                }, 2000);
-                window.testimonialVideoLoaded_${testimonial.videoId}_${pageType} = true;
-              };
-              s.onerror = function() {
-                console.error('❌ Failed to load VTurb testimonial video: ${testimonial.videoId}');
-                // ✅ FIXED: Set as loaded even on error to prevent infinite loading
-                window.testimonialVideoLoaded_${testimonial.videoId}_${pageType} = true;
-              };
-              document.head.appendChild(s);
-            } catch (error) {
-              console.error('Error injecting testimonial video script:', error);
-            }
-          })();
-        `;
-        
-        document.head.appendChild(script);
-        console.log('✅ Testimonial VTurb script injected for:', testimonial.name);
-
-        // Check for video load status
-        setTimeout(() => {
-          if ((window as any)[`testimonialVideoLoaded_${testimonial.videoId}_${pageType}`]) {
-            setVideoLoaded(true);
-            console.log('✅ Testimonial video loaded for:', testimonial.name);
-                  var testimonialContainer = document.getElementById('vid-${testimonial.videoId}-${pageType}');
-          } else {
-            console.log('⚠️ Testimonial video not loaded yet, will retry...');
-            // Retry once if not loaded
-            setTimeout(() => injectTestimonialVideo(), 2000);
-          }
-        }, 5000);
-      };
-      
-      // ✅ UPDATED: Different timing for upsell pages
-      if (pageType === 'upsell') {
-        // Wait longer on upsell pages to avoid conflicts
-        setTimeout(injectTestimonialVideo, 3000);
-      } else {
-        // Immediate injection on main page
-        injectTestimonialVideo();
-      }
-    }
-
-    // Cleanup when card becomes inactive
-    return () => {
-      if (!isActive) {
-        // Clean up scripts when switching testimonials
-        const scriptId = `scr_testimonial_${testimonial.videoId}_${pageType}`;
-        const script = document.getElementById(scriptId);
-        if (script) {
-          try {
-            script.remove();
-            console.log('🧹 Cleaned up testimonial script for:', testimonial.name);
-          } catch (error) {
-            console.error('Error removing testimonial script:', error);
-          }
-        }
-        
-        setVideoLoaded(false);
-      }
-    };
-  }, [isActive, testimonial.videoId, testimonial.name, pageType]);
-
-  return (
-    <div className={`bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200 hover:bg-white/95 transition-all duration-300 max-w-md w-full mx-4 ${
-      isDragging ? 'shadow-2xl' : 'shadow-lg'
-    } ${isActive ? 'ring-2 ring-blue-300' : ''}`}>
-      
-      {/* Customer Info - Photo + Name Side by Side */}
-      <div className="flex items-center gap-4 mb-4">
-        <img 
-          src={testimonial.profileImage}
-          alt={testimonial.name}
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-blue-300 flex-shrink-0 shadow-lg"
-          draggable={false}
-          loading="lazy"
-        />
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg sm:text-xl font-bold text-blue-900 leading-tight mb-1">
-            {testimonial.name}
-          </h3>
-          <p className="text-sm sm:text-base text-blue-700 font-medium leading-tight mb-2">
-            {testimonial.location}
-          </p>
-          <div className="inline-flex">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
-              <CheckCircle className="w-3 h-3" />
-              <span className="text-xs font-bold">VERIFIED</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Customer Testimonial Quote */}
-      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 mb-4 border border-blue-100">
-        <p className="text-sm sm:text-base text-blue-800 leading-relaxed italic">
-          "{testimonial.caption}"
-        </p>
-      </div>
-
-      {/* ✅ EXACT SAME video container structure as DoctorsSection */}
-      {isActive && (
-        <div className="mb-4">
-          <div 
-            className="aspect-video rounded-xl overflow-hidden shadow-lg bg-black relative" 
-            style={{ 
-              isolation: 'isolate',
-              contain: 'layout style paint',
-              backgroundColor: '#000000' // ✅ FIXED: Ensure black background to prevent white flashes
-            }}
-          >
-            {/* ✅ Container with maximum isolation - EXACT SAME as DoctorsSection */}
-            <div
-              id={`vid-${testimonial.videoId}-${pageType}`}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                zIndex: 20,
-                overflow: 'hidden',
-                borderRadius: '0.75rem',
-                isolation: 'isolate',
-                contain: 'layout style paint size',
-                backgroundColor: 'transparent' // ✅ FIXED: Transparent to show video properly
-              }}
-            ></div>
-            
-            {/* ✅ Placeholder - Only show while loading */}
-            {/* ✅ FIXED: Show loading state only while video is loading */}
-            {!videoLoaded && (
-              <div 
-                className="absolute inset-0 bg-black flex items-center justify-center"
-                style={{ zIndex: 15 }}
-              >
-                <div className="text-center">
-                  <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mb-2"></div>
-                  <p className="text-white/70 text-xs">Loading video...</p>
-                </div>
+          {/* ✅ Footer Warning - Only show after 2min41s */}
+          {(showPurchaseSection || isBoltEnvironment) && (
+          <footer className="text-center text-orange-700 animate-fadeInUp animation-delay-1000">
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-orange-200">
+              <div className="bg-red-500 text-white px-3 py-1.5 rounded-lg inline-block mb-2">
+                <span className="font-bold text-xs sm:text-sm">🔴 FINAL WARNING</span>
               </div>
-            )}
-          </div>
-        </div>
-      )}
+              <p className="text-xs sm:text-sm font-bold text-red-600 mb-1">
+                Once this page closes, this testosterone offer disappears forever.
+              </p>
+              <p className="text-xs opacity-70">
+                This is your only chance to add Ignite to your order
+              </p>
+            </div>
+          </footer>
+          )}
 
-      {/* Rating */}
-      <div className="flex items-center justify-center gap-1">
-        {[...Array(5)].map((_, i) => (
-          <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
-        ))}
-        <span className="ml-1 text-gray-600 text-sm font-medium">5.0</span>
+        </div>
       </div>
     </div>
   );
