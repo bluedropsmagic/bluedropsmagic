@@ -220,6 +220,78 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
     };
   }, [variant]);
 
+  // ✅ NEW: Inject testimonial videos for second upsell
+  useEffect(() => {
+    if (showPurchaseSection || isBoltEnvironment) {
+      const testimonialVideos = [
+        { id: 'daniel', videoId: '687c9e4e7d725bff283cc099' },
+        { id: 'marcus', videoId: '687c9e611dd0489c9a8ab751' },
+        { id: 'rick', videoId: '687c9e49886aa48cc3165615' }
+      ];
+
+      testimonialVideos.forEach(({ id, videoId }) => {
+        setTimeout(() => {
+          console.log(`🎬 Injecting testimonial video for ${id}: ${videoId}`);
+          
+          // Remove existing script if any
+          const existingScript = document.getElementById(`scr_testimonial_${videoId}`);
+          if (existingScript) {
+            existingScript.remove();
+          }
+
+          // Create the vturb-smartplayer element
+          const playerContainer = document.getElementById(`testimonial-video-${id}`);
+          if (playerContainer) {
+            playerContainer.innerHTML = `
+              <vturb-smartplayer 
+                id="vid-${videoId}" 
+                style="display: block; margin: 0 auto; width: 100%;"
+              ></vturb-smartplayer>
+            `;
+
+            // Inject the script
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.id = `scr_testimonial_${videoId}`;
+            script.async = true;
+            script.innerHTML = `
+              (function() {
+                try {
+                  console.log('🎬 Loading testimonial VTurb video: ${videoId}');
+                  var s = document.createElement("script");
+                  s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
+                  s.async = true;
+                  s.onload = function() {
+                    console.log('✅ Testimonial VTurb video loaded: ${videoId}');
+                  };
+                  s.onerror = function() {
+                    console.error('❌ Failed to load testimonial VTurb video: ${videoId}');
+                  };
+                  document.head.appendChild(s);
+                } catch (error) {
+                  console.error('Error injecting testimonial VTurb script:', error);
+                }
+              })();
+            `;
+            
+            document.head.appendChild(script);
+            console.log(`✅ Testimonial VTurb script injected for ${id}`);
+          }
+        }, 1000 * (testimonialVideos.findIndex(v => v.id === id) + 1)); // Stagger injection
+      });
+
+      // Cleanup on unmount
+      return () => {
+        testimonialVideos.forEach(({ videoId }) => {
+          const scriptToRemove = document.getElementById(`scr_testimonial_${videoId}`);
+          if (scriptToRemove) {
+            scriptToRemove.remove();
+          }
+        });
+      };
+    }
+  }, [showPurchaseSection, isBoltEnvironment]);
+
   const getSecondUpsellContent = (variant: string): SecondUpsellContent => {
     const contents = {
       'up2-1bt': {
@@ -635,6 +707,107 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
           {/* Footer Warning - Only show after 2min41s */}
           {(showPurchaseSection || isBoltEnvironment) && (
           <footer className="text-center text-orange-700 animate-fadeInUp animation-delay-1000">
+            {/* ✅ NEW: Custom Testimonials Section for Second Upsell */}
+            <div className="mb-8 animate-fadeInUp animation-delay-1100">
+              <div className="text-center mb-6">
+                <h3 className="text-2xl sm:text-3xl font-black text-orange-900 mb-2">
+                  Real Men. Real Results.
+                </h3>
+                <p className="text-lg text-orange-700 font-semibold">
+                  What Happens When You Add Testosterone Support
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {/* Testimonial 1 - Daniel Carter */}
+                <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-orange-200 shadow-lg">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">🎤</span>
+                    <div>
+                      <h4 className="font-bold text-orange-900">Daniel Carter</h4>
+                      <p className="text-sm text-orange-700">Austin, TX</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-orange-800 italic mb-4 leading-relaxed">
+                    "First week on Ignite and I stopped snoozing my alarm. By week three, my wife thought I'd had work done — turns out I just got my testosterone back."
+                  </p>
+                  
+                  <div className="aspect-video rounded-lg overflow-hidden shadow-md bg-gray-900">
+                    <div
+                      id="testimonial-video-daniel"
+                      className="w-full h-full"
+                      style={{
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%'
+                      }}
+                    >
+                      {/* VTurb player will be injected here */}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Testimonial 2 - Marcus Reed */}
+                <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-orange-200 shadow-lg">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">🎤</span>
+                    <div>
+                      <h4 className="font-bold text-orange-900">Marcus Reed</h4>
+                      <p className="text-sm text-orange-700">Atlanta, GA</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-orange-800 italic mb-4 leading-relaxed">
+                    "I wasn't expecting this… but people started treating me differently. More respect, more attention — even my wife noticed I was walking taller."
+                  </p>
+                  
+                  <div className="aspect-video rounded-lg overflow-hidden shadow-md bg-gray-900">
+                    <div
+                      id="testimonial-video-marcus"
+                      className="w-full h-full"
+                      style={{
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%'
+                      }}
+                    >
+                      {/* VTurb player will be injected here */}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Testimonial 3 - Rick Alvarez */}
+                <div className="bg-white/40 backdrop-blur-sm rounded-xl p-4 border border-orange-200 shadow-lg">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">🎤</span>
+                    <div>
+                      <h4 className="font-bold text-orange-900">Rick Alvarez</h4>
+                      <p className="text-sm text-orange-700">San Diego, CA</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-orange-800 italic mb-4 leading-relaxed">
+                    "I'm 47 and haven't felt this alive in years. The drive is back, the confidence is back… I honestly feel unstoppable again."
+                  </p>
+                  
+                  <div className="aspect-video rounded-lg overflow-hidden shadow-md bg-gray-900">
+                    <div
+                      id="testimonial-video-rick"
+                      className="w-full h-full"
+                      style={{
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%'
+                      }}
+                    >
+                      {/* VTurb player will be injected here */}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-orange-200">
               <div className="bg-red-500 text-white px-3 py-1.5 rounded-lg inline-block mb-2">
                 <span className="font-bold text-xs sm:text-sm">🔴 FINAL WARNING</span>
