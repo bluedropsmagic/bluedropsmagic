@@ -61,15 +61,61 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       console.log('⏰ 1min32s elapsed - showing email section');
       setShowEmailSection(true);
       
+      // ✅ NEW: Auto-scroll to email section
+      setTimeout(() => {
+        const emailSection = document.querySelector('section:has([class*="Email Received"])')
+          || document.querySelector('[class*="bg-white backdrop-blur-sm rounded-2xl"]')
+          || document.getElementById('email-section');
+        
+        if (emailSection) {
+          emailSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+          });
+          console.log('📍 Auto-scrolled to email section');
+        }
+      }, 500); // Small delay to ensure section is rendered
+      
       // Show second video 10 seconds after email appears
       setTimeout(() => {
         console.log('⏰ Showing second video after email');
         setShowSecondVideo(true);
         
+        // ✅ NEW: Auto-scroll to second video
+        setTimeout(() => {
+          const secondVideoSection = document.getElementById('second-video-container');
+          if (secondVideoSection) {
+            secondVideoSection.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'nearest'
+            });
+            console.log('📍 Auto-scrolled to second video');
+          }
+        }, 1000); // Wait for video to render
+        
         // Show purchase buttons 1min13s after second video appears
         setTimeout(() => {
           console.log('⏰ 1min13s after second video - showing purchase buttons');
           setShowPurchaseButtons(true);
+          
+          // ✅ NEW: Auto-scroll to purchase buttons
+          setTimeout(() => {
+            const purchaseSection = document.getElementById('purchase-section')
+              || document.querySelector('[data-purchase-section="true"]')
+              || document.querySelector('.checkout-button');
+            
+            if (purchaseSection) {
+              purchaseSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'nearest'
+              });
+              console.log('📍 Auto-scrolled to purchase buttons');
+            }
+          }, 800); // Wait for buttons to render
+          
         }, 73000); // 1min13s = 73 seconds
         
       }, 10000);
@@ -408,7 +454,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
 
           {/* Email Section - Only show after 1min32s */}
           {showEmailSection && (
-          <section className="mb-6 animate-fadeInUp">
+          <section id="email-section" className="mb-6 animate-fadeInUp">
             <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200 shadow-lg">
               {/* Email Header */}
               <div className="bg-gray-100 rounded-lg p-3 mb-4 border border-gray-200">
@@ -441,7 +487,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
 
           {/* Second VTurb Video Section - Only show after email appears */}
           {showSecondVideo && (
-          <div className="mb-6 animate-fadeInUp">
+          <div id="second-video-section" className="mb-6 animate-fadeInUp">
             <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
               <div
                 id="second-video-container"
@@ -460,7 +506,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
 
           {/* Main Offer */}
           {showPurchaseButtons && (
-          <div className="mb-6 relative animate-fadeInUp animation-delay-1100">
+          <div id="purchase-section" data-purchase-section="true" className="mb-6 relative animate-fadeInUp animation-delay-1100">
             {/* TODAY ONLY Tag */}
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
               <div className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
