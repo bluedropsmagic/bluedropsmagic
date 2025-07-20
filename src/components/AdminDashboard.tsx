@@ -6,6 +6,7 @@ import { ConversionFunnel } from './ConversionFunnel';
 import { ConversionHeatmap } from './ConversionHeatmap';
 import { TrackingTestPanel } from './TrackingTestPanel';
 import { ManelChart } from './ManelChart';
+import { UpsellDownsellSessions } from './UpsellDownsellSessions';
 import { RedTrackTestPanel } from './RedTrackTestPanel';
 import { BoltNavigation } from './BoltNavigation';
 import { AdminTestingEnvironment } from './AdminTestingEnvironment';
@@ -863,6 +864,11 @@ export const AdminDashboard: React.FC = () => {
               {/* ✅ NEW: Manel Chart - Only shows with 5+ sales */}
               <div className="mb-4 sm:mb-8">
                 <ManelChart />
+              </div>
+
+              {/* Upsell & Downsell Sessions */}
+              <div className="mb-4 sm:mb-8">
+                <UpsellDownsellSessions />
               </div>
 
               {/* Stats Grid - Mobile optimized */}
