@@ -44,6 +44,67 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       console.log('🔧 Bolt environment detected on downsell page - all content visible');
     }
   }, []);
+
+  // ✅ NEW: Inject VTurb script for downsell video
+  useEffect(() => {
+    const videoId = '687c72f603cd186056ea5d15';
+    
+    console.log('🎬 Injecting VTurb for downsell video:', videoId);
+    
+    // Remove existing script if any
+    const existingScript = document.getElementById(`scr_${videoId}`);
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Create the vturb-smartplayer element
+    const playerContainer = document.getElementById('downsell-video-container');
+    if (playerContainer) {
+      playerContainer.innerHTML = `
+        <vturb-smartplayer 
+          id="vid-${videoId}" 
+          style="display: block; margin: 0 auto; width: 100%;"
+        ></vturb-smartplayer>
+      `;
+
+      // Inject the script
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.id = `scr_${videoId}`;
+      script.async = true;
+      script.innerHTML = `
+        (function() {
+          try {
+            console.log('🎬 Loading downsell VTurb video: ${videoId}');
+            var s = document.createElement("script");
+            s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
+            s.async = true;
+            s.onload = function() {
+              console.log('✅ Downsell VTurb video loaded: ${videoId}');
+            };
+            s.onerror = function() {
+              console.error('❌ Failed to load downsell VTurb video: ${videoId}');
+            };
+            document.head.appendChild(s);
+          } catch (error) {
+            console.error('Error injecting downsell VTurb script:', error);
+          }
+        })();
+      `;
+      
+      document.head.appendChild(script);
+      console.log('✅ VTurb script injected for downsell video');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      const scriptToRemove = document.getElementById(`scr_${videoId}`);
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, []);
+
   // ✅ Ensure no Hotjar on downsell pages
   useEffect(() => {
     const existingHotjar = document.querySelectorAll('script[src*="hotjar"]');
