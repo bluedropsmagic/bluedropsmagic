@@ -130,10 +130,10 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     // ✅ UPDATED: Use specific video ID based on variant
     const getVideoId = (variant: string) => {
       switch (variant) {
-        case 'dws1': return '687c7957886aa48cc3163f77'; // For 1-bottle buyers - FIRST video
-        case 'dws2': return '687c7957886aa48cc3163f77'; // For 3-bottle buyers - FIRST video
-        case 'dw3': return '687c7957886aa48cc3163f77';  // For 6-bottle buyers - FIRST video
-        default: return '687c7957886aa48cc3163f77';
+        case 'dws1': return '687c72f603cd186056ea5d15'; // For 1-bottle buyers - FIRST video
+        case 'dws2': return '687c72f603cd186056ea5d15'; // For 3-bottle buyers - FIRST video
+        case 'dw3': return '687c72f603cd186056ea5d15';  // For 6-bottle buyers - FIRST video
+        default: return '687c72f603cd186056ea5d15';
       }
     };
     
