@@ -433,6 +433,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           )}
 
           {/* Main Offer */}
+          {showPurchaseButtons && (
           <div className="mb-6 relative animate-fadeInUp animation-delay-1100">
             {/* TODAY ONLY Tag */}
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
@@ -533,8 +534,10 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </div>
+          )}
 
           {/* Lab Discount Message */}
+          {showPurchaseButtons && (
           <section className="text-center mb-6 animate-fadeInUp animation-delay-1200">
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <p className="text-blue-800 font-bold text-sm sm:text-base">
@@ -542,8 +545,10 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </p>
             </div>
           </section>
+          )}
 
           {/* Extra Benefits Intro */}
+          {showPurchaseButtons && (
           <section className="text-center mb-6 animate-fadeInUp animation-delay-1300">
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
               <p className="text-blue-800 text-sm sm:text-base">
@@ -551,8 +556,10 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </p>
             </div>
           </section>
+          )}
 
           {/* Testimonials */}
+          {showPurchaseButtons && (
           <section className="mb-6 animate-fadeInUp animation-delay-1400">
             {/* Tristan Hayes */}
             <div className="bg-white backdrop-blur-sm rounded-2xl p-4 border border-blue-200 shadow-lg mb-4">
@@ -602,8 +609,10 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </section>
+          )}
 
           {/* Final Call to Action */}
+          {showPurchaseButtons && (
           <section className="text-center mb-6 animate-fadeInUp animation-delay-1500">
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
               <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
@@ -617,8 +626,10 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </p>
             </div>
           </section>
+          )}
 
           {/* Final Offer Repeat */}
+          {showPurchaseButtons && (
           <div className="mb-6 relative animate-fadeInUp animation-delay-1600">
             <div className="relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 rounded-2xl blur-lg opacity-60 animate-pulse"></div>
@@ -644,16 +655,20 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </div>
+          )}
 
           {/* Closing Message */}
+          {showPurchaseButtons && (
           <section className="text-center mb-6 animate-fadeInUp animation-delay-1700">
             <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
               <p className="text-blue-800 text-sm sm:text-base mb-1">I'll leave it here.</p>
               <p className="text-blue-600 font-medium text-sm sm:text-base">Take care!</p>
             </div>
           </section>
+          )}
 
           {/* Reject Button */}
+          {showPurchaseButtons && (
           <div className="mb-6 animate-fadeInUp animation-delay-1800">
             <button 
               onClick={handleReject}
@@ -662,6 +677,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               <span className="text-xs sm:text-sm font-medium">No, thanks. I'll miss out.</span>
             </button>
           </div>
+          )}
 
         </div>
       </div>
