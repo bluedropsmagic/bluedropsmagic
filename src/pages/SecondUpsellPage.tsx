@@ -312,7 +312,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
         productImage: 'https://i.imgur.com/MKvvyGH.png',
         acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
-        videoId: '687c8357a159330096eff21e' // Placeholder video ID
+        videoId: '687ca4ac03cd186056ea7c06' // Main video for second upsell
       },
       'upig3bt': {
         offer: {
@@ -332,7 +332,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
         productImage: 'https://i.imgur.com/MKvvyGH.png',
         acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
-        videoId: '687c7e662a38c6be43a1fc6e' // Placeholder video ID
+        videoId: '687ca4ac03cd186056ea7c06' // Main video for second upsell
       },
       'upig6bt': {
         offer: {
@@ -352,7 +352,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
         productImage: 'https://i.imgur.com/MKvvyGH.png',
         acceptButtonText: 'YES — ADD THIS TESTOSTERONE SUPPORT TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
-        videoId: '687c83476137406f142b1e81' // Placeholder video ID
+        videoId: '687ca4ac03cd186056ea7c06' // Main video for second upsell
       }
     };
 
