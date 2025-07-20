@@ -138,7 +138,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
     }
     
     const timer = setTimeout(() => {
-      console.log('⏰ 2min41s elapsed - showing purchase section');
+      console.log('⏰ 2min16s elapsed - showing purchase section');
       setShowPurchaseSection(true);
       
       // Auto-scroll to purchase section
@@ -154,7 +154,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
         }
       }, 500);
       
-    }, 161000); // 2min41s = 161 seconds = 161,000 milliseconds
+    }, 136000); // 2min16s = 136 seconds = 136,000 milliseconds
     
     return () => clearTimeout(timer);
   }, [isBoltEnvironment]);
