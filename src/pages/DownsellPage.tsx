@@ -27,7 +27,23 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const [searchParams] = useSearchParams();
   const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
+  const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
 
+  // ✅ NEW: Detect Bolt environment
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    const isBolt = hostname.includes('stackblitz') || 
+                   hostname.includes('bolt.new') ||
+                   hostname.includes('webcontainer') ||
+                   hostname.includes('localhost') ||
+                   hostname.includes('127.0.0.1');
+    
+    setIsBoltEnvironment(isBolt);
+    
+    if (isBolt) {
+      console.log('🔧 Bolt environment detected on downsell page - all content visible');
+    }
+  }, []);
   // ✅ Ensure no Hotjar on downsell pages
   useEffect(() => {
     const existingHotjar = document.querySelectorAll('script[src*="hotjar"]');
@@ -154,6 +170,15 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50">
       {/* Bolt Navigation */}
       <BoltNavigation />
+      
+      {/* ✅ NEW: Bolt Environment Indicator */}
+      {isBoltEnvironment && (
+        <div className="fixed top-4 right-4 z-40">
+          <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
+            🔧 BOLT MODE: All Content Visible
+          </div>
+        </div>
+      )}
       
       {/* Fixed Red Alert Banner */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 shadow-lg">

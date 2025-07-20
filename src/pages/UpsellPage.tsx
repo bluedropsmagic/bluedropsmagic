@@ -36,6 +36,24 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
   const [showPurchaseSection, setShowPurchaseSection] = useState(false);
+  const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
+
+  // ✅ NEW: Detect Bolt environment
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    const isBolt = hostname.includes('stackblitz') || 
+                   hostname.includes('bolt.new') ||
+                   hostname.includes('webcontainer') ||
+                   hostname.includes('localhost') ||
+                   hostname.includes('127.0.0.1');
+    
+    setIsBoltEnvironment(isBolt);
+    
+    if (isBolt) {
+      console.log('🔧 Bolt environment detected on upsell page - showing all content immediately');
+      setShowPurchaseSection(true);
+    }
+  }, []);
 
   // ✅ NEW: Inject Hotjar for upsell pages
   useEffect(() => {
@@ -112,6 +130,13 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
   // ✅ NEW: Show purchase section after 2min41s (161 seconds)
   useEffect(() => {
+    // Skip timer in Bolt environment - show content immediately
+    if (isBoltEnvironment) {
+      console.log('🔧 Bolt environment - showing purchase section immediately');
+      setShowPurchaseSection(true);
+      return;
+    }
+    
     const timer = setTimeout(() => {
       console.log('⏰ 2min41s elapsed - showing purchase section');
       setShowPurchaseSection(true);
@@ -132,7 +157,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
     }, 161000); // 2min41s = 161 seconds = 161,000 milliseconds
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [isBoltEnvironment]);
 
   // ✅ NEW: Inject VTurb script based on variant
   useEffect(() => {
@@ -301,6 +326,15 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
       {/* Bolt Navigation */}
       <BoltNavigation />
       
+      {/* ✅ NEW: Bolt Environment Indicator */}
+      {isBoltEnvironment && (
+        <div className="fixed top-4 right-4 z-40">
+          <div className="bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
+            🔧 BOLT MODE: All Content Visible
+          </div>
+        </div>
+      )}
+      
       {/* Fixed Red Alert Banner */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 shadow-lg">
         <div className="flex items-center justify-center gap-2">
@@ -385,7 +419,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           </div>
 
           {/* ✅ Purchase Section - Only show after 2min41s */}
-          {showPurchaseSection && (
+          {(showPurchaseSection || isBoltEnvironment) && (
           <div 
             id="purchase-section"
             className="mb-6 relative animate-fadeInUp animation-delay-800"
@@ -503,7 +537,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           )}
 
           {/* ✅ Reject Button - Only show after 2min41s */}
-          {showPurchaseSection && (
+          {(showPurchaseSection || isBoltEnvironment) && (
           <div className="mb-6 animate-fadeInUp animation-delay-900">
             <button 
               onClick={handleReject}
@@ -515,14 +549,14 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           )}
 
           {/* ✅ NEW: Testimonials Section - Only show after purchase section appears */}
-          {showPurchaseSection && (
+          {(showPurchaseSection || isBoltEnvironment) && (
           <div className="mb-6 animate-fadeInUp animation-delay-1100">
             <TestimonialsSection />
           </div>
           )}
 
           {/* ✅ Footer Warning - Only show after 2min41s */}
-          {showPurchaseSection && (
+          {(showPurchaseSection || isBoltEnvironment) && (
           <footer className="text-center text-blue-700 animate-fadeInUp animation-delay-1000">
             <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
               <div className="bg-red-500 text-white px-3 py-1.5 rounded-lg inline-block mb-2">
