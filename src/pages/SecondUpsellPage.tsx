@@ -571,6 +571,15 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                     We don't have data on how people will react to such high testosterone levels
                   </p>
                   
+                  <div className="bg-red-500/30 backdrop-blur-sm rounded-lg p-3 border border-red-300/40 mb-3">
+                    <p className="text-white text-sm sm:text-base font-bold">
+                      🔥 6 BOTTLES — $49 per bottle
+                    </p>
+                    <p className="text-red-100 text-xs sm:text-sm">
+                      $294 total — Maximum testosterone support
+                    </p>
+                  </div>
+                  
                   <div className="bg-red-500/30 backdrop-blur-sm rounded-lg p-3 border border-red-300/40 mb-4">
                     <p className="text-white text-xs sm:text-sm font-bold">
                       🚨 YOU MAY RECEIVE UNWANTED ATTENTION
