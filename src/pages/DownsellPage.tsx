@@ -85,9 +85,9 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     const getVideoId = (variant: string) => {
       switch (variant) {
         case 'dws1': return '687c8357a159330096eff21e'; // For 1-bottle buyers
-        case 'dws2': return '687c72f603cd186056ea5d15'; // For 3-bottle buyers  
-        case 'dw3': return '687c72f603cd186056ea5d15';  // For 6-bottle buyers
-        default: return '687c72f603cd186056ea5d15';
+        case 'dws2': return '687c7e662a38c6be43a1fc6e'; // For 3-bottle buyers  
+        case 'dw3': return '687c83476137406f142b1e81';  // For 6-bottle buyers
+        default: return '687c8357a159330096eff21e';
       }
     };
     
@@ -257,42 +257,42 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     const contents = {
       'dws1': {
         productType: 'COMPLETE YOUR TREATMENT',
-        priceText: '$39 per bottle',
+        priceText: '$23 per bottle',
         subscriptionText: 'Add 8 more bottles to your order',
         productImage: 'https://i.imgur.com/2YU6i8f.png', // Same as up1bt
-        savings: 'Save $585 instantly',
+        savings: 'Save $528 instantly',
         description: 'Complete 9-month treatment protocol',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/mWYd5nGjgx?accepted=no',
-        finalOfferText: '👉 Add 8 More Bottles – $39/Bottle',
+        finalOfferText: '👉 Add 8 More Bottles – $23/Bottle',
         bottleCount: '8 more bottles',
-        pricePerBottle: '$39'
+        pricePerBottle: '$23'
       },
       'dws2': {
-        productType: '6 BOTTLE PACKAGE',
-        priceText: '$24 per bottle',
-        subscriptionText: 'When you buy a 6-bottle kit',
-        productImage: 'https://i.postimg.cc/XqFzZmRd/6-bottle.png',
-        savings: 'Save $65 per bottle',
-        description: 'Complete 6-bottle treatment',
+        productType: 'COMPLETE YOUR TREATMENT',
+        priceText: '$23 per bottle',
+        subscriptionText: 'Add 6 more bottles to your order',
+        productImage: 'https://i.imgur.com/2YU6i8f.png', // Same as up3bt
+        savings: 'Save $396 instantly',
+        description: 'Complete 9-month treatment protocol',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=no',
-        finalOfferText: '👉 6 Bottles – $24/Bottle',
-        bottleCount: '6 bottles',
-        pricePerBottle: '$24'
+        finalOfferText: '👉 Add 6 More Bottles – $23/Bottle',
+        bottleCount: '6 more bottles',
+        pricePerBottle: '$23'
       },
       'dw3': {
-        productType: '3 BOTTLE PACKAGE',
-        priceText: '$33 per bottle',
-        subscriptionText: 'When you buy a 3-bottle kit',
-        productImage: 'https://i.postimg.cc/XqFzZmRd/6-bottle.png',
-        savings: 'Save $150 total',
-        description: 'Complete 3-bottle treatment',
+        productType: 'COMPLETE YOUR TREATMENT',
+        priceText: '$23 per bottle',
+        subscriptionText: 'Add 3 more bottles to your order',
+        productImage: 'https://i.imgur.com/2YU6i8f.png', // Same as up6bt
+        savings: 'Save $198 instantly',
+        description: 'Complete 9-month treatment protocol',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dw3?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dw3?accepted=no',
-        finalOfferText: '👉 3 Bottles – $33/Bottle',
-        bottleCount: '3 bottles',
-        pricePerBottle: '$33'
+        finalOfferText: '👉 Add 3 More Bottles – $23/Bottle',
+        bottleCount: '3 more bottles',
+        pricePerBottle: '$23'
       }
     };
 
