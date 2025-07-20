@@ -276,7 +276,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
           paidBottles: '3 MORE BOTTLES'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=yes',
-        rejectUrl: 'https://pagamento.paybluedrops.com/ex-ocu/next-offer/46jLdobjp3?accepted=no',
+        rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176849703:1/thank-you',
         productImage: 'https://i.imgur.com/2YU6i8f.png',
         acceptButtonText: 'CLAIM OFFER',
         rejectButtonText: 'No thanks — I\'ll throw away my progress and risk permanent failure',
