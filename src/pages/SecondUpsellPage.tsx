@@ -564,13 +564,28 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
                 {/* CTA Button */}
                 <div className="relative mb-4">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-400 via-red-500 to-orange-600 rounded-xl blur opacity-75 animate-pulse"></div>
+                  {/* Pulsing ring effects */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-orange-400 via-red-500 to-orange-600 rounded-xl blur-sm opacity-75 animate-pulse"></div>
+                  <div className="absolute -inset-2 bg-gradient-to-r from-orange-300 via-red-400 to-orange-500 rounded-xl blur-md opacity-50 animate-pulse animation-delay-300"></div>
+                  <div className="absolute -inset-3 bg-gradient-to-r from-orange-200 via-red-300 to-orange-400 rounded-xl blur-lg opacity-25 animate-pulse animation-delay-600"></div>
+                  
                   <button 
                     onClick={handleAccept}
-                    className="relative w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                    className="relative w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-2xl text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button animate-bounce"
+                    style={{ 
+                      animationDuration: '2s',
+                      animationIterationCount: 'infinite',
+                      animationTimingFunction: 'ease-in-out'
+                    }}
                   >
                     <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
-                    <span className="relative z-10">{content.acceptButtonText}</span>
+                    
+                    {/* Shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-shimmer"></div>
+                    
+                    <span className="relative z-10 animate-pulse">{content.acceptButtonText}</span>
+                    
+                    {/* Glow effect on hover */}
                     <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
                 </div>
