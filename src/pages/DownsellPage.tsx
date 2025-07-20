@@ -31,6 +31,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const [showEmailSection, setShowEmailSection] = useState(false);
   const [showSecondVideo, setShowSecondVideo] = useState(false);
   const [showPurchaseButtons, setShowPurchaseButtons] = useState(false);
+  const [showRestOfContent, setShowRestOfContent] = useState(false); // ✅ NEW: Control rest of content
 
   // ✅ NEW: Detect Bolt environment
   useEffect(() => {
@@ -48,39 +49,42 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       setShowEmailSection(true);
       setShowSecondVideo(true);
       setShowPurchaseButtons(true);
+      setShowRestOfContent(true);
     }
   }, []);
 
-  // ✅ NEW: Show email section after 1min32s (92 seconds)
+  // ✅ NEW: Show rest of content after 1min30s (90 seconds)
   useEffect(() => {
     if (isBoltEnvironment) return; // Skip timer in Bolt environment
     
-    const emailTimer = setTimeout(() => {
-      console.log('⏰ 1min32s elapsed - showing email section');
+    const contentTimer = setTimeout(() => {
+      console.log('⏰ 1min30s elapsed - showing rest of downsell content');
+      setShowRestOfContent(true);
       setShowEmailSection(true);
+      setShowPurchaseButtons(true);
       
-      // Show second video 10 seconds after email appears
+      // Show second video 10 seconds after content appears
       setTimeout(() => {
-        console.log('⏰ Showing second video after email');
+        console.log('⏰ Showing second video after content');
         setShowSecondVideo(true);
       }, 10000);
       
-    }, 92000); // 1min32s = 92 seconds
+    }, 90000); // 1min30s = 90 seconds
     
-    return () => clearTimeout(emailTimer);
+    return () => clearTimeout(contentTimer);
   }, [isBoltEnvironment]);
 
-  // ✅ NEW: Show purchase buttons after 1min13s (73 seconds)
+  // ✅ NEW: Show email section after 1min32s (92 seconds)
   useEffect(() => {
-    if (isBoltEnvironment) return; // Skip timer in Bolt environment
-    
-    const buttonTimer = setTimeout(() => {
-      console.log('⏰ 1min13s elapsed - showing purchase buttons');
-      setShowPurchaseButtons(true);
-    }, 73000); // 1min13s = 73 seconds
-    
-    return () => clearTimeout(buttonTimer);
-  }, [isBoltEnvironment]);
+    // ✅ REMOVED: Email timing now controlled by showRestOfContent
+    return () => {}; // Empty cleanup
+  }, []);
+
+  // ✅ NEW: Show purchase buttons after 1min13s (73 seconds) 
+  useEffect(() => {
+    // ✅ REMOVED: Button timing now controlled by showRestOfContent
+    return () => {}; // Empty cleanup
+  }, []);
 
   // ✅ NEW: Inject VTurb script for downsell video
   useEffect(() => {
@@ -363,6 +367,16 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </header>
 
           {/* Main Headline */}
+          <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-3">
+              <span className="text-red-600 block mb-1">So you're really just going to</span>
+              <span className="bg-gradient-to-r from-red-500 via-orange-500 to-red-600 bg-clip-text text-transparent block">
+                give up and walk away
+              </span>
+              <span className="text-blue-900 block">like nothing's at stake?</span>
+            </h1>
+          </div>
+
           {/* VTurb Video Section */}
           <div className="mb-6 animate-fadeInUp animation-delay-400">
             <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
@@ -380,8 +394,10 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
             </div>
           </div>
 
-          {/* Email Section - Only show after 1min32s */}
-          {showEmailSection && (
+          {/* ✅ REST OF CONTENT - Only show after 1min30s */}
+          {(showRestOfContent || isBoltEnvironment) && (
+          <>
+          {/* Email Section */}
           <section className="mb-6 animate-fadeInUp">
             <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200 shadow-lg">
               {/* Email Header */}
@@ -411,9 +427,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </section>
-          )}
 
-          {/* Second VTurb Video Section - Only show after email appears */}
+          {/* Second VTurb Video Section */}
           {showSecondVideo && (
           <div className="mb-6 animate-fadeInUp">
             <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
@@ -433,7 +448,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           )}
 
           {/* Main Offer */}
-          {showPurchaseButtons && (
           <div className="mb-6 relative animate-fadeInUp animation-delay-1100">
             {/* TODAY ONLY Tag */}
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
@@ -534,10 +548,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </div>
-          )}
 
           {/* Lab Discount Message */}
-          {showPurchaseButtons && (
           <section className="text-center mb-6 animate-fadeInUp animation-delay-1200">
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <p className="text-blue-800 font-bold text-sm sm:text-base">
@@ -545,10 +557,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </p>
             </div>
           </section>
-          )}
 
           {/* Extra Benefits Intro */}
-          {showPurchaseButtons && (
           <section className="text-center mb-6 animate-fadeInUp animation-delay-1300">
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
               <p className="text-blue-800 text-sm sm:text-base">
@@ -556,10 +566,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </p>
             </div>
           </section>
-          )}
 
           {/* Testimonials */}
-          {showPurchaseButtons && (
           <section className="mb-6 animate-fadeInUp animation-delay-1400">
             {/* Tristan Hayes */}
             <div className="bg-white backdrop-blur-sm rounded-2xl p-4 border border-blue-200 shadow-lg mb-4">
@@ -609,10 +617,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </section>
-          )}
 
           {/* Final Call to Action */}
-          {showPurchaseButtons && (
           <section className="text-center mb-6 animate-fadeInUp animation-delay-1500">
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
               <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
@@ -626,10 +632,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </p>
             </div>
           </section>
-          )}
 
           {/* Final Offer Repeat */}
-          {showPurchaseButtons && (
           <div className="mb-6 relative animate-fadeInUp animation-delay-1600">
             <div className="relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 rounded-2xl blur-lg opacity-60 animate-pulse"></div>
@@ -655,20 +659,16 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </div>
-          )}
 
           {/* Closing Message */}
-          {showPurchaseButtons && (
           <section className="text-center mb-6 animate-fadeInUp animation-delay-1700">
             <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
               <p className="text-blue-800 text-sm sm:text-base mb-1">I'll leave it here.</p>
               <p className="text-blue-600 font-medium text-sm sm:text-base">Take care!</p>
             </div>
           </section>
-          )}
 
           {/* Reject Button */}
-          {showPurchaseButtons && (
           <div className="mb-6 animate-fadeInUp animation-delay-1800">
             <button 
               onClick={handleReject}
@@ -677,6 +677,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               <span className="text-xs sm:text-sm font-medium">No, thanks. I'll miss out.</span>
             </button>
           </div>
+          </>
           )}
 
         </div>
