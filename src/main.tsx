@@ -22,9 +22,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/up6bt" element={<UpsellPage variant="6-bottle" />} />
         
         {/* Second Upsell Pages */}
-        <Route path="/up2-1bt" element={<SecondUpsellPage variant="up2-1bt" />} />
-        <Route path="/up2-3bt" element={<SecondUpsellPage variant="up2-3bt" />} />
-        <Route path="/up2-6bt" element={<SecondUpsellPage variant="up2-6bt" />} />
+        <Route path="/upig" element={<SecondUpsellPage variant="up2-1bt" />} />
         
         {/* Downsell Pages */}
         <Route path="/dws1" element={<DownsellPage variant="dws1" />} />

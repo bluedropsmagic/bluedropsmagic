@@ -47,9 +47,7 @@ export const BoltNavigation: React.FC = () => {
     {
       category: 'Second Upsell Pages',
       items: [
-        { label: '🎯 Second Upsell 1-Bottle', path: '/up2-1bt?cid=bolt_test_up2_1bt', color: 'bg-purple-500 hover:bg-purple-600' },
-        { label: '🎯 Second Upsell 3-Bottle', path: '/up2-3bt?cid=bolt_test_up2_3bt', color: 'bg-purple-500 hover:bg-purple-600' },
-        { label: '🎯 Second Upsell 6-Bottle', path: '/up2-6bt?cid=bolt_test_up2_6bt', color: 'bg-purple-500 hover:bg-purple-600' }
+        { label: '🎯 Second Upsell (UPIG)', path: '/upig?cid=bolt_test_upig', color: 'bg-purple-500 hover:bg-purple-600' }
       ]
     },
     {
