@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { RefreshCw, TrendingUp, Users, ArrowUp, ArrowDown } from 'lucide-react';
+import { RefreshCw, TrendingUp, Users, ArrowUp, ArrowDown, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SessionData {
   page_type: string;
@@ -17,6 +17,11 @@ interface UpsellDownsellSessionsProps {
 export const UpsellDownsellSessions: React.FC<UpsellDownsellSessionsProps> = ({ className = '' }) => {
   const [sessionData, setSessionData] = useState<SessionData[]>([]);
   const [loading, setLoading] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<{[key: string]: boolean}>({
+    'second-upsell': false,
+    'upsell': false,
+    'downsell': false
+  });
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
@@ -152,6 +157,13 @@ export const UpsellDownsellSessions: React.FC<UpsellDownsellSessionsProps> = ({ 
     setSelectedDate(event.target.value);
   };
 
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
   const getPageTypeIcon = (pageType: string) => {
     switch (pageType) {
       case 'Second Upsell':
@@ -192,6 +204,21 @@ export const UpsellDownsellSessions: React.FC<UpsellDownsellSessionsProps> = ({ 
     return sessionData.reduce((sum, item) => sum + item.total_page_views, 0);
   };
 
+  // Group data by page type
+  const groupedData = {
+    'second-upsell': sessionData.filter(item => item.page_type === 'Second Upsell'),
+    'upsell': sessionData.filter(item => item.page_type === 'Upsell'),
+    'downsell': sessionData.filter(item => item.page_type === 'Downsell')
+  };
+
+  const getSectionStats = (sectionData: SessionData[]) => {
+    return {
+      totalSessions: sectionData.reduce((sum, item) => sum + item.unique_sessions, 0),
+      totalPageViews: sectionData.reduce((sum, item) => sum + item.total_page_views, 0),
+      pageCount: sectionData.length
+    };
+  };
+
   return (
     <div className={`bg-white rounded-xl shadow-sm border border-gray-200 ${className}`}>
       {/* Header */}
@@ -199,7 +226,7 @@ export const UpsellDownsellSessions: React.FC<UpsellDownsellSessionsProps> = ({ 
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
             <Users className="w-5 h-5" />
-            Sessões Únicas - Upsells & Downsells
+            Sessões por Página - Upsells & Downsells
           </h3>
           <button
             onClick={() => fetchSessionData(selectedDate)}
@@ -272,64 +299,279 @@ export const UpsellDownsellSessions: React.FC<UpsellDownsellSessionsProps> = ({ 
         ) : (
           <>
             {sessionData.length > 0 ? (
-              <div className="space-y-4">
-                {sessionData.map((item, index) => (
-                  <div
-                    key={`${item.page_type}-${item.page_variant}`}
-                    className={`border rounded-lg p-4 ${getPageTypeColor(item.page_type)}`}
+              <div className="space-y-6">
+                {/* Second Upsell Section */}
+                <div className="border border-purple-200 rounded-lg">
+                  <div 
+                    className="bg-purple-50 p-4 cursor-pointer hover:bg-purple-100 transition-colors rounded-t-lg"
+                    onClick={() => toggleSection('second-upsell')}
                   >
                     <div className="flex items-center justify-between">
-                      {/* Left side - Page info */}
                       <div className="flex items-center gap-3">
-                        {getPageTypeIcon(item.page_type)}
+                        <TrendingUp className="w-5 h-5 text-purple-600" />
                         <div>
-                          <h4 className="font-semibold text-gray-900">
-                            {item.page_variant}
+                          <h4 className="font-semibold text-purple-900">
+                            🟠 Second Upsells (IGNITEMEN)
                           </h4>
-                          <p className="text-sm text-gray-600">
-                            {item.page_type}
+                          <p className="text-sm text-purple-700">
+                            Páginas UPIG - Ofertas de testosterone support
                           </p>
                         </div>
                       </div>
-
-                      {/* Right side - Stats */}
-                      <div className="text-right">
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="font-semibold text-gray-900">
-                              {item.unique_sessions}
-                            </p>
-                            <p className="text-gray-600">Sessões únicas</p>
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">
-                              {item.total_page_views}
-                            </p>
-                            <p className="text-gray-600">Page views</p>
-                          </div>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-2">
-                          Última visita: {formatLastVisit(item.last_visit)}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Progress bar for visual representation */}
-                    <div className="mt-3">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className={`h-2 rounded-full transition-all duration-500 ease-out ${
-                            item.page_type === 'Second Upsell' ? 'bg-purple-500' :
-                            item.page_type === 'Upsell' ? 'bg-blue-500' : 'bg-orange-500'
-                          }`}
-                          style={{ 
-                            width: `${Math.min((item.unique_sessions / Math.max(...sessionData.map(d => d.unique_sessions))) * 100, 100)}%` 
-                          }}
-                        ></div>
+                      
+                      <div className="flex items-center gap-4">
+                        {(() => {
+                          const stats = getSectionStats(groupedData['second-upsell']);
+                          return (
+                            <div className="text-right text-sm">
+                              <p className="font-bold text-purple-800">{stats.totalSessions} sessões</p>
+                              <p className="text-purple-600">{stats.pageCount} páginas ativas</p>
+                            </div>
+                          );
+                        })()}
+                        
+                        {expandedSections['second-upsell'] ? (
+                          <ChevronUp className="w-5 h-5 text-purple-600" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-purple-600" />
+                        )}
                       </div>
                     </div>
                   </div>
-                ))}
+                  
+                  {expandedSections['second-upsell'] && (
+                    <div className="p-4 space-y-3 border-t border-purple-200">
+                      {groupedData['second-upsell'].length > 0 ? (
+                        groupedData['second-upsell'].map((item) => (
+                          <div
+                            key={`${item.page_type}-${item.page_variant}`}
+                            className="bg-purple-50 border border-purple-200 rounded-lg p-3"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                  <span className="text-purple-600 font-bold text-sm">
+                                    {item.page_variant.replace('UPIG', '')}
+                                  </span>
+                                </div>
+                                <div>
+                                  <h5 className="font-semibold text-purple-900">
+                                    /{item.page_variant.toLowerCase()}
+                                  </h5>
+                                  <p className="text-xs text-purple-600">
+                                    Second Upsell Page
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="text-right">
+                                <div className="grid grid-cols-2 gap-3 text-sm">
+                                  <div>
+                                    <p className="font-bold text-purple-900">{item.unique_sessions}</p>
+                                    <p className="text-purple-600 text-xs">Sessões</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold text-purple-900">{item.total_page_views}</p>
+                                    <p className="text-purple-600 text-xs">Views</p>
+                                  </div>
+                                </div>
+                                <p className="text-xs text-purple-500 mt-1">
+                                  {formatLastVisit(item.last_visit)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-purple-600 text-sm text-center py-4">
+                          Nenhuma sessão registrada para second upsells hoje
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Original Upsell Section */}
+                <div className="border border-blue-200 rounded-lg">
+                  <div 
+                    className="bg-blue-50 p-4 cursor-pointer hover:bg-blue-100 transition-colors rounded-t-lg"
+                    onClick={() => toggleSection('upsell')}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <ArrowUp className="w-5 h-5 text-blue-600" />
+                        <div>
+                          <h4 className="font-semibold text-blue-900">
+                            📦 Upsells Originais
+                          </h4>
+                          <p className="text-sm text-blue-700">
+                            Páginas UP - Ofertas de mais frascos BlueDrops
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4">
+                        {(() => {
+                          const stats = getSectionStats(groupedData['upsell']);
+                          return (
+                            <div className="text-right text-sm">
+                              <p className="font-bold text-blue-800">{stats.totalSessions} sessões</p>
+                              <p className="text-blue-600">{stats.pageCount} páginas ativas</p>
+                            </div>
+                          );
+                        })()}
+                        
+                        {expandedSections['upsell'] ? (
+                          <ChevronUp className="w-5 h-5 text-blue-600" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-blue-600" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {expandedSections['upsell'] && (
+                    <div className="p-4 space-y-3 border-t border-blue-200">
+                      {groupedData['upsell'].length > 0 ? (
+                        groupedData['upsell'].map((item) => (
+                          <div
+                            key={`${item.page_type}-${item.page_variant}`}
+                            className="bg-blue-50 border border-blue-200 rounded-lg p-3"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                  <span className="text-blue-600 font-bold text-sm">
+                                    {item.page_variant.replace('UP', '').replace('BT', '')}
+                                  </span>
+                                </div>
+                                <div>
+                                  <h5 className="font-semibold text-blue-900">
+                                    /{item.page_variant.toLowerCase()}
+                                  </h5>
+                                  <p className="text-xs text-blue-600">
+                                    Upsell Page
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="text-right">
+                                <div className="grid grid-cols-2 gap-3 text-sm">
+                                  <div>
+                                    <p className="font-bold text-blue-900">{item.unique_sessions}</p>
+                                    <p className="text-blue-600 text-xs">Sessões</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold text-blue-900">{item.total_page_views}</p>
+                                    <p className="text-blue-600 text-xs">Views</p>
+                                  </div>
+                                </div>
+                                <p className="text-xs text-blue-500 mt-1">
+                                  {formatLastVisit(item.last_visit)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-blue-600 text-sm text-center py-4">
+                          Nenhuma sessão registrada para upsells hoje
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Downsell Section */}
+                <div className="border border-orange-200 rounded-lg">
+                  <div 
+                    className="bg-orange-50 p-4 cursor-pointer hover:bg-orange-100 transition-colors rounded-t-lg"
+                    onClick={() => toggleSection('downsell')}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <ArrowDown className="w-5 h-5 text-orange-600" />
+                        <div>
+                          <h4 className="font-semibold text-orange-900">
+                            💰 Downsells
+                          </h4>
+                          <p className="text-sm text-orange-700">
+                            Páginas DWS/DW3 - Ofertas de desconto
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4">
+                        {(() => {
+                          const stats = getSectionStats(groupedData['downsell']);
+                          return (
+                            <div className="text-right text-sm">
+                              <p className="font-bold text-orange-800">{stats.totalSessions} sessões</p>
+                              <p className="text-orange-600">{stats.pageCount} páginas ativas</p>
+                            </div>
+                          );
+                        })()}
+                        
+                        {expandedSections['downsell'] ? (
+                          <ChevronUp className="w-5 h-5 text-orange-600" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-orange-600" />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {expandedSections['downsell'] && (
+                    <div className="p-4 space-y-3 border-t border-orange-200">
+                      {groupedData['downsell'].length > 0 ? (
+                        groupedData['downsell'].map((item) => (
+                          <div
+                            key={`${item.page_type}-${item.page_variant}`}
+                            className="bg-orange-50 border border-orange-200 rounded-lg p-3"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                  <span className="text-orange-600 font-bold text-sm">
+                                    {item.page_variant.replace('DWS', 'D').replace('DW', 'D')}
+                                  </span>
+                                </div>
+                                <div>
+                                  <h5 className="font-semibold text-orange-900">
+                                    /{item.page_variant.toLowerCase()}
+                                  </h5>
+                                  <p className="text-xs text-orange-600">
+                                    Downsell Page
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="text-right">
+                                <div className="grid grid-cols-2 gap-3 text-sm">
+                                  <div>
+                                    <p className="font-bold text-orange-900">{item.unique_sessions}</p>
+                                    <p className="text-orange-600 text-xs">Sessões</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-bold text-orange-900">{item.total_page_views}</p>
+                                    <p className="text-orange-600 text-xs">Views</p>
+                                  </div>
+                                </div>
+                                <p className="text-xs text-orange-500 mt-1">
+                                  {formatLastVisit(item.last_visit)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-orange-600 text-sm text-center py-4">
+                          Nenhuma sessão registrada para downsells hoje
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="text-center py-12">
@@ -340,30 +582,6 @@ export const UpsellDownsellSessions: React.FC<UpsellDownsellSessionsProps> = ({ 
                 <p className="text-gray-500 text-sm">
                   Selecione uma data diferente ou aguarde novas visitas às páginas de upsell/downsell
                 </p>
-              </div>
-            )}
-
-            {/* Page Type Legend */}
-            {sessionData.length > 0 && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-semibold text-gray-700 mb-3">📋 Legenda das Páginas:</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-purple-600" />
-                    <span className="font-medium text-purple-700">Second Upsell:</span>
-                    <span className="text-gray-600">UPIG1BT, UPIG3BT, UPIG6BT</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <ArrowUp className="w-4 h-4 text-blue-600" />
-                    <span className="font-medium text-blue-700">Upsell:</span>
-                    <span className="text-gray-600">UP1BT, UP3BT, UP6BT</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <ArrowDown className="w-4 h-4 text-orange-600" />
-                    <span className="font-medium text-orange-700">Downsell:</span>
-                    <span className="text-gray-600">DWS1, DWS2, DW3</span>
-                  </div>
-                </div>
               </div>
             )}
 
