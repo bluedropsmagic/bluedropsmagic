@@ -225,61 +225,61 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
     const contents = {
       'up2-1bt': {
         offer: {
-          title: 'FINAL UPGRADE OPPORTUNITY',
-          subtitle: '✔️ Complete Your Transformation with Premium Support',
-          description: 'Exclusive add-on for maximum results...'
+          title: 'IGNITEMEN — RECOMMENDED SUPPORT PACKAGE',
+          subtitle: '🔹 Complete your recovery with essential testosterone support',
+          description: 'The perfect complement to your BlueDrops protocol'
         },
         pricing: {
-          pricePerBottle: 'Special upgrade price: only $29 per bottle',
-          totalPrice: 'Premium support package',
-          savings: 'Save $300 on this exclusive upgrade',
+          pricePerBottle: 'Special offer: Only $69 per bottle',
+          totalPrice: '2 bottles — $138 total',
+          savings: 'No subscription. No pressure. Just what you need.',
           freeBottles: '',
-          paidBottles: 'PREMIUM SUPPORT PACKAGE'
+          paidBottles: 'TESTOSTERONE SUPPORT PACKAGE'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/second-offer/up2-1bt?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176654642:1/thank-you',
-        productImage: 'https://i.imgur.com/2YU6i8f.png',
-        acceptButtonText: 'UPGRADE NOW',
+        productImage: 'https://i.imgur.com/MKvvyGH.png',
+        acceptButtonText: 'YES — ADD IGNITEMEN TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
         videoId: '687c8357a159330096eff21e' // Placeholder video ID
       },
       'up2-3bt': {
         offer: {
-          title: 'FINAL UPGRADE OPPORTUNITY',
-          subtitle: '✔️ Complete Your Transformation with Premium Support',
-          description: 'Exclusive add-on for maximum results...'
+          title: 'IGNITEMEN — RECOMMENDED SUPPORT PACKAGE',
+          subtitle: '🔹 Complete your recovery with essential testosterone support',
+          description: 'The perfect complement to your BlueDrops protocol'
         },
         pricing: {
-          pricePerBottle: 'Special upgrade price: only $29 per bottle',
-          totalPrice: 'Premium support package',
-          savings: 'Save $300 on this exclusive upgrade',
+          pricePerBottle: 'Special offer: Only $69 per bottle',
+          totalPrice: '2 bottles — $138 total',
+          savings: 'No subscription. No pressure. Just what you need.',
           freeBottles: '',
-          paidBottles: 'PREMIUM SUPPORT PACKAGE'
+          paidBottles: 'TESTOSTERONE SUPPORT PACKAGE'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/second-offer/up2-3bt?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176845818:1/thank-you',
-        productImage: 'https://i.imgur.com/2YU6i8f.png',
-        acceptButtonText: 'UPGRADE NOW',
+        productImage: 'https://i.imgur.com/MKvvyGH.png',
+        acceptButtonText: 'YES — ADD IGNITEMEN TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
         videoId: '687c7e662a38c6be43a1fc6e' // Placeholder video ID
       },
       'up2-6bt': {
         offer: {
-          title: 'FINAL UPGRADE OPPORTUNITY',
-          subtitle: '✔️ Complete Your Transformation with Premium Support',
-          description: 'Exclusive add-on for maximum results...'
+          title: 'IGNITEMEN — RECOMMENDED SUPPORT PACKAGE',
+          subtitle: '🔹 Complete your recovery with essential testosterone support',
+          description: 'The perfect complement to your BlueDrops protocol'
         },
         pricing: {
-          pricePerBottle: 'Special upgrade price: only $29 per bottle',
-          totalPrice: 'Premium support package',
-          savings: 'Save $300 on this exclusive upgrade',
+          pricePerBottle: 'Special offer: Only $69 per bottle',
+          totalPrice: '2 bottles — $138 total',
+          savings: 'No subscription. No pressure. Just what you need.',
           freeBottles: '',
-          paidBottles: 'PREMIUM SUPPORT PACKAGE'
+          paidBottles: 'TESTOSTERONE SUPPORT PACKAGE'
         },
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/second-offer/up2-6bt?accepted=yes',
         rejectUrl: 'https://pagamento.paybluedrops.com/checkout/176849703:1/thank-you',
-        productImage: 'https://i.imgur.com/2YU6i8f.png',
-        acceptButtonText: 'UPGRADE NOW',
+        productImage: 'https://i.imgur.com/MKvvyGH.png',
+        acceptButtonText: 'YES — ADD IGNITEMEN TO MY ORDER',
         rejectButtonText: 'No thanks — Complete my order',
         videoId: '687c83476137406f142b1e81' // Placeholder video ID
       }
@@ -430,7 +430,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
               <div className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
                 <div className="flex items-center gap-1 sm:gap-2">
                   <AlertTriangle className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
-                  <span className="tracking-wide">FINAL UPGRADE</span>
+                  <span className="tracking-wide">🟠 IGNITEMEN</span>
                 </div>
               </div>
             </div>
@@ -453,7 +453,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                 {/* Product Name */}
                 <div className="text-center mb-3 sm:mb-4">
                   <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white leading-none">
-                    BLUEDROPS
+                    🟠 IGNITEMEN
                   </h3>
                   <p className="text-white/80 text-sm sm:text-base font-bold tracking-wide -mt-1">
                     {content.offer.title}
@@ -470,6 +470,10 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                   <div className="space-y-1.5 sm:space-y-2 bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20 mb-4">
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
                       <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-orange-400 flex-shrink-0" />
+                      <span>Designed to elevate your energy, confidence, and presence</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-orange-400 flex-shrink-0" />
                       <span>{content.pricing.totalPrice}</span>
                     </div>
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
@@ -478,11 +482,11 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                     </div>
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
                       <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-orange-400 flex-shrink-0" />
-                      <span>Exclusive premium support</span>
+                      <span>{content.pricing.savings}</span>
                     </div>
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
                       <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-orange-400 flex-shrink-0" />
-                      <span>Priority customer service</span>
+                      <span>👉 This is the smart move: the boost your system needs, with total control.</span>
                     </div>
                   </div>
                 </div>
@@ -539,7 +543,56 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
           {/* Reject Button - Only show after 2min41s */}
           {(showPurchaseSection || isBoltEnvironment) && (
-          <div className="mb-6 animate-fadeInUp animation-delay-900">
+          <div className="mb-6 space-y-4 animate-fadeInUp animation-delay-900">
+            {/* Warning Button - High Testosterone Risk */}
+            <div className="relative">
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="bg-gradient-to-r from-red-500 to-red-700 text-white px-3 py-1 rounded-full text-xs font-black shadow-lg border border-white/40">
+                  ⚠️ HIGH RISK
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-red-600/95 to-red-800/95 backdrop-blur-xl rounded-xl p-4 pt-6 border-2 border-white/30 shadow-2xl">
+                {/* Product Image */}
+                <div className="flex justify-center mb-3">
+                  <img 
+                    src="https://i.imgur.com/k7IpZud.png" 
+                    alt="High Testosterone Warning"
+                    className="w-full h-auto object-contain drop-shadow-2xl max-h-24 sm:max-h-32"
+                  />
+                </div>
+
+                {/* Warning Text */}
+                <div className="text-center mb-4">
+                  <h4 className="text-lg sm:text-xl font-black text-white mb-2 leading-tight">
+                    ⚠️ WARNING: EXTREME TESTOSTERONE BOOST
+                  </h4>
+                  <p className="text-red-200 text-xs sm:text-sm font-medium mb-3">
+                    We don't have data on how people will react to such high testosterone levels
+                  </p>
+                  
+                  <div className="bg-red-500/30 backdrop-blur-sm rounded-lg p-3 border border-red-300/40 mb-4">
+                    <p className="text-white text-xs sm:text-sm font-bold">
+                      🚨 YOU MAY RECEIVE UNWANTED ATTENTION
+                    </p>
+                    <p className="text-red-100 text-xs mt-1">
+                      Buy at your own risk — results may be too powerful
+                    </p>
+                  </div>
+                </div>
+
+                {/* Extreme CTA Button */}
+                <button 
+                  onClick={handleAccept}
+                  className="w-full bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                >
+                  <span className="relative z-10">⚠️ I ACCEPT THE RISK — GIVE ME MAXIMUM POWER</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+              </div>
+            </div>
+
+            {/* Original Reject Button */}
             <button 
               onClick={handleReject}
               className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
