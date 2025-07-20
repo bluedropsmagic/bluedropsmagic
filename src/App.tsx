@@ -190,15 +190,23 @@ function App() {
 
   // ✅ NEW: Check for admin override or time-based content reveal
   useEffect(() => {
-    if (isAdmin) {
-      console.log('👨‍💼 Admin logged in - showing purchase buttons and content');
+    if (isAdmin || isBoltEnvironment) {
+      console.log('👨‍💼 Admin logged in OR Bolt environment - showing purchase buttons and content');
       setShowRestOfContent(true);
       setShowPurchaseButton(true);
     }
-  }, [isAdmin]);
+  }, [isAdmin, isBoltEnvironment]);
 
   // ✅ NEW: Auto-trigger content reveal after 30 seconds
   useEffect(() => {
+    // Skip timer in Bolt environment - show content immediately
+    if (isBoltEnvironment) {
+      console.log('🔧 Bolt environment - showing content immediately');
+      setShowRestOfContent(true);
+      setShowPurchaseButton(true);
+      return;
+    }
+    
     console.log('🕐 Setting up 35:55 timer for content reveal');
     
     const timer = setTimeout(() => {
@@ -210,7 +218,7 @@ function App() {
       console.log('🧹 Cleaning up 35:55 timer');
       clearTimeout(timer);
     };
-  }, []); // Run only once on mount
+  }, [isBoltEnvironment]); // Run when Bolt environment changes
   // ✅ NEW: Function to scroll to 6-bottle purchase button
   const scrollToSixBottleButton = () => {
     try {
@@ -786,10 +794,10 @@ function App() {
       <BoltNavigation />
 
       {/* ✅ NEW: Admin DTC Button - For content override */}
-      {isAdmin && (
+      {(isAdmin || isBoltEnvironment) && (
         <div className="fixed top-4 right-4 z-40">
-          <div className="bg-green-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
-            👨‍💼 ADMIN MODE: All Content Visible
+          <div className={`${isAdmin ? 'bg-green-500' : 'bg-blue-500'} text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg`}>
+            {isAdmin ? '👨‍💼 ADMIN MODE' : '🔧 BOLT MODE'}: All Content Visible
           </div>
         </div>
       )}
@@ -810,7 +818,7 @@ function App() {
           <VideoSection />
 
           {/* Product Offers - Only show after 35:55 or admin override */}
-          {(showRestOfContent || isAdmin) && (
+          {(showRestOfContent || isAdmin || isBoltEnvironment) && (
             <ProductOffers 
               showPurchaseButton={showPurchaseButton}
               onPurchase={handlePurchase}
@@ -820,12 +828,12 @@ function App() {
         </div>
 
         {/* Doctors Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin) && (
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
         <DoctorsSection />
         )}
 
         {/* Doctors Trust Button - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin) && (
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
           <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1500">
             <div className="text-center">
               {/* Pulsing wrapper */}
@@ -886,12 +894,12 @@ function App() {
         )}
 
         {/* Testimonials Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin) && (
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
         <TestimonialsSection />
         )}
 
         {/* Success Story Button - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin) && (
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
           <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1300">
             <div className="text-center">
               {/* Pulsing wrapper */}
@@ -951,17 +959,17 @@ function App() {
           </div>
         )}
         {/* News Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin) && (
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
         <NewsSection />
         )}
 
         {/* Guarantee Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin) && (
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
         <GuaranteeSection />
         )}
 
         {/* Final purchase section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin) && (
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
           <section 
             id="final-purchase-section"
             data-purchase-section="true"
