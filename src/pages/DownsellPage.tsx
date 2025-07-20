@@ -28,6 +28,8 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
+  const [showEmailSection, setShowEmailSection] = useState(false);
+  const [showSecondVideo, setShowSecondVideo] = useState(false);
 
   // ✅ NEW: Detect Bolt environment
   useEffect(() => {
@@ -42,8 +44,31 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     
     if (isBolt) {
       console.log('🔧 Bolt environment detected on downsell page - all content visible');
+      setShowEmailSection(true);
+      setShowSecondVideo(true);
     }
   }, []);
+
+  // ✅ NEW: Show email section after 1min32s (92 seconds)
+  useEffect(() => {
+    if (isBoltEnvironment) {
+      return; // Skip timer in Bolt environment
+    }
+    
+    const emailTimer = setTimeout(() => {
+      console.log('⏰ 1min32s elapsed - showing email section');
+      setShowEmailSection(true);
+      
+      // Show second video 10 seconds after email appears
+      setTimeout(() => {
+        console.log('⏰ Showing second video after email');
+        setShowSecondVideo(true);
+      }, 10000);
+      
+    }, 92000); // 1min32s = 92 seconds
+    
+    return () => clearTimeout(emailTimer);
+  }, [isBoltEnvironment]);
 
   // ✅ NEW: Inject VTurb script for downsell video
   useEffect(() => {
@@ -104,6 +129,68 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       }
     };
   }, []);
+
+  // ✅ NEW: Inject second VTurb video
+  useEffect(() => {
+    if (showSecondVideo) {
+      const videoId = '687c7957886aa48cc3163f77';
+      
+      console.log('🎬 Injecting second VTurb video:', videoId);
+      
+      // Remove existing script if any
+      const existingScript = document.getElementById(`scr_${videoId}`);
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      // Create the vturb-smartplayer element
+      const playerContainer = document.getElementById('second-video-container');
+      if (playerContainer) {
+        playerContainer.innerHTML = `
+          <vturb-smartplayer 
+            id="vid-${videoId}" 
+            style="display: block; margin: 0 auto; width: 100%;"
+          ></vturb-smartplayer>
+        `;
+
+        // Inject the script
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.id = `scr_${videoId}`;
+        script.async = true;
+        script.innerHTML = `
+          (function() {
+            try {
+              console.log('🎬 Loading second downsell VTurb video: ${videoId}');
+              var s = document.createElement("script");
+              s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/v4/player.js";
+              s.async = true;
+              s.onload = function() {
+                console.log('✅ Second downsell VTurb video loaded: ${videoId}');
+              };
+              s.onerror = function() {
+                console.error('❌ Failed to load second downsell VTurb video: ${videoId}');
+              };
+              document.head.appendChild(s);
+            } catch (error) {
+              console.error('Error injecting second downsell VTurb script:', error);
+            }
+          })();
+        `;
+        
+        document.head.appendChild(script);
+        console.log('✅ Second VTurb script injected for downsell video');
+      }
+    }
+
+    // Cleanup on unmount
+    return () => {
+      const scriptToRemove = document.getElementById('scr_687c7957886aa48cc3163f77');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [showSecondVideo]);
 
   // ✅ Ensure no Hotjar on downsell pages
   useEffect(() => {
@@ -281,14 +368,9 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
             </div>
           </div>
 
-          {/* Email Section */}
-          <section className="mb-6 animate-fadeInUp animation-delay-500">
-            <div className="text-center mb-4">
-              <p className="text-blue-800 text-sm sm:text-base font-semibold">
-                You might not know this… But I get emails like this almost every day:
-              </p>
-            </div>
-            
+          {/* Email Section - Only show after 1min32s */}
+          {showEmailSection && (
+          <section className="mb-6 animate-fadeInUp">
             <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200 shadow-lg">
               {/* Email Header */}
               <div className="bg-gray-100 rounded-lg p-3 mb-4 border border-gray-200">
@@ -298,7 +380,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
                 </div>
                 <div className="text-xs text-gray-600 space-y-1">
                   <p><strong>From:</strong> James C.</p>
-                  <p><strong>To:</strong> contact@bluedrops.com</p>
+                  <p><strong>To:</strong> support@bluedrops.com</p>
                   <p><strong>Subject:</strong> New Order Request</p>
                 </div>
               </div>
@@ -317,123 +399,26 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
               </div>
             </div>
           </section>
+          )}
 
-          {/* Proof Section */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-600">
-            <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
-              <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                This only proves one thing:
-              </h2>
-              <p className="text-blue-800 text-sm sm:text-base mb-3">
-                The benefits of Blue Drops go far beyond fixing erectile dysfunction.
-              </p>
-              <p className="text-blue-600 font-bold text-sm sm:text-base">
-                Over 14,365 men have reported that Blue Drops helped them:
-              </p>
-            </div>
-          </section>
-
-          {/* Benefits Grid */}
-          <section className="mb-6 animate-fadeInUp animation-delay-700">
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
-                  <span className="text-lg">🍆</span>
-                  <span>Increase penis size and girth</span>
-                </p>
-              </div>
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
-                  <span className="text-lg">💪</span>
-                  <span>Triple their performance time in bed</span>
-                </p>
-              </div>
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
-                  <span className="text-lg">🧠</span>
-                  <span>Sharpen mental focus</span>
-                </p>
-              </div>
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
-                  <span className="text-lg">💪</span>
-                  <span>Build more muscle and strength</span>
-                </p>
-              </div>
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
-                  <span className="text-lg">🔥</span>
-                  <span>Burn off stubborn fat</span>
-                </p>
-              </div>
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
-                <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
-                  <span className="text-lg">✨</span>
-                  <span>Regrow hair and improve appearance</span>
-                </p>
+          {/* Second VTurb Video Section - Only show after email appears */}
+          {showSecondVideo && (
+          <div className="mb-6 animate-fadeInUp">
+            <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
+              <div
+                id="second-video-container"
+                className="w-full h-full"
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%'
+                }}
+              >
+                {/* Second VTurb player will be injected here */}
               </div>
             </div>
-          </section>
-
-          {/* Continuation */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-800">
-            <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
-              <p className="text-blue-800 text-sm sm:text-base mb-3">
-                That's why <strong>NONE</strong> of them want to stop taking Blue Drops — even after beating ED.
-              </p>
-              <p className="text-blue-800 text-sm sm:text-base">
-                They would do anything to get this exclusive discount I'm offering you right now.
-              </p>
-            </div>
-          </section>
-
-          {/* Final Offer Setup */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-900">
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-2">
-                And that's why I'm giving you one more shot…
-              </h2>
-              <p className="text-blue-800 text-sm sm:text-base mb-2">
-                This time, an even better deal.
-              </p>
-              <p className="text-blue-800 text-sm sm:text-base">
-                Right here, on this page — and <strong>ONLY</strong> while supplies last...
-              </p>
-            </div>
-          </section>
-
-          {/* Price Announcement */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-950">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-xl p-4">
-              <p className="text-lg sm:text-xl font-bold mb-2">
-                You'll pay just <span className="text-yellow-300">${content.pricePerBottle} per bottle</span>
-              </p>
-              <p className="text-sm sm:text-base">
-                on a 6-bottle supply of Blue Drops.
-              </p>
-            </div>
-          </section>
-
-          {/* Never Again Warning */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-975">
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-              <p className="text-red-700 font-bold text-base sm:text-lg mb-1">
-                ⚠️ <strong>You will NOT see this offer again.</strong>
-              </p>
-              <p className="text-red-600 font-bold text-sm sm:text-base">
-                Not tomorrow. Not ever.
-              </p>
-            </div>
-          </section>
-
-          {/* CTA Instruction */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1000">
-            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
-              <p className="text-blue-800 text-sm sm:text-base font-semibold">
-                Click the button below to claim your kit.
-              </p>
-            </div>
-          </section>
+          </div>
+          )}
 
           {/* Main Offer */}
           <div className="mb-6 relative animate-fadeInUp animation-delay-1100">
