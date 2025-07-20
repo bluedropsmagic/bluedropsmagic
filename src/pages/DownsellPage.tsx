@@ -272,7 +272,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         productType: 'COMPLETE YOUR TREATMENT',
         priceText: '$23 per bottle',
         subscriptionText: 'Add 6 more bottles to your order',
-        productImage: 'https://i.imgur.com/2YU6i8f.png', // Same as up3bt
+        productImage: 'https://i.imgur.com/hsfqxVP.png', // 6-bottle product image
         savings: 'Save $396 instantly',
         description: 'Complete 9-month treatment protocol',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dws2?accepted=yes',
@@ -285,7 +285,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
         productType: 'COMPLETE YOUR TREATMENT',
         priceText: '$23 per bottle',
         subscriptionText: 'Add 3 more bottles to your order',
-        productImage: 'https://i.imgur.com/2YU6i8f.png', // Same as up6bt
+        productImage: 'https://i.imgur.com/eXYnjhm.png', // 3-bottle product image
         savings: 'Save $198 instantly',
         description: 'Complete 9-month treatment protocol',
         acceptUrl: 'https://pagamento.paybluedrops.com/ex-ocu/downsell-offer/dw3?accepted=yes',
