@@ -44,6 +44,65 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
       console.log('🔧 Bolt environment detected on downsell page - all content visible');
     }
   }, []);
+
+  // ✅ NEW: Inject VTurb script for downsell video
+  useEffect(() => {
+    console.log('🎬 Injecting VTurb for downsell video: 687c72f603cd186056ea5d15');
+    
+    // Remove existing script if any
+    const existingScript = document.getElementById('scr_687c72f603cd186056ea5d15');
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Create the video container content
+    const playerContainer = document.getElementById('downsell-video-container');
+    if (playerContainer) {
+      playerContainer.innerHTML = `
+        <vturb-smartplayer 
+          id="vid-687c72f603cd186056ea5d15" 
+          style="display: block; margin: 0 auto; width: 100%;"
+        ></vturb-smartplayer>
+      `;
+
+      // Inject the script
+      const script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.id = 'scr_687c72f603cd186056ea5d15';
+      script.async = true;
+      script.innerHTML = `
+        (function() {
+          try {
+            console.log('🎬 Loading downsell VTurb video: 687c72f603cd186056ea5d15');
+            var s = document.createElement("script");
+            s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/687c72f603cd186056ea5d15/v4/player.js";
+            s.async = true;
+            s.onload = function() {
+              console.log('✅ Downsell VTurb video loaded: 687c72f603cd186056ea5d15');
+            };
+            s.onerror = function() {
+              console.error('❌ Failed to load downsell VTurb video: 687c72f603cd186056ea5d15');
+            };
+            document.head.appendChild(s);
+          } catch (error) {
+            console.error('Error injecting downsell VTurb script:', error);
+          }
+        })();
+      `;
+      
+      document.head.appendChild(script);
+      console.log('✅ VTurb script injected for downsell video');
+    }
+
+    // Cleanup on unmount
+    return () => {
+      const scriptToRemove = document.getElementById('scr_687c72f603cd186056ea5d15');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, []);
+
   // ✅ Ensure no Hotjar on downsell pages
   useEffect(() => {
     const existingHotjar = document.querySelectorAll('script[src*="hotjar"]');
@@ -205,114 +264,63 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           {/* Main Headline */}
           <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
             <h1 className="text-xl sm:text-2xl md:text-3xl font-black leading-tight mb-4 text-red-700">
-              <span className="block mb-2">⚠️ <strong>Maybe you didn't realize it yet...</strong></span>
+              <span className="text-blue-900 block mb-1">You're Just ONE Step</span>
+              <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
+                Away From Success
+              </span>
             </h1>
             
-            <p className="text-sm sm:text-base text-red-700 font-bold px-2 mb-6">
-              ⚠️ But eliminating <strong>100%</strong> of the toxic plaque from your penile veins is the <strong>ONLY</strong> way to never suffer from erectile dysfunction again.
+            <p className="text-sm sm:text-base text-blue-800 font-semibold px-2 mb-6">
+              Watch this important message about your treatment success.
             </p>
           </div>
 
-          {/* Warning Section */}
+          {/* VTurb Video Section */}
           <div className="mb-6 animate-fadeInUp animation-delay-500">
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
-              <h2 className="text-lg sm:text-xl font-black text-red-700 mb-3">
-                ⚠️ <strong>If you don't completely EXTERMINATE that toxic junk from your system...</strong>
-              </h2>
-              <p className="text-red-700 font-bold text-sm sm:text-base mb-2">
-                ⚠️ <strong>Your ED issues WILL come back.</strong>
+            <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative">
+              <div
+                id="downsell-video-container"
+                className="w-full h-full"
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '100%'
+                }}
+              >
+                {/* VTurb player will be injected here */}
+              </div>
+            </div>
+          </div>
+
+          {/* Sound Warning */}
+          <div className="mb-4 animate-fadeInUp animation-delay-600">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-lg">🔊</span>
+                <span className="text-blue-800 font-semibold text-sm">
+                  Please make sure your sound is on
+                </span>
+              </div>
+              <p className="text-blue-600 text-xs">
+                This video contains important audio information
               </p>
             </div>
           </div>
 
-          {/* Consequences Section */}
-          <section className="mb-6 animate-fadeInUp animation-delay-600">
-            <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200">
-              <div className="space-y-3 text-sm sm:text-base text-gray-700 leading-relaxed">
-                <p>Even if you've started to feel the incredible benefits within the first few weeks…</p>
-                <p className="font-bold text-red-700">
-                  ⚠️ <strong>If you stop using Blue Drops before all the plaque is gone, the nightmare can return to haunt you.</strong>
-                </p>
-                <p className="font-bold text-red-700">
-                  ⚠️ <strong>That dreaded softness right at the crucial moment can strike again…</strong>
-                </p>
-                <p className="font-bold text-red-700">
-                  ⚠️ <strong>The anxiety before sex will creep back in…</strong>
-                </p>
-                <p>Your relationship could go back to square one...</p>
-                <p className="font-bold text-xl text-red-700">
-                  ⚠️ <strong>And worst of all — your erectile problems might become irreversible.</strong>
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Help Decision */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-700">
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-2">
-                But I made a decision:
-              </h2>
-              <p className="text-blue-800 text-sm sm:text-base">
-                I'm going to help you as much as I can — so you never have to go through that again.
-              </p>
-            </div>
-          </section>
-
-          {/* Email Section */}
-          <section className="mb-6 animate-fadeInUp animation-delay-800">
-            <div className="text-center mb-4">
-              <p className="text-blue-800 text-sm sm:text-base font-semibold">
-                You might not know this… But I get emails like this almost every day:
-              </p>
-            </div>
-            
-            <div className="bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200 shadow-lg">
-              {/* Email Header */}
-              <div className="bg-gray-100 rounded-lg p-3 mb-4 border border-gray-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <Mail className="w-4 h-4 text-blue-600" />
-                  <span className="font-semibold text-gray-900 text-sm">Email Received</span>
-                </div>
-                <div className="text-xs text-gray-600 space-y-1">
-                  <p><strong>From:</strong> James C.</p>
-                  <p><strong>To:</strong> contact@bluedrops.com</p>
-                  <p><strong>Subject:</strong> New Order Request</p>
-                </div>
-              </div>
-              
-              {/* Email Content */}
-              <div className="space-y-3 text-xs sm:text-sm text-gray-700 leading-relaxed">
-                <p>I need your help.</p>
-                <p>I recently finished my 6 bottles of Blue Drops, and honestly — I don't want to stop.</p>
-                <p>I don't worry about sex anymore, and my wife has never been so satisfied with my performance.</p>
-                <p>On top of that, I've noticed an increase in penis size — and so has my wife.</p>
-                <p><strong>I think I gained around 2 inches, it's insane!!!</strong></p>
-                <p>I feel more energetic and have way more stamina in everyday life.</p>
-                <p>I wanted to order another 6-month supply, but I saw the site says it's out of stock.</p>
-                <p>Please let me know when it's back — I'm willing to pay more if needed.</p>
-                <p>Sincerely,<br/>James C.</p>
-              </div>
-            </div>
-          </section>
-
           {/* Proof Section */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-900">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-700">
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
               <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
-                This only proves one thing:
+                The benefits of Blue Drops go far beyond fixing erectile dysfunction:
               </h2>
               <p className="text-blue-800 text-sm sm:text-base mb-3">
-                The benefits of Blue Drops go far beyond fixing erectile dysfunction.
-              </p>
-              <p className="text-blue-600 font-bold text-sm sm:text-base">
                 Over 14,365 men have reported that Blue Drops helped them:
               </p>
             </div>
           </section>
 
           {/* Benefits Grid */}
-          <section className="mb-6 animate-fadeInUp animation-delay-1000">
+          <section className="mb-6 animate-fadeInUp animation-delay-800">
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 border border-green-200">
                 <p className="font-bold text-xs sm:text-sm flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-green-700 text-center sm:text-left">
@@ -354,7 +362,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Continuation */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1100">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-900">
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
               <p className="text-blue-800 text-sm sm:text-base mb-3">
                 That's why <strong>NONE</strong> of them want to stop taking Blue Drops — even after beating ED.
@@ -366,7 +374,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Final Offer Setup */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1200">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1000">
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-2">
                 And that's why I'm giving you one more shot…
@@ -381,7 +389,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Price Announcement */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1250">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1100">
             <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-xl p-4">
               <p className="text-lg sm:text-xl font-bold mb-2">
                 You'll pay just <span className="text-yellow-300">${content.pricePerBottle} per bottle</span>
@@ -393,7 +401,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Never Again Warning */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1275">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1150">
             <div className="bg-red-50 border border-red-200 rounded-xl p-4">
               <p className="text-red-700 font-bold text-base sm:text-lg mb-1">
                 ⚠️ <strong>You will NOT see this offer again.</strong>
@@ -405,7 +413,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* CTA Instruction */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1280">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1200">
             <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
               <p className="text-blue-800 text-sm sm:text-base font-semibold">
                 Click the button below to claim your kit.
@@ -414,7 +422,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Main Offer */}
-          <div className="mb-6 relative animate-fadeInUp animation-delay-1300">
+          <div className="mb-6 relative animate-fadeInUp animation-delay-1250">
             {/* TODAY ONLY Tag */}
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
               <div className="bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
@@ -516,7 +524,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </div>
 
           {/* Lab Discount Message */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1400">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1300">
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <p className="text-blue-800 font-bold text-sm sm:text-base">
                 This is the <strong>BIGGEST</strong> discount ever offered by the lab — because we don't want you to suffer from ED ever again.
@@ -525,7 +533,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Extra Benefits Intro */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1500">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1350">
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
               <p className="text-blue-800 text-sm sm:text-base">
                 And don't miss out on the <strong>EXTRA</strong> benefits this formula can bring you.
@@ -534,7 +542,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Testimonials */}
-          <section className="mb-6 animate-fadeInUp animation-delay-1600">
+          <section className="mb-6 animate-fadeInUp animation-delay-1400">
             {/* Tristan Hayes */}
             <div className="bg-white backdrop-blur-sm rounded-2xl p-4 border border-blue-200 shadow-lg mb-4">
               <div className="flex items-start gap-3">
@@ -585,7 +593,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Final Call to Action */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1700">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1500">
             <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 border border-blue-200">
               <h2 className="text-lg sm:text-xl font-bold text-blue-900 mb-3">
                 Take advantage of this one-time-only offer...
@@ -600,7 +608,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Final Offer Repeat */}
-          <div className="mb-6 relative animate-fadeInUp animation-delay-1800">
+          <div className="mb-6 relative animate-fadeInUp animation-delay-1600">
             <div className="relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 rounded-2xl blur-lg opacity-60 animate-pulse"></div>
               
@@ -627,7 +635,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </div>
 
           {/* Closing Message */}
-          <section className="text-center mb-6 animate-fadeInUp animation-delay-1900">
+          <section className="text-center mb-6 animate-fadeInUp animation-delay-1700">
             <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-blue-200">
               <p className="text-blue-800 text-sm sm:text-base mb-1">I'll leave it here.</p>
               <p className="text-blue-600 font-medium text-sm sm:text-base">Take care!</p>
@@ -635,7 +643,7 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
           </section>
 
           {/* Reject Button */}
-          <div className="mb-6 animate-fadeInUp animation-delay-2000">
+          <div className="mb-6 animate-fadeInUp animation-delay-1800">
             <button 
               onClick={handleReject}
               className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
