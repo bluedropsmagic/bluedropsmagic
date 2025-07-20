@@ -337,7 +337,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
       )}
       
       {/* Fixed Red Alert Banner */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-3 shadow-lg">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-orange-500 to-red-600 text-white px-4 py-3 shadow-lg">
         <div className="flex items-center justify-center gap-2">
           <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5" />
           <span className="font-black text-xs sm:text-sm md:text-base tracking-wide">⚠️ FINAL UPGRADE OPPORTUNITY</span>
@@ -361,13 +361,13 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
           {/* Hero Section */}
           <div className="mb-6 text-center animate-fadeInUp animation-delay-400">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-3">
-              <span className="text-purple-900 block mb-1">One Final Step</span>
-              <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 bg-clip-text text-transparent block">
+              <span className="text-orange-900 block mb-1">One Final Step</span>
+              <span className="bg-gradient-to-r from-orange-600 via-red-500 to-orange-800 bg-clip-text text-transparent block">
                 To Complete Success
               </span>
             </h1>
             
-            <p className="text-sm sm:text-base text-purple-800 font-semibold px-2 mb-6">
+            <p className="text-sm sm:text-base text-orange-800 font-semibold px-2 mb-6">
               You've made a smart choice — now let's maximize your results with this exclusive upgrade.
             </p>
           </div>
@@ -391,14 +391,14 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
           {/* Sound Warning */}
           <div className="mb-4 animate-fadeInUp animation-delay-600">
-            <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 text-center">
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 text-center">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <span className="text-lg">🔊</span>
-                <span className="text-purple-800 font-semibold text-sm">
+                <span className="text-orange-800 font-semibold text-sm">
                   Please make sure your sound is on
                 </span>
               </div>
-              <p className="text-purple-600 text-xs">
+              <p className="text-orange-600 text-xs">
                 This video contains important upgrade information
               </p>
             </div>
@@ -427,7 +427,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
           >
             {/* FINAL UPGRADE Tag */}
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
-              <div className="bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
+              <div className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-600 text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-black shadow-lg border border-white/40">
                 <div className="flex items-center gap-1 sm:gap-2">
                   <AlertTriangle className="w-3 sm:w-4 h-3 sm:h-4 text-white" />
                   <span className="tracking-wide">FINAL UPGRADE</span>
@@ -437,9 +437,9 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
             {/* Card Container */}
             <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 rounded-2xl sm:rounded-3xl blur-lg opacity-60 animate-pulse"></div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-orange-400 via-red-400 to-orange-500 rounded-2xl sm:rounded-3xl blur-lg opacity-60 animate-pulse"></div>
               
-              <div className="relative bg-gradient-to-br from-purple-600/95 to-purple-800/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 pt-6 sm:pt-8 border-2 border-white/30 shadow-2xl">
+              <div className="relative bg-gradient-to-br from-orange-600/95 to-red-800/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 pt-6 sm:pt-8 border-2 border-white/30 shadow-2xl">
                 
                 {/* Product Image */}
                 <div className="flex justify-center mb-3 sm:mb-4">
@@ -462,26 +462,26 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
                 {/* Offer Details */}
                 <div className="text-center mb-4">
-                  <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm shadow-lg mb-3">
+                  <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm shadow-lg mb-3">
                     {content.offer.subtitle}
                   </div>
                   
                   {/* Benefits List */}
                   <div className="space-y-1.5 sm:space-y-2 bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20 mb-4">
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
-                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-pink-400 flex-shrink-0" />
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-orange-400 flex-shrink-0" />
                       <span>{content.pricing.totalPrice}</span>
                     </div>
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
-                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-pink-400 flex-shrink-0" />
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-orange-400 flex-shrink-0" />
                       <span>{content.pricing.pricePerBottle}</span>
                     </div>
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
-                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-pink-400 flex-shrink-0" />
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-orange-400 flex-shrink-0" />
                       <span>Exclusive premium support</span>
                     </div>
                     <div className="flex items-center justify-center gap-2 text-white text-xs sm:text-sm">
-                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-pink-400 flex-shrink-0" />
+                      <CheckCircle className="w-3 sm:w-4 h-3 sm:h-4 text-orange-400 flex-shrink-0" />
                       <span>Priority customer service</span>
                     </div>
                   </div>
@@ -489,10 +489,10 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
                 {/* CTA Button */}
                 <div className="relative mb-4">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 rounded-xl blur opacity-75 animate-pulse"></div>
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-orange-400 via-red-500 to-orange-600 rounded-xl blur opacity-75 animate-pulse"></div>
                   <button 
                     onClick={handleAccept}
-                    className="relative w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
+                    className="relative w-full bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold py-4 sm:py-5 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg sm:text-xl border-2 border-white/40 backdrop-blur-sm overflow-hidden checkout-button"
                   >
                     <div className="absolute inset-0 rounded-xl border border-white/30 pointer-events-none"></div>
                     <span className="relative z-10">{content.acceptButtonText}</span>
@@ -502,21 +502,21 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
                 {/* Benefits Icons */}
                 <div className="flex justify-center items-center gap-1 mb-3">
-                  <div className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-sm rounded px-2 py-1 border border-purple-300/40 flex-1">
+                  <div className="bg-gradient-to-r from-orange-500/30 to-red-500/30 backdrop-blur-sm rounded px-2 py-1 border border-orange-300/40 flex-1">
                     <div className="flex items-center justify-center gap-1 text-white">
-                      <Shield className="w-3 h-3 text-pink-400 flex-shrink-0" />
+                      <Shield className="w-3 h-3 text-orange-400 flex-shrink-0" />
                       <span className="text-center font-semibold text-xs">180-Day</span>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-sm rounded px-2 py-1 border border-purple-300/40 flex-1">
+                  <div className="bg-gradient-to-r from-orange-500/30 to-red-500/30 backdrop-blur-sm rounded px-2 py-1 border border-orange-300/40 flex-1">
                     <div className="flex items-center justify-center gap-1 text-white">
-                      <Truck className="w-3 h-3 text-pink-400 flex-shrink-0" />
+                      <Truck className="w-3 h-3 text-orange-400 flex-shrink-0" />
                       <span className="text-center font-semibold text-xs">Free Ship</span>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-sm rounded px-2 py-1 border border-purple-300/40 flex-1">
+                  <div className="bg-gradient-to-r from-orange-500/30 to-red-500/30 backdrop-blur-sm rounded px-2 py-1 border border-orange-300/40 flex-1">
                     <div className="flex items-center justify-center gap-1 text-white">
-                      <Clock className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+                      <Clock className="w-3 h-3 text-orange-400 flex-shrink-0" />
                       <span className="text-center font-semibold text-xs">Limited</span>
                     </div>
                   </div>
@@ -558,8 +558,8 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
 
           {/* Footer Warning - Only show after 2min41s */}
           {(showPurchaseSection || isBoltEnvironment) && (
-          <footer className="text-center text-purple-700 animate-fadeInUp animation-delay-1000">
-            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-purple-200">
+          <footer className="text-center text-orange-700 animate-fadeInUp animation-delay-1000">
+            <div className="bg-white/30 backdrop-blur-sm rounded-xl p-4 border border-orange-200">
               <div className="bg-red-500 text-white px-3 py-1.5 rounded-lg inline-block mb-2">
                 <span className="font-bold text-xs sm:text-sm">🔴 FINAL WARNING</span>
               </div>
