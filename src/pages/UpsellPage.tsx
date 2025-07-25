@@ -504,7 +504,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
                   <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded px-2 py-1 border border-blue-300/40 flex-1">
                     <div className="flex items-center justify-center gap-1 text-white">
                       <Shield className="w-3 h-3 text-yellow-400 flex-shrink-0" />
-                      <span className="text-center font-semibold text-xs">180-Day</span>
+                      <span className="text-center font-semibold text-xs">90-Day</span>
                     </div>
                   </div>
                   <div className="bg-gradient-to-r from-blue-500/30 to-cyan-500/30 backdrop-blur-sm rounded px-2 py-1 border border-blue-300/40 flex-1">
