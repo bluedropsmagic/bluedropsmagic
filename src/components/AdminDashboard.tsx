@@ -10,6 +10,7 @@ import { UpsellDownsellSessions } from './UpsellDownsellSessions';
 import { RedTrackTestPanel } from './RedTrackTestPanel';
 import { BoltNavigation } from './BoltNavigation';
 import { AdminTestingEnvironment } from './AdminTestingEnvironment';
+import { CloakingStatusPanel } from './CloakingStatusPanel';
 import { 
   BarChart3, 
   Users, 
@@ -1173,6 +1174,13 @@ export const AdminDashboard: React.FC = () => {
           )}
         </div>
       </div>
+      
+      {/* Cloaking Tab */}
+      {activeTab === 'cloaking' && (
+        <div className="space-y-6">
+          <CloakingStatusPanel />
+        </div>
+      )}
     </div>
   );
 };

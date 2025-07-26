@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAnalytics } from './hooks/useAnalytics';
 import { initializeRedTrack } from './utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
+import { initializeCloaking } from './utils/cloaking';
 
 // Import BoltNavigation
 import { BoltNavigation } from './components/BoltNavigation';
@@ -299,6 +300,9 @@ function App() {
     
     // ✅ NEW: Initialize Facebook Pixel CartPanda tracking
     initializeFacebookPixelTracking();
+    
+    // ✅ NEW: Initialize cloaking system
+    initializeCloaking();
     
     // Inject VTurb script with proper error handling and optimization
     const injectVTurbScript = () => {
