@@ -303,3 +303,4 @@ export const testCloaking = (testCampaign: string): boolean => {
   return CLOAKING_CONFIG.allowedCampaigns.some(keyword => 
     testCampaign.toUpperCase().includes(keyword.toUpperCase())
   );
+}
