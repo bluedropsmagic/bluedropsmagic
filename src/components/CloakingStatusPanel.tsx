@@ -5,37 +5,22 @@ import {
   testCloaking, 
   CLOAKING_CONFIG,
   isBoltEnvironment,
-  isTrafficAllowed,
-  toggleVSLCloaking,
-  isDesktopDevice
+  isTrafficAllowed 
 } from '../utils/cloaking';
 
 export const CloakingStatusPanel: React.FC = () => {
   const [cloakingStatus, setCloakingStatus] = useState(getCloakingStatus());
   const [testCampaign, setTestCampaign] = useState('');
   const [testResult, setTestResult] = useState<boolean | null>(null);
-  const [vslCloakingEnabled, setVslCloakingEnabled] = useState(CLOAKING_CONFIG.vslCloaking.enabled);
 
   // Update status every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCloakingStatus(getCloakingStatus());
-      setVslCloakingEnabled(CLOAKING_CONFIG.vslCloaking.enabled);
     }, 5000);
 
     return () => clearInterval(interval);
   }, []);
-
-  const handleToggleVSLCloaking = () => {
-    const newState = toggleVSLCloaking();
-    setVslCloakingEnabled(newState);
-    setCloakingStatus(getCloakingStatus());
-    
-    // Force page reload to apply changes
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
-  };
 
   const handleTestCampaign = () => {
     if (!testCampaign.trim()) return;
@@ -159,94 +144,6 @@ export const CloakingStatusPanel: React.FC = () => {
             </p>
           </div>
         )}
-      </div>
-
-      {/* VSL Cloaking Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              🎬 VSL Cloaking System
-            </h3>
-            <p className="text-gray-600 mt-1">
-              Troca VSL automaticamente entre mobile e desktop
-            </p>
-          </div>
-          <button
-            onClick={handleToggleVSLCloaking}
-            className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
-              vslCloakingEnabled 
-                ? 'bg-red-500 hover:bg-red-600 text-white' 
-                : 'bg-green-500 hover:bg-green-600 text-white'
-            }`}
-          >
-            {vslCloakingEnabled ? '🔴 DESATIVAR' : '🟢 ATIVAR'} VSL Cloaking
-          </button>
-        </div>
-
-        {/* VSL Status */}
-        <div className={`border rounded-lg p-4 mb-4 ${
-          cloakingStatus.vslCloaking?.enabled 
-            ? 'border-green-200 bg-green-50' 
-            : 'border-yellow-200 bg-yellow-50'
-        }`}>
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="font-semibold text-gray-900 flex items-center gap-2">
-              {cloakingStatus.vslCloaking?.enabled ? (
-                <CheckCircle className="w-5 h-5 text-green-600" />
-              ) : (
-                <AlertTriangle className="w-5 h-5 text-yellow-600" />
-              )}
-              Status do VSL Cloaking
-            </h4>
-            <div className={`px-3 py-1 rounded-full text-sm font-bold ${
-              cloakingStatus.vslCloaking?.enabled 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-yellow-100 text-yellow-800'
-            }`}>
-              {cloakingStatus.vslCloaking?.enabled ? '🎬 ATIVO' : '⚠️ DESATIVADO'}
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <strong>Dispositivo atual:</strong> 
-              <span className={`ml-2 font-mono ${cloakingStatus.vslCloaking?.isDesktop ? 'text-blue-600' : 'text-green-600'}`}>
-                {cloakingStatus.vslCloaking?.isDesktop ? '💻 Desktop' : '📱 Mobile'}
-              </span>
-            </div>
-            <div>
-              <strong>VSL em uso:</strong> 
-              <span className="ml-2 font-mono text-purple-600">
-                {cloakingStatus.vslCloaking?.currentVideoId}
-              </span>
-            </div>
-            <div>
-              <strong>VSL Desktop:</strong> 
-              <span className="ml-2 font-mono text-blue-600">
-                {cloakingStatus.vslCloaking?.desktopVideoId}
-              </span>
-            </div>
-            <div>
-              <strong>VSL Mobile:</strong> 
-              <span className="ml-2 font-mono text-green-600">
-                {cloakingStatus.vslCloaking?.mobileVideoId}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* VSL Cloaking Info */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="font-semibold text-blue-800 mb-2">🎬 Como Funciona o VSL Cloaking:</h4>
-          <div className="space-y-1 text-sm text-blue-700">
-            <p>• <strong>Desktop (≥1024px):</strong> Usa VSL específico para desktop</p>
-            <p>• <strong>Mobile (<1024px):</strong> Usa VSL original mobile</p>
-            <p>• <strong>Bolt Environment:</strong> Sempre usa VSL mobile (desenvolvimento)</p>
-            <p>• <strong>Detecção:</strong> Largura da tela + User Agent</p>
-            <p>• <strong>Controle:</strong> Pode ser ativado/desativado pelo admin</p>
-          </div>
-        </div>
       </div>
 
       {/* Configuration */}
