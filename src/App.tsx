@@ -310,8 +310,8 @@ function App() {
     
     // Inject VTurb script with proper error handling and optimization
     const injectVTurbScript = () => {
-      // ✅ UPDATED: Use dynamic video ID from VSL cloaking
-      const { getVideoId } = require('./utils/vslCloaking');
+      // ✅ UPDATED: Use imported getVideoId function
+      import('./utils/vslCloaking').then(({ getVideoId }) => {
       const videoId = getVideoId();
       const mainContainer = document.getElementById(`vid_${videoId}`);
       
@@ -432,6 +432,7 @@ function App() {
       
       document.head.appendChild(script);
       console.log(`✅ VTurb script injected successfully for ${videoId}`);
+      });
     };
 
     // Delay script injection to improve initial page load
@@ -473,13 +474,14 @@ function App() {
 
     return () => {
       clearTimeout(scriptTimeout);
-      const { getVideoId } = require('./utils/vslCloaking');
-      const videoId = getVideoId();
-      const scriptToRemove = document.getElementById(`scr_${videoId}`);
-      if (scriptToRemove) {
-        scriptToRemove.remove();
+      import('./utils/vslCloaking').then(({ getVideoId }) => {
+        const videoId = getVideoId();
+        const scriptToRemove = document.getElementById(`scr_${videoId}`);
+        if (scriptToRemove) {
+          scriptToRemove.remove();
+        }
+      });
       }
-    };
   }, []);
 
   // ✅ NEW: Expose tracking functions globally for testing
@@ -520,19 +522,19 @@ function App() {
         console.log(`🔍 Attempt ${trackingAttempts}/${maxAttempts} - Looking for MAIN video player...`);
         
         // Multiple ways to detect VTurb player
-        const { getVideoId } = require('./utils/vslCloaking');
-        const videoId = getVideoId();
-        const playerContainer = document.getElementById(`vid_${videoId}`);
-        
-        if (!playerContainer) {
-          console.error(`❌ MAIN video container not found (vid_${videoId})`);
-          console.log('🔍 Available elements with "vid" in ID:', 
-            Array.from(document.querySelectorAll('[id*="vid"]')).map(el => el.id)
-          );
-          return;
-        }
-        
-        console.log('✅ MAIN video container found:', playerContainer);
+        import('./utils/vslCloaking').then(({ getVideoId }) => {
+          const videoId = getVideoId();
+          const playerContainer = document.getElementById(`vid_${videoId}`);
+          
+          if (!playerContainer) {
+            console.error(`❌ MAIN video container not found (vid_${videoId})`);
+            console.log('🔍 Available elements with "vid" in ID:', 
+              Array.from(document.querySelectorAll('[id*="vid"]')).map(el => el.id)
+            );
+            return;
+          }
+          
+          console.log('✅ MAIN video container found:', playerContainer);
 
         // ✅ FIXED: Force tracking if video is loaded
         if (window.vslVideoLoaded && !hasTrackedPlay) {
@@ -662,6 +664,7 @@ function App() {
           playerContainer.addEventListener('touchstart', trackInteraction);
           console.log('🎯 Interaction listeners adicionados');
         }
+        });
 
       } catch (error) {
         console.error('Error in checkForPlayer:', error);
