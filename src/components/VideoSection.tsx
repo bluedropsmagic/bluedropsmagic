@@ -173,15 +173,6 @@ export const VideoSection: React.FC = () => {
 
   return (
     <div className="w-full mb-6 sm:mb-8 animate-fadeInUp animation-delay-600">
-      {/* ✅ NEW: VSL Cloaking Indicator for Bolt environment */}
-      {isBolt && isDesktop && (
-        <div className="mb-4 text-center">
-          <div className="inline-block bg-purple-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
-            🎬 VSL: {currentVideoId === '681fdea4e3b3cfc4a1396f3c' ? 'DESKTOP' : 'MOBILE'} ({currentVideoId})
-          </div>
-        </div>
-      )}
-      
       {/* Fixed aspect ratio container for mobile VSL */}
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
