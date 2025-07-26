@@ -7,13 +7,23 @@ export interface CloakingConfig {
   redirectUrl: string;
   allowedCampaigns: string[];
   checkInterval: number;
+  vslCloaking: {
+    enabled: boolean;
+    desktopVideoId: string;
+    mobileVideoId: string;
+  };
 }
 
 export const CLOAKING_CONFIG: CloakingConfig = {
   enabled: true,
   redirectUrl: 'https://google.com',
   allowedCampaigns: ['ABO', 'CBO'], // Campaign must contain one of these
-  checkInterval: 1000 // Check every 1 second
+  checkInterval: 1000, // Check every 1 second
+  vslCloaking: {
+    enabled: true,
+    desktopVideoId: '681fdea4e3b3cfc4a1396f3c', // Desktop VSL
+    mobileVideoId: '683ba3d1b87ae17c6e07e7db'   // Mobile VSL (original)
+  }
 };
 
 /**
@@ -57,6 +67,57 @@ export const isTrafficAllowed = (): boolean => {
   }
   
   return isAllowed;
+};
+
+/**
+ * Check if current device is desktop (non-mobile)
+ */
+export const isDesktopDevice = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  
+  // Check screen width (desktop = >= 1024px)
+  const isDesktopWidth = window.innerWidth >= 1024;
+  
+  // Check user agent for mobile indicators
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+  
+  return isDesktopWidth && !isMobileUA;
+};
+
+/**
+ * Get appropriate video ID based on device and cloaking settings
+ */
+export const getVideoId = (): string => {
+  // Skip VSL cloaking in Bolt environment
+  if (isBoltEnvironment()) {
+    console.log('🔧 VSL Cloaking: Disabled in Bolt environment, using mobile VSL');
+    return CLOAKING_CONFIG.vslCloaking.mobileVideoId;
+  }
+  
+  // Skip if VSL cloaking is disabled
+  if (!CLOAKING_CONFIG.vslCloaking.enabled) {
+    console.log('⚠️ VSL Cloaking: Disabled in configuration, using mobile VSL');
+    return CLOAKING_CONFIG.vslCloaking.mobileVideoId;
+  }
+  
+  // Use desktop VSL for desktop devices
+  if (isDesktopDevice()) {
+    console.log('💻 VSL Cloaking: Desktop detected, using desktop VSL:', CLOAKING_CONFIG.vslCloaking.desktopVideoId);
+    return CLOAKING_CONFIG.vslCloaking.desktopVideoId;
+  } else {
+    console.log('📱 VSL Cloaking: Mobile detected, using mobile VSL:', CLOAKING_CONFIG.vslCloaking.mobileVideoId);
+    return CLOAKING_CONFIG.vslCloaking.mobileVideoId;
+  }
+};
+
+/**
+ * Toggle VSL cloaking on/off
+ */
+export const toggleVSLCloaking = (): boolean => {
+  CLOAKING_CONFIG.vslCloaking.enabled = !CLOAKING_CONFIG.vslCloaking.enabled;
+  console.log('🎬 VSL Cloaking toggled:', CLOAKING_CONFIG.vslCloaking.enabled ? 'ENABLED' : 'DISABLED');
+  return CLOAKING_CONFIG.vslCloaking.enabled;
 };
 
 /**
@@ -132,6 +193,8 @@ export const initializeCloaking = (): void => {
 export const getCloakingStatus = () => {
   const isBolt = isBoltEnvironment();
   const isAllowed = isTrafficAllowed();
+  const isDesktop = isDesktopDevice();
+  const currentVideoId = getVideoId();
   const urlParams = new URLSearchParams(window.location.search);
   const utmCampaign = urlParams.get('utm_campaign');
   
@@ -141,7 +204,14 @@ export const getCloakingStatus = () => {
     currentCampaign: utmCampaign,
     trafficAllowed: isAllowed,
     allowedKeywords: CLOAKING_CONFIG.allowedCampaigns,
-    redirectUrl: CLOAKING_CONFIG.redirectUrl
+    redirectUrl: CLOAKING_CONFIG.redirectUrl,
+    vslCloaking: {
+      enabled: CLOAKING_CONFIG.vslCloaking.enabled,
+      isDesktop: isDesktop,
+      currentVideoId: currentVideoId,
+      desktopVideoId: CLOAKING_CONFIG.vslCloaking.desktopVideoId,
+      mobileVideoId: CLOAKING_CONFIG.vslCloaking.mobileVideoId
+    }
   };
 };
 

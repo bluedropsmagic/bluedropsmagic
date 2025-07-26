@@ -1,10 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Play, Volume2, AlertTriangle, Clock, RefreshCw } from 'lucide-react';
+import { getVideoId, isBoltEnvironment, isDesktopDevice } from '../utils/cloaking';
 
 export const VideoSection: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [currentVideoId, setCurrentVideoId] = useState<string>('683ba3d1b87ae17c6e07e7db');
+  const [isBolt, setIsBolt] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // ✅ NEW: Detect environment and device type
+  useEffect(() => {
+    const boltEnv = isBoltEnvironment();
+    const desktop = isDesktopDevice();
+    const videoId = getVideoId();
+    
+    setIsBolt(boltEnv);
+    setIsDesktop(desktop);
+    setCurrentVideoId(videoId);
+    
+    console.log('🎬 VideoSection initialized:', {
+      isBolt: boltEnv,
+      isDesktop: desktop,
+      videoId: videoId
+    });
+  }, []);
 
   useEffect(() => {
     // Check if video is loaded
@@ -12,7 +33,7 @@ export const VideoSection: React.FC = () => {
     let checkInterval: number;
     
     const checkVideoLoad = () => {
-      const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+      const videoContainer = document.getElementById(`vid_${currentVideoId}`);
       if (videoContainer) {
         // Check for actual video content
         const hasVideo = videoContainer.querySelector('video') || 
@@ -55,7 +76,7 @@ export const VideoSection: React.FC = () => {
         console.error('Error cleaning up video load check:', error);
       }
     };
-  }, [isLoading]);
+  }, [isLoading, currentVideoId]);
 
   // ✅ UPDATED: Better retry logic with more logging
   const handleRetryLoad = () => {
@@ -65,7 +86,7 @@ export const VideoSection: React.FC = () => {
     setHasError(false);
     
     // Force reload the VTurb script
-    const existingScript = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
+    const existingScript = document.getElementById(`scr_${currentVideoId}`);
     if (existingScript) {
       existingScript.remove();
       console.log('🔄 Removed existing VTurb script');
@@ -82,7 +103,7 @@ export const VideoSection: React.FC = () => {
     // Re-inject script
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.id = 'scr_683ba3d1b87ae17c6e07e7db';
+    script.id = `scr_${currentVideoId}`;
     script.async = true;
     script.innerHTML = `
       console.log('🔄 Retry #${retryCount + 1}: Executing VTurb script reload...');
@@ -94,7 +115,7 @@ export const VideoSection: React.FC = () => {
           }
           
           var s = document.createElement("script");
-          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/player.js";
+          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${currentVideoId}/player.js";
           s.async = true; 
           s.defer = true;
           
@@ -103,7 +124,7 @@ export const VideoSection: React.FC = () => {
           s.onerror = function(error) {
             console.error('Error reloading VTurb script:', error);
             // Don't completely fail if it's just a custom element issue
-            if (error && error.toString().includes('vturb-bezel')) {
+            if (error && error.toString().includes('vturb')) {
               console.log('🔄 Custom element error on reload, video may still work');
               window.vslVideoLoaded = true; // Mark as loaded anyway
             }
@@ -152,12 +173,21 @@ export const VideoSection: React.FC = () => {
 
   return (
     <div className="w-full mb-6 sm:mb-8 animate-fadeInUp animation-delay-600">
+      {/* ✅ NEW: VSL Cloaking Indicator for Bolt environment */}
+      {isBolt && isDesktop && (
+        <div className="mb-4 text-center">
+          <div className="inline-block bg-purple-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
+            🎬 VSL: {currentVideoId === '681fdea4e3b3cfc4a1396f3c' ? 'DESKTOP' : 'MOBILE'} ({currentVideoId})
+          </div>
+        </div>
+      )}
+      
       {/* Fixed aspect ratio container for mobile VSL */}
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ FIXED: VTurb Video Container - Ensure container exists */}
           <div
-            id="vid_683ba3d1b87ae17c6e07e7db"
+            id={`vid_${currentVideoId}`}
             className="absolute inset-0 w-full h-full z-30 cursor-pointer"
             style={{
               position: 'absolute',
@@ -175,8 +205,8 @@ export const VideoSection: React.FC = () => {
           >
             {/* ✅ FIXED: Ensure thumbnail and backdrop are always present */}
             <img 
-              id="thumb_683ba3d1b87ae17c6e07e7db" 
-              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/thumbnail.jpg" 
+              id={`thumb_${currentVideoId}`} 
+              src={`https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${currentVideoId}/thumbnail.jpg`} 
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
               loading="eager"
@@ -188,7 +218,7 @@ export const VideoSection: React.FC = () => {
             
             {/* ✅ FIXED: Backdrop with proper z-index */}
             <div 
-              id="backdrop_683ba3d1b87ae17c6e07e7db" 
+              id={`backdrop_${currentVideoId}`} 
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
@@ -200,7 +230,7 @@ export const VideoSection: React.FC = () => {
             
             {/* ✅ NEW: VTurb content will be injected here with higher z-index */}
             <div 
-              id="vturb-content-683ba3d1b87ae17c6e07e7db"
+              id={`vturb-content-${currentVideoId}`}
               className="absolute inset-0 w-full h-full"
               style={{
                 zIndex: 10,
@@ -272,7 +302,7 @@ export const VideoSection: React.FC = () => {
               }}
               onClick={() => {
                 console.log('🎬 Play button clicked');
-                const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+                const videoContainer = document.getElementById(`vid_${currentVideoId}`);
                 if (videoContainer) {
                   videoContainer.click();
                 }
