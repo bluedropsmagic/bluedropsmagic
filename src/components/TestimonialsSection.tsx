@@ -20,8 +20,6 @@ export const TestimonialsSection: React.FC = () => {
   const [lastMoveTime, setLastMoveTime] = useState(0);
   const [lastMoveX, setLastMoveX] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
-  const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
   const [pageType, setPageType] = useState<'main' | 'upsell'>('main');
@@ -56,24 +54,6 @@ export const TestimonialsSection: React.FC = () => {
 
   // ✅ NEW: Detect if we're on an upsell page
   useEffect(() => {
-    // Detect Bolt environment
-    const hostname = window.location.hostname;
-    const isBolt = hostname.includes('stackblitz') || 
-                   hostname.includes('bolt.new') ||
-                   hostname.includes('webcontainer') ||
-                   hostname.includes('localhost') ||
-                   hostname.includes('127.0.0.1');
-    
-    setIsBoltEnvironment(isBolt);
-    
-    // Detect desktop (screen width >= 1024px)
-    const checkIsDesktop = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-    
-    checkIsDesktop();
-    window.addEventListener('resize', checkIsDesktop);
-    
     const path = window.location.pathname;
     if (path.includes('/up1bt') || path.includes('/up3bt') || path.includes('/up6bt')) {
       setPageType('upsell');
@@ -82,16 +62,6 @@ export const TestimonialsSection: React.FC = () => {
       setPageType('main');
       console.log('🎬 TestimonialsSection: Detected main page, using main video injection');
     }
-    
-    if (isBolt) {
-      console.log('🔧 Bolt environment detected - testimonials will show on all devices');
-    } else if (isDesktop) {
-      console.log('💻 Desktop detected - testimonials will be hidden (mobile only)');
-    }
-    
-    return () => {
-      window.removeEventListener('resize', checkIsDesktop);
-    };
   }, []);
 
   // Intersection Observer for lazy loading
@@ -325,12 +295,6 @@ export const TestimonialsSection: React.FC = () => {
     };
   };
 
-  // ✅ NEW: Don't render on desktop unless in Bolt environment
-  if (isDesktop && !isBoltEnvironment) {
-    console.log('💻 Hiding testimonials on desktop (not Bolt environment)');
-    return null;
-  }
-
   if (!isVisible) {
     return (
       <section 
@@ -349,15 +313,6 @@ export const TestimonialsSection: React.FC = () => {
 
   return (
     <section className="mt-16 sm:mt-20 w-full max-w-5xl mx-auto px-4 animate-fadeInUp animation-delay-1200">
-      {/* ✅ NEW: Bolt Environment Indicator for Testimonials */}
-      {isBoltEnvironment && isDesktop && (
-        <div className="mb-4 text-center">
-          <div className="inline-block bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg">
-            🔧 BOLT MODE: Testimonials visible on desktop for testing
-          </div>
-        </div>
-      )}
-      
       {/* Section Header */}
       <div className="text-center mb-4">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-2">
