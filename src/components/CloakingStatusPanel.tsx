@@ -5,45 +5,22 @@ import {
   testCloaking, 
   CLOAKING_CONFIG,
   isBoltEnvironment,
-  isTrafficAllowed,
-  generateUserFingerprint,
-  isUserBlocked
+  isTrafficAllowed 
 } from '../utils/cloaking';
 
 export const CloakingStatusPanel: React.FC = () => {
-  const [cloakingStatus, setCloakingStatus] = useState<any>(null);
+  const [cloakingStatus, setCloakingStatus] = useState(getCloakingStatus());
   const [testCampaign, setTestCampaign] = useState('');
   const [testResult, setTestResult] = useState<boolean | null>(null);
-  const [userFingerprint, setUserFingerprint] = useState<string>('');
-  const [isCurrentUserBlocked, setIsCurrentUserBlocked] = useState<boolean>(false);
-
-  // Load initial status
-  useEffect(() => {
-    const loadStatus = async () => {
-      const status = await getCloakingStatus();
-      setCloakingStatus(status);
-      setUserFingerprint(generateUserFingerprint());
-      setIsCurrentUserBlocked(await isUserBlocked());
-    };
-    
-    loadStatus();
-  }, []);
 
   // Update status every 5 seconds
   useEffect(() => {
-    if (!cloakingStatus) return;
-    
     const interval = setInterval(() => {
-      const updateStatus = async () => {
-        const status = await getCloakingStatus();
-        setCloakingStatus(status);
-        setIsCurrentUserBlocked(await isUserBlocked());
-      };
-      updateStatus();
+      setCloakingStatus(getCloakingStatus());
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [cloakingStatus]);
+  }, []);
 
   const handleTestCampaign = () => {
     if (!testCampaign.trim()) return;
@@ -89,17 +66,6 @@ export const CloakingStatusPanel: React.FC = () => {
     }
   ];
 
-  if (!cloakingStatus) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-          <p className="text-gray-600">Carregando status do cloaking...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -111,54 +77,16 @@ export const CloakingStatusPanel: React.FC = () => {
               Sistema de Cloaking - Filtro de Tráfego
             </h2>
             <p className="text-gray-600 mt-1">
-              Redireciona para Google se utm_campaign não contiver ABO ou CBO + Bloqueio Permanente
+              Redireciona para Google se utm_campaign não contiver ABO ou CBO
             </p>
           </div>
           <button
-            onClick={async () => {
-              const status = await getCloakingStatus();
-              setCloakingStatus(status);
-              setIsCurrentUserBlocked(await isUserBlocked());
-            }}
+            onClick={() => setCloakingStatus(getCloakingStatus())}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Atualizar
           </button>
-        </div>
-
-        {/* Permanent Blocking Status */}
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-          <h3 className="font-semibold text-red-900 mb-2">🔒 Sistema de Bloqueio Permanente:</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <strong>Status:</strong> 
-              <span className={`ml-2 font-bold ${cloakingStatus.permanentBlocking ? 'text-red-600' : 'text-gray-600'}`}>
-                {cloakingStatus.permanentBlocking ? '🔒 ATIVO' : '⚪ DESABILITADO'}
-              </span>
-            </div>
-            <div>
-              <strong>Usuário atual:</strong> 
-              <span className={`ml-2 font-bold ${isCurrentUserBlocked ? 'text-red-600' : 'text-green-600'}`}>
-                {isCurrentUserBlocked ? '🚫 BLOQUEADO' : '✅ PERMITIDO'}
-              </span>
-            </div>
-            <div className="md:col-span-2">
-              <strong>Fingerprint:</strong> 
-              <code className="ml-2 bg-gray-100 px-2 py-1 rounded text-xs">{userFingerprint}</code>
-            </div>
-          </div>
-          
-          {cloakingStatus.permanentBlocking && (
-            <div className="mt-3 p-3 bg-red-100 border border-red-300 rounded">
-              <p className="text-red-700 text-sm font-medium">
-                ⚠️ <strong>ATENÇÃO:</strong> Usuários bloqueados são redirecionados PERMANENTEMENTE, mesmo com UTMs válidas!
-              </p>
-              <p className="text-red-600 text-xs mt-1">
-                Uma vez bloqueado, o usuário nunca mais consegue acessar o site
-              </p>
-            </div>
-          )}
         </div>
 
         {/* Current Status */}
@@ -255,8 +183,6 @@ export const CloakingStatusPanel: React.FC = () => {
                 <p>• Verifica parâmetro <code>utm_campaign</code> na URL</p>
                 <p>• Se não contiver <strong>ABO</strong> ou <strong>CBO</strong> → redireciona</p>
                 <p>• Se não houver <code>utm_campaign</code> → redireciona</p>
-                <p>• <strong>NOVO:</strong> Usuário bloqueado fica permanentemente bloqueado</p>
-                <p>• <strong>NOVO:</strong> Mesmo com UTMs válidas, usuário bloqueado é redirecionado</p>
                 <p>• Desabilitado no ambiente Bolt para desenvolvimento</p>
                 <p>• Verificação a cada 1 segundo</p>
               </div>
@@ -356,8 +282,6 @@ export const CloakingStatusPanel: React.FC = () => {
           <p><strong>3. Campanhas Permitidas:</strong> Devem conter "ABO" ou "CBO" no utm_campaign</p>
           <p><strong>4. Redirecionamento:</strong> Tráfego bloqueado vai para google.com</p>
           <p><strong>5. Monitoramento:</strong> Verificação contínua a cada 1 segundo</p>
-          <p><strong>6. NOVO - Bloqueio Permanente:</strong> Usuários bloqueados ficam permanentemente bloqueados</p>
-          <p><strong>7. NOVO - Fingerprinting:</strong> Sistema identifica usuários por impressão digital do browser</p>
         </div>
         
         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -367,8 +291,6 @@ export const CloakingStatusPanel: React.FC = () => {
             <p>• <strong>CBO:</strong> Campaign Budget Optimization (Facebook Ads)</p>
             <p>• <strong>Apenas tráfego autorizado</strong> do Facebook Ads será permitido</p>
             <p>• <strong>Tráfego orgânico ou de outras fontes</strong> será redirecionado</p>
-            <p>• <strong>BLOQUEIO PERMANENTE:</strong> Uma vez bloqueado, sempre bloqueado</p>
-            <p>• <strong>IMPOSSÍVEL CONTORNAR:</strong> Mesmo com UTMs válidas, usuário bloqueado é redirecionado</p>
           </div>
         </div>
       </div>

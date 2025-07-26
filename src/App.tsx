@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAnalytics } from './hooks/useAnalytics';
 import { initializeRedTrack } from './utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
-import { initializeCloaking } from './utils/cloaking';
+import { initializeCloaking, getVideoId } from './utils/cloaking';
 
 // Import BoltNavigation
 import { BoltNavigation } from './components/BoltNavigation';
@@ -31,8 +31,8 @@ function App() {
   const [adminDelayOverride, setAdminDelayOverride] = useState(false); // ✅ CHANGED: Default false
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false); // ✅ NEW: Detect Bolt environment
 
-  // ✅ FIXED: Use standard video ID
-  const currentVideoId = '683ba3d1b87ae17c6e07e7db';
+  // ✅ NEW: VSL Cloaking state
+  const [currentVideoId, setCurrentVideoId] = useState<string>('683ba3d1b87ae17c6e07e7db');
 
   // ✅ NEW: Detect Bolt environment
   useEffect(() => {
@@ -48,6 +48,11 @@ function App() {
     if (isBolt) {
       console.log('🔧 Bolt environment detected - navigation buttons enabled');
     }
+    
+    // ✅ NEW: Set appropriate video ID based on device and cloaking
+    const videoId = getVideoId();
+    setCurrentVideoId(videoId);
+    console.log('🎬 Using video ID:', videoId);
   }, []);
 
   // ✅ NEW: Load Hotjar for main page only
