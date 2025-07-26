@@ -11,7 +11,6 @@ import { RedTrackTestPanel } from './RedTrackTestPanel';
 import { BoltNavigation } from './BoltNavigation';
 import { AdminTestingEnvironment } from './AdminTestingEnvironment';
 import { CloakingStatusPanel } from './CloakingStatusPanel';
-import { VSLCloakingPanel } from './VSLCloakingPanel';
 import { 
   BarChart3, 
   Users, 
@@ -107,7 +106,7 @@ export const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
-  const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'testing' | 'settings' | 'cloaking' | 'vsl-cloaking'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'testing' | 'settings' | 'cloaking'>('analytics');
   const [contentDelay, setContentDelay] = useState(2155); // ✅ CHANGED: Default to 35:55 (2155 seconds)
 
   const navigate = useNavigate();
@@ -828,17 +827,6 @@ export const AdminDashboard: React.FC = () => {
                   <Lock className="w-4 h-4 inline mr-2" />
                   Cloaking
                 </button>
-                <button
-                  onClick={() => setActiveTab('vsl-cloaking')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                    activeTab === 'vsl-cloaking'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Eye className="w-4 h-4 inline mr-2" />
-                  VSL Cloaking
-                </button>
               </nav>
             </div>
           </div>
@@ -1096,10 +1084,6 @@ export const AdminDashboard: React.FC = () => {
           ) : activeTab === 'cloaking' ? (
             <div className="space-y-6">
               <CloakingStatusPanel />
-            </div>
-          ) : activeTab === 'vsl-cloaking' ? (
-            <div className="space-y-6">
-              <VSLCloakingPanel />
             </div>
           ) : (
             // ✅ NEW: Settings Tab - Delay Controller
