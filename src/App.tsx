@@ -4,6 +4,7 @@ import { useAnalytics } from './hooks/useAnalytics';
 import { initializeRedTrack } from './utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
 import { initializeCloaking } from './utils/cloaking';
+import { initializeVSLCloaking } from './utils/vslCloaking';
 
 // Import BoltNavigation
 import { BoltNavigation } from './components/BoltNavigation';
@@ -304,20 +305,26 @@ function App() {
     // ✅ NEW: Initialize cloaking system
     initializeCloaking();
     
+    // ✅ NEW: Initialize VSL cloaking system
+    initializeVSLCloaking();
+    
     // Inject VTurb script with proper error handling and optimization
     const injectVTurbScript = () => {
-      // ✅ FIXED: Check if container exists first
-      const mainContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+      // ✅ UPDATED: Use dynamic video ID from VSL cloaking
+      const { getVideoId } = require('./utils/vslCloaking');
+      const videoId = getVideoId();
+      const mainContainer = document.getElementById(`vid_${videoId}`);
+      
       if (!mainContainer) {
-        console.error('❌ Main video container not found! Cannot inject VTurb script.');
+        console.error(`❌ Main video container not found for ${videoId}! Cannot inject VTurb script.`);
         console.log('🔍 Available containers:', document.querySelectorAll('[id*="vid"]'));
         return;
       }
       
-      console.log('✅ Main video container found:', mainContainer);
+      console.log(`✅ Main video container found for ${videoId}:`, mainContainer);
 
       // Remove any existing script first
-      const existingScript = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
+      const existingScript = document.getElementById(`scr_${videoId}`);
       if (existingScript) {
         existingScript.remove();
         console.log('🗑️ Removed existing VTurb script');
@@ -325,7 +332,7 @@ function App() {
 
       const script = document.createElement('script');
       script.type = 'text/javascript';
-      script.id = 'scr_683ba3d1b87ae17c6e07e7db';
+      script.id = `scr_${videoId}`;
       script.async = true;
       script.defer = true;
       
@@ -336,95 +343,95 @@ function App() {
             // ✅ FIXED: Check if custom elements are already defined
             // Removed custom element check to allow video to load properly
             
-            // ✅ CRITICAL: Initialize main video container isolation
-            window.mainVideoId = '683ba3d1b87ae17c6e07e7db';
+            // ✅ UPDATED: Initialize main video container isolation with dynamic ID
+            window.mainVideoId = '${videoId}';
             window.smartplayer = window.smartplayer || { instances: {} };
-            console.log('🎬 Initializing MAIN video player: 683ba3d1b87ae17c6e07e7db');
+            console.log('🎬 Initializing MAIN video player: ${videoId}');
 
             // ✅ FIXED: Check for existing scripts
-            if (document.querySelector('script[src*="683ba3d1b87ae17c6e07e7db/player.js"]')) {
-              console.log('🛡️ VTurb script already in DOM, skipping duplicate injection');
+            if (document.querySelector('script[src*="${videoId}/player.js"]')) {
+              console.log('🛡️ VTurb script already in DOM for ${videoId}, skipping duplicate injection');
               window.vslVideoLoaded = true;
               return;
             }
             
             // ✅ FIXED: Ensure target container exists
-            var targetContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+            var targetContainer = document.getElementById('vid_${videoId}');
             if (!targetContainer) {
-              console.error('❌ Target container not found during script injection');
+              console.error('❌ Target container not found during script injection for ${videoId}');
               return;
             }
             
             var s = document.createElement("script");
-            s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/player.js";
+            s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/player.js";
             s.async = true;
             s.onload = function() {
-              console.log('VTurb player script loaded successfully');
+              console.log('VTurb player script loaded successfully for ${videoId}');
               window.vslVideoLoaded = true;
               
               // ✅ FIXED: Verify container still exists after load
-              var container = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+              var container = document.getElementById('vid_${videoId}');
               if (!container) {
-                console.error('❌ Container disappeared after VTurb load!');
+                console.error('❌ Container disappeared after VTurb load for ${videoId}!');
               }
               // ✅ AUTO-PLAY: Tentar dar play automaticamente no vídeo principal
               setTimeout(function() {
                 try {
                   // Método 1: Via smartplayer instance
-                  if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances['683ba3d1b87ae17c6e07e7db']) {
-                    var player = window.smartplayer.instances['683ba3d1b87ae17c6e07e7db'];
+                  if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances['${videoId}']) {
+                    var player = window.smartplayer.instances['${videoId}'];
                     if (player.play) {
                       player.play();
-                      console.log('✅ Auto-play via smartplayer instance');
+                      console.log('✅ Auto-play via smartplayer instance for ${videoId}');
                     }
                   }
                   
                   // Método 2: Via elemento de vídeo direto
-                  var videoElements = document.querySelectorAll('#vid_683ba3d1b87ae17c6e07e7db video');
+                  var videoElements = document.querySelectorAll('#vid_${videoId} video');
                   videoElements.forEach(function(video) {
                     if (video.play) {
                       video.play().then(function() {
-                        console.log('✅ Auto-play via video element');
+                        console.log('✅ Auto-play via video element for ${videoId}');
                       }).catch(function(error) {
-                        console.log('⚠️ Auto-play blocked by browser:', error);
+                        console.log('⚠️ Auto-play blocked by browser for ${videoId}:', error);
                       });
                     }
                   });
                   
                   // Método 3: Simular clique no container (fallback)
-                  var container = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+                  var container = document.getElementById('vid_${videoId}');
                   if (container) {
                     container.click();
-                    console.log('✅ Auto-play via container click');
+                    console.log('✅ Auto-play via container click for ${videoId}');
                   }
                 } catch (error) {
-                  console.log('⚠️ Auto-play failed:', error);
+                  console.log('⚠️ Auto-play failed for ${videoId}:', error);
                 }
               }, 3000); // Aguardar 3 segundos para o vídeo carregar
               
               // ✅ CRITICAL: Ensure main video stays in its container
               setTimeout(function() {
-                var mainContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+                var mainContainer = document.getElementById('vid_${videoId}');
                 if (mainContainer) {
-                  console.log('✅ Main video container secured');
+                  console.log('✅ Main video container secured for ${videoId}');
                   // Mark main video as protected
                   mainContainer.setAttribute('data-main-video', 'true');
-                  mainContainer.setAttribute('data-video-id', '683ba3d1b87ae17c6e07e7db');
+                  mainContainer.setAttribute('data-video-id', '${videoId}');
                 }
               }, 2000);
             };
             s.onerror = function() {
-              console.error('Failed to load VTurb player script');
+              console.error('Failed to load VTurb player script for ${videoId}');
             };
             document.head.appendChild(s);
           } catch (error) {
-            console.error('Error injecting VTurb script:', error);
+            console.error('Error injecting VTurb script for ${videoId}:', error);
           }
         })();
       `;
       
       document.head.appendChild(script);
-      console.log('✅ VTurb script injected successfully');
+      console.log(`✅ VTurb script injected successfully for ${videoId}`);
     };
 
     // Delay script injection to improve initial page load
@@ -433,12 +440,14 @@ function App() {
       
       // ✅ FIXED: Check if video actually loaded
       const checkVideoLoaded = () => {
-        const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+        const { getVideoId } = require('./utils/vslCloaking');
+        const videoId = getVideoId();
+        const videoContainer = document.getElementById(`vid_${videoId}`);
         if (videoContainer && (videoContainer.querySelector('video') || videoContainer.querySelector('iframe') || window.vslVideoLoaded)) {
           setIsVideoLoaded(true);
-          console.log('✅ Video container has video element, marking as loaded');
+          console.log(`✅ Video container has video element for ${videoId}, marking as loaded`);
         } else {
-          console.log('⏳ Waiting for video to load...');
+          console.log(`⏳ Waiting for video ${videoId} to load...`);
         }
       };
       
@@ -464,7 +473,9 @@ function App() {
 
     return () => {
       clearTimeout(scriptTimeout);
-      const scriptToRemove = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
+      const { getVideoId } = require('./utils/vslCloaking');
+      const videoId = getVideoId();
+      const scriptToRemove = document.getElementById(`scr_${videoId}`);
       if (scriptToRemove) {
         scriptToRemove.remove();
       }
@@ -509,10 +520,12 @@ function App() {
         console.log(`🔍 Attempt ${trackingAttempts}/${maxAttempts} - Looking for MAIN video player...`);
         
         // Multiple ways to detect VTurb player
-        const playerContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+        const { getVideoId } = require('./utils/vslCloaking');
+        const videoId = getVideoId();
+        const playerContainer = document.getElementById(`vid_${videoId}`);
         
         if (!playerContainer) {
-          console.error('❌ MAIN video container not found (vid_683ba3d1b87ae17c6e07e7db)');
+          console.error(`❌ MAIN video container not found (vid_${videoId})`);
           console.log('🔍 Available elements with "vid" in ID:', 
             Array.from(document.querySelectorAll('[id*="vid"]')).map(el => el.id)
           );
@@ -532,7 +545,7 @@ function App() {
         
         // Method 1: Check for smartplayer instances
         if (window.smartplayer && window.smartplayer.instances) {
-          const playerInstance = window.smartplayer.instances['683ba3d1b87ae17c6e07e7db'];
+          const playerInstance = window.smartplayer.instances[videoId];
           if (playerInstance) {
             console.log('✅ VTurb player instance found');
             
