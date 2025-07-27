@@ -3,10 +3,9 @@ import { useAnalytics } from '../hooks/useAnalytics';
 import { initializeRedTrack } from '../utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from '../utils/facebookPixelTracking';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
-import { Star, Shield, Truck, CreditCard, CheckCircle, Play, Volume2, AlertTriangle } from 'lucide-react';
+import { Star, Shield, Truck, CreditCard, CheckCircle } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
-  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
   const { trackVideoPlay, trackVideoProgress, trackOfferClick } = useAnalytics();
 
@@ -27,101 +26,6 @@ export const LandingPage: React.FC = () => {
     // Initialize tracking
     initializeRedTrack();
     initializeFacebookPixelTracking();
-    
-    // Inject VTurb script for landing page video
-    const injectVTurbScript = () => {
-      const videoId = '683ba3d1b87ae17c6e07e7db'; // Same as main page
-      
-      // Remove existing script if any
-      const existingScript = document.getElementById(`scr_${videoId}`);
-      if (existingScript) {
-        existingScript.remove();
-      }
-
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.id = `scr_${videoId}`;
-      script.async = true;
-      script.innerHTML = `
-        (function() {
-          try {
-            console.log('🎬 Loading landing page VTurb video: ${videoId}');
-            var s = document.createElement("script");
-            s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/player.js";
-            s.async = true;
-            s.onload = function() {
-              console.log('✅ Landing page VTurb video loaded: ${videoId}');
-              window.landingVideoLoaded = true;
-              
-              // Auto-play attempt
-              setTimeout(function() {
-                try {
-                  if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances['${videoId}']) {
-                    var player = window.smartplayer.instances['${videoId}'];
-                    if (player.play) {
-                      player.play();
-                      console.log('✅ Auto-play via smartplayer instance');
-                    }
-                  }
-                  
-                  var videoElements = document.querySelectorAll('#vid_${videoId} video');
-                  videoElements.forEach(function(video) {
-                    if (video.play) {
-                      video.play().then(function() {
-                        console.log('✅ Auto-play via video element');
-                      }).catch(function(error) {
-                        console.log('⚠️ Auto-play blocked by browser:', error);
-                      });
-                    }
-                  });
-                } catch (error) {
-                  console.log('⚠️ Auto-play failed:', error);
-                }
-              }, 3000);
-            };
-            s.onerror = function() {
-              console.error('Failed to load landing page VTurb script');
-            };
-            document.head.appendChild(s);
-          } catch (error) {
-            console.error('Error injecting landing page VTurb script:', error);
-          }
-        })();
-      `;
-      
-      document.head.appendChild(script);
-      console.log('✅ Landing page VTurb script injected');
-    };
-
-    setTimeout(() => {
-      injectVTurbScript();
-      
-      const checkVideoLoaded = () => {
-        const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
-        if (videoContainer && (videoContainer.querySelector('video') || videoContainer.querySelector('iframe') || window.landingVideoLoaded)) {
-          setIsVideoLoaded(true);
-        }
-      };
-      
-      checkVideoLoaded();
-      const videoCheckInterval = setInterval(checkVideoLoaded, 1000);
-      
-      setTimeout(() => {
-        clearInterval(videoCheckInterval);
-        setIsVideoLoaded(true);
-      }, 15000);
-      
-      return () => {
-        clearInterval(videoCheckInterval);
-      };
-    }, 500);
-
-    return () => {
-      const scriptToRemove = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
-      if (scriptToRemove) {
-        scriptToRemove.remove();
-      }
-    };
   }, []);
 
   const handlePurchase = (packageType: 'premium' | 'regular' | 'trial') => {
@@ -191,105 +95,19 @@ export const LandingPage: React.FC = () => {
             </p>
             
             <div className="flex items-center justify-center gap-2 text-blue-700 text-sm">
-              <Play className="w-4 h-4" />
-              <span className="font-medium tracking-wider">WATCH THE BREAKTHROUGH DISCOVERY</span>
+              <span className="font-medium tracking-wider">DISCOVER THE BREAKTHROUGH SOLUTION</span>
             </div>
           </div>
 
-          {/* Video Section */}
-          <div className="w-full mb-6 sm:mb-8 animate-fadeInUp animation-delay-600">
-            <div className="relative w-full max-w-sm mx-auto">
-              <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
-                <div
-                  id="vid_683ba3d1b87ae17c6e07e7db"
-                  className="absolute inset-0 w-full h-full z-30 cursor-pointer"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    touchAction: 'manipulation',
-                    isolation: 'isolate',
-                    contain: 'layout style paint'
-                  }}
-                >
-                  <img 
-                    id="thumb_683ba3d1b87ae17c6e07e7db" 
-                    src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/thumbnail.jpg" 
-                    className="absolute inset-0 w-full h-full object-cover cursor-pointer"
-                    alt="VSL Thumbnail"
-                    loading="eager"
-                    style={{ 
-                      touchAction: 'manipulation',
-                      zIndex: 1
-                    }}
-                  />
-                  
-                  <div 
-                    id="backdrop_683ba3d1b87ae17c6e07e7db" 
-                    className="absolute inset-0 w-full h-full cursor-pointer"
-                    style={{
-                      WebkitBackdropFilter: 'blur(5px)',
-                      backdropFilter: 'blur(5px)',
-                      zIndex: 2,
-                      touchAction: 'manipulation'
-                    }}
-                  />
-
-                  {!isVideoLoaded && (
-                    <div 
-                      className="absolute inset-0 flex items-center justify-center cursor-pointer"
-                      style={{ 
-                        touchAction: 'manipulation',
-                        zIndex: 20
-                      }}
-                    >
-                      <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30 hover:bg-white/30 transition-colors">
-                        <Play className="w-10 h-10 text-white ml-1" />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Video Warnings */}
-            <div className="mt-4 space-y-3 max-w-sm mx-auto">
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Volume2 className="w-4 h-4 text-blue-600" />
-                  <span className="text-blue-800 font-semibold text-sm">
-                    Please make sure your sound is on
-                  </span>
-                </div>
-                <p className="text-blue-600 text-xs">
-                  This video contains important audio information
-                </p>
-              </div>
-
-              <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <AlertTriangle className="w-4 h-4 text-red-600" />
-                  <span className="text-red-800 font-semibold text-sm">
-                    This video may be taken down at any time
-                  </span>
-                </div>
-                <p className="text-red-600 text-xs">
-                  Watch now before it's removed from the internet
-                </p>
-              </div>
-            </div>
-          </div>
 
           {/* First CTA Section */}
-          <div className="w-full mb-8 animate-fadeInUp animation-delay-800">
+          <div className="w-full mb-8 animate-fadeInUp animation-delay-600">
             <PurchaseButtons onPurchase={handlePurchase} />
           </div>
         </div>
 
         {/* Product Benefits Section */}
-        <section className="mt-8 sm:mt-12 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-1000">
+        <section className="mt-8 sm:mt-12 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-800">
           <div className="text-center mb-8">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
               <span className="block">Why BlueDrops Works</span>
@@ -334,7 +152,7 @@ export const LandingPage: React.FC = () => {
         </section>
 
         {/* Scientific Proof Section */}
-        <section className="mt-16 sm:mt-20 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-1200">
+        <section className="mt-16 sm:mt-20 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-1000">
           <div className="text-center mb-8">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
               <span className="block">Backed by</span>
@@ -389,7 +207,7 @@ export const LandingPage: React.FC = () => {
         </section>
 
         {/* Testimonials Section */}
-        <section className="mt-16 sm:mt-20 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-1400">
+        <section className="mt-16 sm:mt-20 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-1200">
           <div className="text-center mb-8">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
               <span className="block">Real Men.</span>
@@ -425,7 +243,7 @@ export const LandingPage: React.FC = () => {
         </section>
 
         {/* Guarantee Section */}
-        <section className="mt-16 sm:mt-20 w-full max-w-2xl mx-auto px-4 animate-fadeInUp animation-delay-1600">
+        <section className="mt-16 sm:mt-20 w-full max-w-2xl mx-auto px-4 animate-fadeInUp animation-delay-1400">
           <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-blue-200 shadow-lg text-center">
             <div className="flex items-center justify-center mb-6">
               <div className="relative">
@@ -457,7 +275,7 @@ export const LandingPage: React.FC = () => {
         </section>
 
         {/* Final CTA Section */}
-        <section className="mt-16 sm:mt-20 w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1800">
+        <section className="mt-16 sm:mt-20 w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1600">
           <div className="text-center mb-6">
             <h2 className="text-2xl sm:text-3xl font-black text-blue-900 mb-2">
               Ready to Transform Your Life?
@@ -471,7 +289,7 @@ export const LandingPage: React.FC = () => {
         </section>
 
         {/* Footer */}
-        <footer className="mt-16 sm:mt-20 text-center text-blue-700 w-full px-4 animate-fadeInUp animation-delay-2000">
+        <footer className="mt-16 sm:mt-20 text-center text-blue-700 w-full px-4 animate-fadeInUp animation-delay-1800">
           <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 max-w-xl mx-auto border border-blue-200">
             <p className="text-xs mb-1">
               <strong>Copyright ©2024 | Blue Drops</strong>
@@ -641,6 +459,5 @@ const TestimonialCard: React.FC<{
 // Global type declarations
 declare global {
   interface Window {
-    landingVideoLoaded?: boolean;
   }
 }
