@@ -6,6 +6,7 @@ import { AdminDashboard } from './components/AdminDashboard.tsx';
 import { UpsellPage } from './pages/UpsellPage.tsx';
 import { DownsellPage } from './pages/DownsellPage.tsx';
 import { SecondUpsellPage } from './pages/SecondUpsellPage.tsx';
+import { LandingPage } from './pages/LandingPage.tsx';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/lpw" element={<LandingPage />} />
         
         {/* Upsell Pages */}
         <Route path="/up1bt" element={<UpsellPage variant="1-bottle" />} />
