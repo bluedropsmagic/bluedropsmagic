@@ -83,19 +83,19 @@ export const LandingPage: React.FC = () => {
           {/* Hero Section */}
           <div className="mb-6 text-center w-full animate-fadeInUp animation-delay-400">
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-[0.85] mb-3 px-2">
-              <span className="text-blue-900 block mb-0.5">The Natural Trick</span>
+              <span className="text-blue-900 block mb-0.5">Natural Solution</span>
               <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block mb-0.5">
-                Helping Men Over 40
+                for Men Over 40
               </span>
-              <span className="text-blue-900 block">Ditch the Blue Pill</span>
+              <span className="text-blue-900 block">Restore Your Performance</span>
             </h1>
             
             <p className="text-base sm:text-lg text-blue-800 mb-2 font-semibold px-2">
-              No Prescriptions, No Side Effects, No Embarrassment
+              Clinically-Backed Formula • No Prescriptions Required • Discreet Delivery
             </p>
             
             <div className="flex items-center justify-center gap-2 text-blue-700 text-sm">
-              <span className="font-medium tracking-wider">DISCOVER THE BREAKTHROUGH SOLUTION</span>
+              <span className="font-medium tracking-wider">ADVANCED MALE ENHANCEMENT FORMULA</span>
             </div>
           </div>
 
@@ -110,9 +110,9 @@ export const LandingPage: React.FC = () => {
         <section className="mt-8 sm:mt-12 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-800">
           <div className="text-center mb-8">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
-              <span className="block">Why BlueDrops Works</span>
+              <span className="block">Clinically Proven</span>
               <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
-                When Pills Don't
+                Male Enhancement
               </span>
             </h2>
           </div>
@@ -120,99 +120,44 @@ export const LandingPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <BenefitCard 
               icon="🩸"
-              title="Boosts Blood Flow by 373%"
-              description="Activates your body's natural circulation switch for maximum performance"
+              title="Enhances Blood Flow by 373%"
+              description="Clinically proven to improve circulation for optimal performance"
             />
             <BenefitCard 
               icon="💪"
               title="Restores Firm, Long-Lasting Erections"
-              description="Get back the confidence and performance you had in your 20s"
+              description="Regain the confidence and performance of your younger years"
             />
             <BenefitCard 
               icon="⏰"
-              title="Just a 7-Second Ritual Before Bed"
-              description="Simple drops under your tongue - no pills, no injections, no hassle"
+              title="Simple 7-Second Daily Protocol"
+              description="Easy sublingual drops - no pills, no injections, no complications"
             />
             <BenefitCard 
               icon="🌿"
-              title="All-Natural Ingredients"
-              description="Safe and effective formula with zero reported side effects"
+              title="Pharmaceutical-Grade Natural Formula"
+              description="Premium ingredients with extensive safety profile"
             />
             <BenefitCard 
               icon="🚫"
-              title="No Doctor Visits, No Embarrassment"
-              description="Skip the awkward conversations and get results privately"
+              title="Private, Confidential Treatment"
+              description="No medical consultations required - complete privacy assured"
             />
             <BenefitCard 
               icon="📦"
-              title="Discreet Shipping"
-              description="Arrives at your doorstep in plain, unmarked packaging"
+              title="Confidential Delivery"
+              description="Professional packaging with complete discretion"
             />
-          </div>
-        </section>
-
-        {/* Scientific Proof Section */}
-        <section className="mt-16 sm:mt-20 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-1000">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
-              <span className="block">Backed by</span>
-              <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
-                Real Science
-              </span>
-            </h2>
-          </div>
-
-          <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-blue-200 shadow-lg">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div>
-                <img 
-                  src="https://images.pexels.com/photos/3683107/pexels-photo-3683107.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" 
-                  alt="Scientific Research" 
-                  className="w-full h-64 object-cover rounded-xl shadow-lg"
-                />
-              </div>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <img src="https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=60&h=40&fit=crop" alt="Harvard" className="h-8" />
-                  <img src="https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=60&h=40&fit=crop" alt="Boston University" className="h-8" />
-                </div>
-                
-                <h3 className="text-xl sm:text-2xl font-bold text-blue-900 mb-4">
-                  Harvard & Boston University Research
-                </h3>
-                
-                <div className="space-y-3 text-blue-800">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm sm:text-base">
-                      <strong>Bicarbonate-based formula</strong> activates hidden "circulation switch" in men
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm sm:text-base">
-                      <strong>Over 175,000 men</strong> are already using this bedtime formula
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm sm:text-base">
-                      <strong>Clinical studies show</strong> significant improvement in just 7 days
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
         {/* Testimonials Section */}
-        <section className="mt-16 sm:mt-20 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-1200">
+        <section className="mt-16 sm:mt-20 w-full max-w-4xl mx-auto px-4 animate-fadeInUp animation-delay-1000">
           <div className="text-center mb-8">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
-              <span className="block">Real Men.</span>
+              <span className="block">Verified Results.</span>
               <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
-                Real Results.
+                Real Men.
               </span>
             </h2>
           </div>
@@ -222,28 +167,28 @@ export const LandingPage: React.FC = () => {
               name="Daniel Carter"
               location="Austin, TX"
               image="https://i.imgur.com/4bcFSBQ.png"
-              testimonial="I was skeptical at first, but BlueDrops completely changed my life. My wife noticed the difference before I even told her!"
+              testimonial="I was skeptical about natural supplements, but BlueDrops delivered results beyond my expectations. The improvement was noticeable within days."
               rating={5}
             />
             <TestimonialCard 
               name="Marcus Reed"
               location="Atlanta, GA"
               image="https://i.imgur.com/Ob6Vy9q.png"
-              testimonial="After 50, I thought there was no hope. BlueDrops proved me wrong. I feel like I'm 30 again!"
+              testimonial="At 52, I thought my best years were behind me. BlueDrops restored my confidence and vitality in ways I didn't think possible."
               rating={5}
             />
             <TestimonialCard 
               name="Rick Alvarez"
               location="San Diego, CA"
               image="https://i.imgur.com/UJ0L2tZ.png"
-              testimonial="No more embarrassing doctor visits. BlueDrops gave me back my confidence and my relationship."
+              testimonial="The discretion and effectiveness of BlueDrops made all the difference. Professional results without the clinical hassle."
               rating={5}
             />
           </div>
         </section>
 
         {/* Guarantee Section */}
-        <section className="mt-16 sm:mt-20 w-full max-w-2xl mx-auto px-4 animate-fadeInUp animation-delay-1400">
+        <section className="mt-16 sm:mt-20 w-full max-w-2xl mx-auto px-4 animate-fadeInUp animation-delay-1200">
           <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-blue-200 shadow-lg text-center">
             <div className="flex items-center justify-center mb-6">
               <div className="relative">
@@ -268,20 +213,20 @@ export const LandingPage: React.FC = () => {
             </h3>
             
             <p className="text-blue-800 text-sm sm:text-base leading-relaxed">
-              Your order is protected by our iron-clad 90-day guarantee. If BlueDrops doesn't 
-              restore your confidence and performance, we'll refund every penny. No questions asked.
+              Your investment is protected by our comprehensive 90-day guarantee. If BlueDrops doesn't 
+              meet your expectations for enhanced performance and confidence, we'll provide a full refund. No questions asked.
             </p>
           </div>
         </section>
 
         {/* Final CTA Section */}
-        <section className="mt-16 sm:mt-20 w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1600">
+        <section className="mt-16 sm:mt-20 w-full max-w-md mx-auto px-4 animate-fadeInUp animation-delay-1400">
           <div className="text-center mb-6">
             <h2 className="text-2xl sm:text-3xl font-black text-blue-900 mb-2">
-              Ready to Transform Your Life?
+              Select Your BlueDrops Package
             </h2>
             <p className="text-blue-700 text-sm sm:text-base">
-              Choose your BlueDrops package below
+              Professional-grade formula with guaranteed results
             </p>
           </div>
           
@@ -289,7 +234,7 @@ export const LandingPage: React.FC = () => {
         </section>
 
         {/* Footer */}
-        <footer className="mt-16 sm:mt-20 text-center text-blue-700 w-full px-4 animate-fadeInUp animation-delay-1800">
+        <footer className="mt-16 sm:mt-20 text-center text-blue-700 w-full px-4 animate-fadeInUp animation-delay-1600">
           <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-4 max-w-xl mx-auto border border-blue-200">
             <p className="text-xs mb-1">
               <strong>Copyright ©2024 | Blue Drops</strong>
@@ -325,9 +270,19 @@ const PurchaseButtons: React.FC<{ onPurchase: (type: 'premium' | 'regular' | 'tr
           <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 rounded-2xl blur-lg opacity-60 animate-pulse"></div>
           
           <div className="relative bg-gradient-to-br from-blue-600/95 to-blue-800/95 backdrop-blur-xl rounded-2xl p-4 sm:p-6 pt-6 sm:pt-8 border-2 border-white/30 shadow-2xl">
+            
+            {/* Product Image */}
+            <div className="flex justify-center mb-3 sm:mb-4">
+              <img 
+                src="https://i.imgur.com/hsfqxVP.png" 
+                alt="BlueDrops 6 Bottle Pack"
+                className="w-full h-auto object-contain drop-shadow-2xl max-h-32 sm:max-h-40 md:max-h-48"
+              />
+            </div>
+            
             <div className="text-center mb-3">
               <h3 className="text-lg sm:text-xl font-black text-white mb-1">
-                PREMIUM PACKAGE
+                BLUEDROPS PREMIUM
               </h3>
               <p className="text-white/80 text-sm">6 Bottles - 180 Day Supply</p>
               <p className="text-yellow-400 font-bold text-base sm:text-lg">$294 - Save $900</p>
@@ -337,7 +292,7 @@ const PurchaseButtons: React.FC<{ onPurchase: (type: 'premium' | 'regular' | 'tr
               onClick={() => onPurchase('premium')}
               className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-3 sm:py-4 px-4 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-base sm:text-lg checkout-button"
             >
-              CLAIM PREMIUM OFFER
+              CLAIM OFFER NOW
             </button>
 
             <div className="flex justify-center items-center gap-1 mt-3">
@@ -368,33 +323,53 @@ const PurchaseButtons: React.FC<{ onPurchase: (type: 'premium' | 'regular' | 'tr
       <div className="grid grid-cols-2 gap-3">
         {/* Regular Offer - $88 */}
         <div className="bg-gradient-to-br from-blue-400/80 to-blue-600/80 backdrop-blur-xl rounded-xl p-3 border border-white/20 shadow-xl">
+          
+          {/* Product Image */}
+          <div className="flex justify-center mb-2 px-1">
+            <img 
+              src="https://i.imgur.com/eXYnjhm.png" 
+              alt="BlueDrops 3 Bottle Pack"
+              className="w-full h-auto object-contain drop-shadow-xl max-h-16 sm:max-h-20"
+            />
+          </div>
+          
           <div className="text-center mb-2">
-            <h3 className="text-sm font-bold text-white">REGULAR</h3>
+            <h3 className="text-sm font-bold text-white">BLUEDROPS</h3>
             <p className="text-white/80 text-xs">3 Bottles</p>
-            <p className="text-yellow-400 font-bold text-sm">$88</p>
+            <p className="text-yellow-400 font-bold text-sm">$198</p>
           </div>
           
           <button 
             onClick={() => onPurchase('regular')}
             className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-2 px-2 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-xs checkout-button"
           >
-            ORDER NOW
+            BUY NOW
           </button>
         </div>
 
         {/* Trial Offer - $49 */}
         <div className="bg-gradient-to-br from-blue-300/80 to-blue-500/80 backdrop-blur-xl rounded-xl p-3 border border-white/20 shadow-xl">
+          
+          {/* Product Image */}
+          <div className="flex justify-center mb-2 px-1">
+            <img 
+              src="https://i.imgur.com/iWs7wy7.png" 
+              alt="BlueDrops 1 Bottle Pack"
+              className="w-full h-auto object-contain drop-shadow-xl max-h-16 sm:max-h-20"
+            />
+          </div>
+          
           <div className="text-center mb-2">
-            <h3 className="text-sm font-bold text-white">TRIAL</h3>
+            <h3 className="text-sm font-bold text-white">BLUEDROPS</h3>
             <p className="text-white/80 text-xs">1 Bottle</p>
-            <p className="text-yellow-400 font-bold text-sm">$49</p>
+            <p className="text-yellow-400 font-bold text-sm">$79</p>
           </div>
           
           <button 
             onClick={() => onPurchase('trial')}
             className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-2 px-2 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-xs checkout-button"
           >
-            TRY NOW
+            BUY NOW
           </button>
         </div>
       </div>
