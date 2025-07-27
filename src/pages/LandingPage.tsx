@@ -95,19 +95,6 @@ export const LandingPage: React.FC = () => {
             <Award className="w-5 h-5" />
             <span className="font-medium tracking-wide">ADVANCED MALE ENHANCEMENT FORMULA</span>
           </div>
-
-          {/* First CTA */}
-          <div className="mb-16">
-            <button 
-              onClick={() => handlePurchase('premium')}
-              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl border-2 border-white/40 animate-pulse"
-            >
-              GET BLUEDROPS NOW
-            </button>
-            <p className="text-blue-600 text-sm mt-4 font-medium">
-              ⬇️ See packages and pricing below
-            </p>
-          </div>
         </div>
       </section>
 
