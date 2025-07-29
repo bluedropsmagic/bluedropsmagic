@@ -15,6 +15,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />
+        <Route path="/ftr" element={<App />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/lpw" element={<LandingPage />} />
         
