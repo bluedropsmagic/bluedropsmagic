@@ -542,6 +542,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
             <button 
               onClick={handleReject}
               className="w-full bg-gradient-to-br from-gray-400/80 to-gray-600/80 backdrop-blur-xl rounded-xl p-3 sm:p-4 border border-white/20 shadow-xl text-white hover:bg-gray-500/80 transition-all duration-300 checkout-button"
+             data-fttrack="checkout"
             >
               <span className="text-xs sm:text-sm font-medium">❌ {content.rejectButtonText}</span>
             </button>

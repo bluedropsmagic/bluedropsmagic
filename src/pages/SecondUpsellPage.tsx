@@ -454,6 +454,7 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                   width: '100%',
                   height: '100%'
                 }}
+               data-fttrack="checkout"
               >
                 {/* VTurb player will be injected here */}
               </div>

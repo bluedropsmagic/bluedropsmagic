@@ -400,6 +400,7 @@ const PurchaseButtons: React.FC<{ onPurchase: (type: 'premium' | 'regular' | 'tr
             <button 
               onClick={() => onPurchase('premium')}
               className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-lg checkout-button"
+             data-fttrack="checkout"
             >
               CLAIM PREMIUM PACKAGE
             </button>

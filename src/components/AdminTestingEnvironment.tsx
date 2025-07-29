@@ -139,6 +139,7 @@ export const AdminTestingEnvironment: React.FC<TestingEnvironmentProps> = ({ cla
                 <button 
                   onClick={() => handlePurchaseTest('1-bottle')}
                   className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-2 px-3 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-sm"
+                 data-fttrack="checkout"
                 >
                   🧪 TESTAR 1-BOTTLE
                 </button>

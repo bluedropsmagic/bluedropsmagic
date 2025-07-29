@@ -287,6 +287,7 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
               <button 
                 onClick={() => handleSecondaryClick('1-bottle')}
                 className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold py-2 sm:py-2.5 px-2 rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg text-xs sm:text-sm border border-white/30 checkout-button"
+               data-fttrack="checkout"
               >
                 <span>BUY NOW</span>
               </button>
