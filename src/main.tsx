@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.tsx';
+import FTRPage from './pages/FTRPage.tsx';
 import { AdminDashboard } from './components/AdminDashboard.tsx';
 import { UpsellPage } from './pages/UpsellPage.tsx';
 import { DownsellPage } from './pages/DownsellPage.tsx';
@@ -15,7 +16,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />
-        <Route path="/ftr" element={<App />} />
+        <Route path="/ftr" element={<FTRPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/lpw" element={<LandingPage />} />
         
