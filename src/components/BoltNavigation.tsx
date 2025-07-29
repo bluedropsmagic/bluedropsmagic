@@ -33,7 +33,8 @@ export const BoltNavigation: React.FC = () => {
     {
       category: 'Main',
       items: [
-        { label: '🏠 Home Page', path: '/', color: 'bg-gray-500 hover:bg-gray-600' }
+        { label: '🏠 Home Page', path: '/', color: 'bg-gray-500 hover:bg-gray-600' },
+        { label: '🎯 FTR Page', path: '/ftr', color: 'bg-gray-500 hover:bg-gray-600' }
       ]
     },
     {
