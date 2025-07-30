@@ -75,6 +75,29 @@ function FTRPage() {
     }
   }, []);
 
+  // ✅ NEW: Inject FTTrack script specifically for FTR page
+  useEffect(() => {
+    // Remove any existing FTTrack scripts to prevent conflicts
+    const existingFTTrack = document.querySelectorAll('script[src*="fttrack.com"]');
+    existingFTTrack.forEach(script => script.remove());
+    
+    // Inject FTTrack script specifically for FTR page
+    const fttrackScript = document.createElement('script');
+    fttrackScript.src = 'https://cdn.fttrack.com/scripts/fb-handler.js';
+    fttrackScript.setAttribute('data-product-id', '23850309-b356-4fec-8b8b-7e4f1281a183');
+    fttrackScript.async = true;
+    
+    document.head.appendChild(fttrackScript);
+    console.log('🎯 FTTrack script loaded specifically for FTR page');
+
+    // Cleanup on unmount
+    return () => {
+      const scriptsToRemove = document.querySelectorAll('script[src*="fttrack.com"]');
+      scriptsToRemove.forEach(script => script.remove());
+      console.log('🧹 FTTrack script removed when leaving FTR page');
+    };
+  }, []);
+
   // ✅ NEW: Prevent white page after errors
   useEffect(() => {
     // Global error handler to prevent white page
