@@ -366,7 +366,6 @@ export const ThankYouPage: React.FC = () => {
             </div>
           </div>
 
-
           {/* Footer */}
           <footer className="text-center text-gray-600 animate-fadeInUp animation-delay-1400">
             <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
