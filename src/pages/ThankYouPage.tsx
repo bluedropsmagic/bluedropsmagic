@@ -318,54 +318,6 @@ export const ThankYouPage: React.FC = () => {
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
                   <Shield className="w-6 h-6 text-green-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 text-sm">180-Day Guarantee</h3>
-                <p className="text-gray-600 text-xs">100% money-back promise</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Truck className="w-6 h-6 text-blue-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900 text-sm">Secure Shipping</h3>
-                <p className="text-gray-600 text-xs">Discreet & trackable delivery</p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Star className="w-6 h-6 text-purple-600" />
-                </div>
-                <h3 className="font-semibold text-gray-900 text-sm">Premium Quality</h3>
-                <p className="text-gray-600 text-xs">Pharmaceutical-grade formula</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Customer Support */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8 animate-fadeInUp animation-delay-1200">
-            <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
-              Need Help?
-            </h2>
-            
-            <div className="text-center space-y-3">
-              <p className="text-gray-700">
-                Our customer support team is here to help you with any questions
-              </p>
-              
-              <div className="space-y-2 text-sm">
-                <p className="text-gray-600">
-                  <strong>Email:</strong> support@bluedrops.com
-                </p>
-                <p className="text-gray-600">
-                  <strong>Response Time:</strong> Within 24 hours
-                </p>
-              </div>
-              
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
-                Contact Support
-              </button>
-            </div>
-          </div>
-
           {/* Footer */}
           <footer className="text-center text-gray-600 animate-fadeInUp animation-delay-1400">
             <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
