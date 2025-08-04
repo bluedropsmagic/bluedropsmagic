@@ -8,6 +8,7 @@ import { UpsellPage } from './pages/UpsellPage.tsx';
 import { DownsellPage } from './pages/DownsellPage.tsx';
 import { SecondUpsellPage } from './pages/SecondUpsellPage.tsx';
 import { LandingPage } from './pages/LandingPage.tsx';
+import { ThankYouPage } from './pages/ThankYouPage.tsx';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/ftr" element={<FTRPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/lpw" element={<LandingPage />} />
+        <Route path="/thankyou" element={<ThankYouPage />} />
         
         {/* Upsell Pages */}
         <Route path="/up1bt" element={<UpsellPage variant="1-bottle" />} />

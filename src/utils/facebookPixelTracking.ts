@@ -215,14 +215,33 @@ export const trackPurchase = (value: number, currency: string = 'BRL'): void => 
   }
   
   try {
-    // ✅ ONLY track Purchase for actual completed purchases
+    // ✅ Track Purchase for both pixels
     const fbq = (window as any).fbq;
+    
+    // Track for first pixel (1205864517252800)
     fbq('track', 'Purchase', {
       value: value,
       currency: currency
     });
     
-    console.log('✅ Meta Pixel: Purchase tracked successfully', { value, currency });
+    // Track for second pixel (1422476642128577) if available
+    if (typeof fbq === 'function') {
+      fbq('track', 'Purchase', {
+        value: value,
+        currency: currency
+      });
+    }
+    
+    console.log('✅ Meta Pixel: Purchase tracked for both pixels', { value, currency });
+    
+    // ✅ Track Purchase with Utmify
+    if (typeof window !== 'undefined' && (window as any).utmify) {
+      (window as any).utmify('track', 'Purchase', {
+        value: value,
+        currency: currency
+      });
+      console.log('✅ Utmify: Purchase tracked successfully', { value, currency });
+    }
     
   } catch (error) {
     console.error('❌ Error tracking Purchase:', error);
