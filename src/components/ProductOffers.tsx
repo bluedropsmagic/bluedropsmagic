@@ -59,30 +59,17 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
     const targetUrl = purchaseUrls[packageType];
     
-    // ✅ FIXED: Track InitiateCheckout AND redirect directly (no popup)
+    // ✅ Track InitiateCheckout for the popup interaction
     trackInitiateCheckout(targetUrl);
     
-    // ✅ NEW: Track offer click for analytics
+    // ✅ Track offer click for analytics (popup opened)
     if (typeof window !== 'undefined' && (window as any).trackOfferClick) {
-      (window as any).trackOfferClick(packageType);
+      (window as any).trackOfferClick(`${packageType}-popup-opened`);
     }
     
-    // ✅ FIXED: Redirect directly instead of opening popup
-    let urlWithParams = buildUrlWithParams(targetUrl);
-    
-    // Add CID parameter if present
-    const urlParams = new URLSearchParams(window.location.search);
-    const cid = urlParams.get('cid');
-    if (cid && !urlWithParams.includes('cid=')) {
-      urlWithParams += (urlWithParams.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
-    }
-    
-    console.log('🎯 Secondary button clicked:', packageType, '- Redirecting directly to:', urlWithParams);
-    
-    // ✅ Direct redirect with same delay as main button
-    setTimeout(() => {
-      window.location.href = urlWithParams;
-    }, 150);
+    // ✅ RESTORED: Open upsell popup as before
+    console.log('🎯 Secondary package clicked:', packageType, '- Opening upsell popup');
+    onSecondaryPackageClick(packageType);
   };
 
   if (!showPurchaseButton) return null;

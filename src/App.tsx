@@ -776,12 +776,24 @@ function App() {
 
   const handleUpsellAccept = () => {
     console.log('✅ Upsell accepted - redirecting to 6-bottle package');
+    
+    // ✅ Track the upsell acceptance
+    if (typeof window !== 'undefined' && (window as any).trackOfferClick) {
+      (window as any).trackOfferClick(`upsell-accept-to-6bottle`);
+    }
+    
     handlePurchase('6-bottle');
     closeUpsellPopup();
   };
 
   const handleUpsellRefuse = () => {
     console.log('❌ Upsell refused - redirecting to original selection:', selectedPackage);
+    
+    // ✅ Track the original package purchase (what user originally wanted)
+    if (selectedPackage && typeof window !== 'undefined' && (window as any).trackOfferClick) {
+      (window as any).trackOfferClick(`${selectedPackage}-after-upsell-refuse`);
+    }
+    
     if (selectedPackage) {
       handlePurchase(selectedPackage as '1-bottle' | '3-bottle' | '6-bottle');
     }
