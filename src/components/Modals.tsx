@@ -70,13 +70,27 @@ export const Modals: React.FC<ModalsProps> = ({
       // Track InitiateCheckout for the original product
       trackInitiateCheckout(targetUrl);
       
-      // Add CID parameter if present
+      // Build URL with all tracking parameters
       let finalUrl = targetUrl;
+      
+      // Add UTM and tracking parameters from current URL
       const urlParams = new URLSearchParams(window.location.search);
+      const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid', 'affiliate_id', 'sub_id'];
+      
+      trackingParams.forEach(param => {
+        const value = urlParams.get(param);
+        if (value && !finalUrl.includes(`${param}=`)) {
+          finalUrl += (finalUrl.includes('?') ? '&' : '?') + `${param}=${encodeURIComponent(value)}`;
+        }
+      });
+      
+      // Add CID parameter if present
       const cid = urlParams.get('cid');
       if (cid && !finalUrl.includes('cid=')) {
         finalUrl += (finalUrl.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
       }
+      
+      console.log('🎯 Modal Auto-refuse URL with all params:', finalUrl);
       
       // Small delay to ensure tracking is sent
       setTimeout(() => {

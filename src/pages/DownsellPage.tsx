@@ -370,12 +370,22 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     trackInitiateCheckout(content.acceptUrl);
     trackOfferClick(`downsell-${variant}-accept`);
     
-    let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
+    // Build URL with all tracking parameters
+    let url = content.acceptUrl;
+    
+    // Add preserved CartPanda parameters
+    if (cartParams) {
+      url += (url.includes('?') ? '&' : '?') + cartParams;
+    }
+    
+    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
+    
+    console.log('🎯 Downsell Accept URL with all params:', url);
     
     setTimeout(() => {
       window.location.href = url;
@@ -386,12 +396,22 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     trackInitiateCheckout(content.rejectUrl);
     trackOfferClick(`downsell-${variant}-reject`);
     
-    let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
+    // Build URL with all tracking parameters
+    let url = content.rejectUrl;
+    
+    // Add preserved CartPanda parameters
+    if (cartParams) {
+      url += (url.includes('?') ? '&' : '?') + cartParams;
+    }
+    
+    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
+    
+    console.log('🎯 Downsell Reject URL with all params:', url);
     
     setTimeout(() => {
       window.location.href = url;

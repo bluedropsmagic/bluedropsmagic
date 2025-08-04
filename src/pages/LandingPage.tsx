@@ -40,13 +40,27 @@ export const LandingPage: React.FC = () => {
     trackOfferClick(`landing-${packageType}`);
     trackInitiateCheckout(url);
     
-    // Add CID if present
+    // Build URL with all tracking parameters
     let finalUrl = url;
+    
+    // Add UTM and tracking parameters
     const urlParams = new URLSearchParams(window.location.search);
+    const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid', 'affiliate_id', 'sub_id'];
+    
+    trackingParams.forEach(param => {
+      const value = urlParams.get(param);
+      if (value && !finalUrl.includes(`${param}=`)) {
+        finalUrl += (finalUrl.includes('?') ? '&' : '?') + `${param}=${encodeURIComponent(value)}`;
+      }
+    });
+    
+    // Add CID if present
     const cid = urlParams.get('cid');
     if (cid && !finalUrl.includes('cid=')) {
       finalUrl += (finalUrl.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
+    
+    console.log('🎯 Landing Page URL with all params:', finalUrl);
     
     setTimeout(() => {
       window.location.href = finalUrl;

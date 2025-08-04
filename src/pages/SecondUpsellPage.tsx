@@ -365,12 +365,22 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
     trackInitiateCheckout(content.acceptUrl);
     trackOfferClick(`second-upsell-${variant}-accept`);
     
-    let url = cartParams ? `${content.acceptUrl}&${cartParams}` : content.acceptUrl;
+    // Build URL with all tracking parameters
+    let url = content.acceptUrl;
+    
+    // Add preserved CartPanda parameters
+    if (cartParams) {
+      url += (url.includes('?') ? '&' : '?') + cartParams;
+    }
+    
+    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
+    
+    console.log('🎯 Second Upsell Accept URL with all params:', url);
     
     setTimeout(() => {
       window.location.href = url;
@@ -381,12 +391,22 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
     trackInitiateCheckout(content.rejectUrl);
     trackOfferClick(`second-upsell-${variant}-reject`);
     
-    let url = cartParams ? `${content.rejectUrl}&${cartParams}` : content.rejectUrl;
+    // Build URL with all tracking parameters
+    let url = content.rejectUrl;
+    
+    // Add preserved CartPanda parameters
+    if (cartParams) {
+      url += (url.includes('?') ? '&' : '?') + cartParams;
+    }
+    
+    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
     const cid = urlParams.get('cid');
     if (cid && !url.includes('cid=')) {
       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
     }
+    
+    console.log('🎯 Second Upsell Reject URL with all params:', url);
     
     setTimeout(() => {
       window.location.href = url;
@@ -679,19 +699,32 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                     trackInitiateCheckout('https://pagamento.paybluedrops.com/checkout/190510289:1');
                     trackOfferClick(`second-upsell-${variant}-high-risk`);
                     
+                    // Build URL with all tracking parameters
                     let url = 'https://pagamento.paybluedrops.com/checkout/190510289:1';
                     
-                    // Add cart params if present
+                    // Add preserved CartPanda parameters
                     if (cartParams) {
                       url += (url.includes('?') ? '&' : '?') + cartParams;
                     }
                     
-                    // Add CID if present
+                    // Add UTM and tracking parameters
                     const urlParams = new URLSearchParams(window.location.search);
+                    const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid', 'affiliate_id', 'sub_id'];
+                    
+                    trackingParams.forEach(param => {
+                      const value = urlParams.get(param);
+                      if (value && !url.includes(`${param}=`)) {
+                        url += (url.includes('?') ? '&' : '?') + `${param}=${encodeURIComponent(value)}`;
+                      }
+                    });
+                    
+                    // Add CID if present
                     const cid = urlParams.get('cid');
                     if (cid && !url.includes('cid=')) {
                       url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
                     }
+                    
+                    console.log('🎯 High Risk Offer URL with all params:', url);
                     
                     setTimeout(() => {
                       window.location.href = url;
