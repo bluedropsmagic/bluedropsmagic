@@ -59,14 +59,30 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
     const targetUrl = purchaseUrls[packageType];
     
-    // ✅ FIXED: ONLY track InitiateCheckout for secondary clicks
+    // ✅ FIXED: Track InitiateCheckout AND redirect directly (no popup)
     trackInitiateCheckout(targetUrl);
     
-    // ✅ REMOVED: trackPurchase call - Purchase should only be tracked on thank you page
-    // trackPurchase(purchaseValues[packageType], 'BRL', `${packageType}-secondary`);
+    // ✅ NEW: Track offer click for analytics
+    if (typeof window !== 'undefined' && (window as any).trackOfferClick) {
+      (window as any).trackOfferClick(packageType);
+    }
     
-    // Call the original handler
-    onSecondaryPackageClick(packageType);
+    // ✅ FIXED: Redirect directly instead of opening popup
+    let urlWithParams = buildUrlWithParams(targetUrl);
+    
+    // Add CID parameter if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const cid = urlParams.get('cid');
+    if (cid && !urlWithParams.includes('cid=')) {
+      urlWithParams += (urlWithParams.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    }
+    
+    console.log('🎯 Secondary button clicked:', packageType, '- Redirecting directly to:', urlWithParams);
+    
+    // ✅ Direct redirect with same delay as main button
+    setTimeout(() => {
+      window.location.href = urlWithParams;
+    }, 150);
   };
 
   if (!showPurchaseButton) return null;
