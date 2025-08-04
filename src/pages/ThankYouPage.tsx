@@ -253,6 +253,77 @@ export const ThankYouPage: React.FC = () => {
             </div>
           )}
 
+          {/* Exclusive App Access */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg border border-blue-200 p-6 mb-8 animate-fadeInUp animation-delay-1200">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <span className="text-2xl">📱</span>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-blue-900 mb-3">
+                🎉 Congratulations! You Now Have Access to Our Exclusive App
+              </h2>
+              
+              <p className="text-blue-700 text-lg mb-6 leading-relaxed">
+                As a BlueDrops customer, you now have exclusive access to our premium mobile app with:
+              </p>
+              
+              {/* App Benefits */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-blue-100">
+                  <div className="text-3xl mb-2">📊</div>
+                  <h3 className="font-bold text-blue-900 mb-1">Progress Tracking</h3>
+                  <p className="text-blue-700 text-sm">Monitor your daily protocol and results</p>
+                </div>
+                
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-blue-100">
+                  <div className="text-3xl mb-2">🔔</div>
+                  <h3 className="font-bold text-blue-900 mb-1">Daily Reminders</h3>
+                  <p className="text-blue-700 text-sm">Never miss your BlueDrops protocol</p>
+                </div>
+                
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-blue-100">
+                  <div className="text-3xl mb-2">👨‍⚕️</div>
+                  <h3 className="font-bold text-blue-900 mb-1">Expert Tips</h3>
+                  <p className="text-blue-700 text-sm">Exclusive content from health professionals</p>
+                </div>
+                
+                <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border border-blue-100">
+                  <div className="text-3xl mb-2">🏆</div>
+                  <h3 className="font-bold text-blue-900 mb-1">Success Stories</h3>
+                  <p className="text-blue-700 text-sm">Real results from other BlueDrops users</p>
+                </div>
+              </div>
+              
+              {/* App Access Button */}
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 via-indigo-500 to-blue-600 rounded-2xl blur-lg opacity-60 animate-pulse"></div>
+                
+                <a
+                  href="https://bluedrops.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative block w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-lg border-2 border-white/40 backdrop-blur-sm"
+                >
+                  <div className="flex items-center justify-center gap-3">
+                    <span className="text-2xl">📱</span>
+                    <span>ACCESS YOUR EXCLUSIVE APP NOW</span>
+                    <span className="text-2xl">🚀</span>
+                  </div>
+                </a>
+              </div>
+              
+              <p className="text-blue-600 text-sm mt-4 font-medium">
+                👆 Click above to access your premium BlueDrops app
+              </p>
+              
+              <div className="mt-4 bg-blue-100 border border-blue-300 rounded-lg p-3">
+                <p className="text-blue-800 text-sm font-semibold">
+                  🔐 Exclusive Access: Only available to BlueDrops customers
+                </p>
+              </div>
+            </div>
+          </div>
           {/* Trust Badges */}
           <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border border-green-200 p-6 mb-8 animate-fadeInUp animation-delay-1200">
             <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
