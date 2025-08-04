@@ -318,6 +318,28 @@ export const ThankYouPage: React.FC = () => {
                 <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
                   <Shield className="w-6 h-6 text-green-600" />
                 </div>
+                <h3 className="font-semibold text-gray-900 text-sm">180-Day Guarantee</h3>
+                <p className="text-gray-600 text-xs">Full money-back guarantee</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Truck className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 text-sm">Free Shipping</h3>
+                <p className="text-gray-600 text-xs">Worldwide delivery included</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <Star className="w-6 h-6 text-yellow-600" />
+                </div>
+                <h3 className="font-semibold text-gray-900 text-sm">Premium Quality</h3>
+                <p className="text-gray-600 text-xs">Highest quality ingredients</p>
+              </div>
+            </div>
+          </div>
+
           {/* Footer */}
           <footer className="text-center text-gray-600 animate-fadeInUp animation-delay-1400">
             <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
