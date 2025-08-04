@@ -237,8 +237,6 @@ export const ThankYouPage: React.FC = () => {
 
           {/* Exclusive App Access */}
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg border border-blue-200 p-6 mb-8 animate-fadeInUp animation-delay-600">
-          {/* Exclusive App Access */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg border border-blue-200 p-6 mb-8 animate-fadeInUp animation-delay-600">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <span className="text-2xl">📱</span>
@@ -308,6 +306,7 @@ export const ThankYouPage: React.FC = () => {
               </div>
             </div>
           </div>
+
           {/* Trust Badges */}
           <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border border-green-200 p-6 mb-8 animate-fadeInUp animation-delay-1000">
             <h2 className="text-xl font-bold text-gray-900 mb-4 text-center">
@@ -414,6 +413,7 @@ export const ThankYouPage: React.FC = () => {
               </div>
             </div>
           )}
+
           {/* Footer */}
           <footer className="text-center text-gray-600 animate-fadeInUp animation-delay-1600">
             <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
