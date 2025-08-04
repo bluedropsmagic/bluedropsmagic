@@ -236,7 +236,7 @@ export const ThankYouPage: React.FC = () => {
 
 
           {/* Exclusive App Access */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg border border-blue-200 p-6 mb-8 animate-fadeInUp animation-delay-1000">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg border border-blue-200 p-6 mb-8 animate-fadeInUp animation-delay-600">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <span className="text-2xl">📱</span>
