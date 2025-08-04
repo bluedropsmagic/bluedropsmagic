@@ -234,27 +234,9 @@ export const ThankYouPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Benefits Reminder */}
-          {productInfo && (
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8 animate-fadeInUp animation-delay-1000">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Award className="w-5 h-5 text-yellow-600" />
-                Your Benefits
-              </h2>
-              
-              <div className="space-y-3">
-                {productInfo.benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span className="text-gray-700">{benefit}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Exclusive App Access */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg border border-blue-200 p-6 mb-8 animate-fadeInUp animation-delay-1200">
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg border border-blue-200 p-6 mb-8 animate-fadeInUp animation-delay-1000">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <span className="text-2xl">📱</span>
@@ -383,8 +365,55 @@ export const ThankYouPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Order Details - Moved to end */}
+          {orderDetails && (
+            <div className="bg-white rounded-2xl shadow-lg border border-green-200 p-6 mb-8 animate-fadeInUp animation-delay-1600">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Gift className="w-5 h-5 text-green-600" />
+                Order Details
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Product Image */}
+                {productInfo && (
+                  <div className="flex justify-center">
+                    <img 
+                      src={productInfo.image}
+                      alt={productInfo.name}
+                      className="w-full h-auto object-contain max-h-48 drop-shadow-lg"
+                    />
+                  </div>
+                )}
+                
+                {/* Order Info */}
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">{productInfo?.name}</h3>
+                    <p className="text-gray-600 text-sm">{productInfo?.description}</p>
+                  </div>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Order ID:</span>
+                      <span className="font-mono text-gray-900">{orderDetails.orderId}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Email:</span>
+                      <span className="text-gray-900">{orderDetails.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Amount:</span>
+                      <span className="font-bold text-green-600">
+                        {orderDetails.currency === 'BRL' ? 'R$' : '$'}{orderDetails.amount}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           {/* Footer */}
-          <footer className="text-center text-gray-600 animate-fadeInUp animation-delay-1600">
+          <footer className="text-center text-gray-600 animate-fadeInUp animation-delay-1800">
             <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-gray-200">
               <p className="text-sm mb-2">
                 <strong>Copyright ©2024 | Blue Drops</strong> - All Rights Reserved
