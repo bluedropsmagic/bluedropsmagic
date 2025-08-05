@@ -298,24 +298,21 @@ export const ThankYouPage: React.FC = () => {
               <div className="mb-8">
                 <div className="relative max-w-xs mx-auto">
                   {/* Slider Container */}
-                  <div className="relative overflow-hidden rounded-lg shadow-lg">
+                  <div className="relative overflow-hidden rounded-lg shadow-lg bg-white">
                     {/* Slides */}
                     {appSlides.map((slide, index) => (
                       <div
                         key={slide.id}
-                        className={`absolute inset-0 transition-all duration-500 ease-in-out ${
+                        className={`transition-all duration-500 ease-in-out ${
                           index === currentSlide 
-                            ? 'opacity-100 transform translate-x-0' 
-                            : index < currentSlide 
-                              ? 'opacity-0 transform -translate-x-full'
-                              : 'opacity-0 transform translate-x-full'
+                            ? 'block opacity-100' 
+                            : 'hidden opacity-0'
                         }`}
-                        style={{ display: index === currentSlide ? 'block' : 'none' }}
                       >
                         <img 
                           src={slide.image}
                           alt={slide.title}
-                          className="w-full h-auto object-contain max-w-full"
+                          className="w-full h-auto object-contain"
                           loading="lazy"
                         />
                       </div>
@@ -324,16 +321,16 @@ export const ThankYouPage: React.FC = () => {
                     {/* Navigation Arrows */}
                     <button
                       onClick={prevSlide}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-blue-600/90 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-600/90 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
                     >
-                      <ChevronLeft className="w-3 h-3" />
+                      <ChevronLeft className="w-4 h-4" />
                     </button>
                     
                     <button
                       onClick={nextSlide}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-blue-600/90 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-600/90 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
                     >
-                      <ChevronRight className="w-3 h-3" />
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                   
