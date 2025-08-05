@@ -355,23 +355,40 @@ export const ThankYouPage: React.FC = () => {
                     />
                   </div>
                 )}
-                  
+                
+                {/* Order Info */}
+                <div className="space-y-4">
                   {/* ✅ NEW: Show combo indicator */}
                   {productInfo?.isCombo && (
-                    <div className="mt-2">
+                    <div className="mb-3">
                       <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                         🎉 COMBO PACKAGE
                       </span>
                     </div>
                   )}
-                
-                {/* Order Info */}
-                <div className="space-y-4">
+                  
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">{productInfo?.name}</h3>
                     <p className="text-gray-600 text-sm">{productInfo?.description}</p>
                     <p className="text-blue-600 text-sm font-medium mt-1">{productInfo?.price}</p>
                   </div>
+                  
+                  {/* ✅ NEW: Package Contents for combos */}
+                  {orderDetails.detectedProducts && orderDetails.detectedProducts.length > 1 && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <h4 className="font-semibold text-blue-900 mb-2 text-sm">Package Contents:</h4>
+                      <div className="space-y-1">
+                        {orderDetails.detectedProducts.map((product, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-xs text-gray-700 capitalize">
+                              {product.replace('-', ' ').replace('upsell', 'Additional').replace('ignitemen', 'IgniteMen')}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
@@ -400,6 +417,24 @@ export const ThankYouPage: React.FC = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* ✅ NEW: Enhanced benefits for combo packages */}
+              {productInfo?.isCombo && (
+                <div className="mt-6 pt-4 border-t border-gray-200">
+                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Gift className="w-4 h-4 text-green-600" />
+                    Your Complete Package Includes:
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {productInfo.benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -438,42 +473,8 @@ export const ThankYouPage: React.FC = () => {
                 <div>
                   <h3 className="font-semibold text-blue-900">Start Your Protocol</h3>
                   <p className="text-blue-700 text-sm">Begin your BlueDrops protocol as soon as you receive your package</p>
-                  {/* ✅ NEW: Show detected products breakdown */}
-                  {orderDetails.detectedProducts && orderDetails.detectedProducts.length > 1 && (
-                    <div className="mt-3 pt-3 border-t border-gray-200">
-                      <span className="text-gray-600 text-xs font-medium block mb-2">Package Contents:</span>
-                      <div className="space-y-1">
-                        {orderDetails.detectedProducts.map((product, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span className="text-xs text-gray-700 capitalize">
-                              {product.replace('-', ' ').replace('upsell', 'Additional').replace('ignitemen', 'IgniteMen')}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
-              
-              {/* ✅ NEW: Enhanced benefits for combo packages */}
-              {productInfo?.isCombo && (
-                <div className="md:col-span-2 mt-4 pt-4 border-t border-gray-200">
-                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Gift className="w-4 h-4 text-green-600" />
-                    Your Complete Package Includes:
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {productInfo.benefits.map((benefit, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
