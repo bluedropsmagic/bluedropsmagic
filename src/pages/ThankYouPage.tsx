@@ -298,7 +298,7 @@ export const ThankYouPage: React.FC = () => {
               <div className="mb-8">
                 <div className="relative max-w-sm mx-auto">
                   {/* Slider Container */}
-                  <div className="relative aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-gray-900">
+                  <div className="relative aspect-[9/16] overflow-hidden">
                     {/* Slides */}
                     {appSlides.map((slide, index) => (
                       <div
@@ -317,26 +317,20 @@ export const ThankYouPage: React.FC = () => {
                           className="w-full h-full object-cover"
                           loading="lazy"
                         />
-                        
-                        {/* Slide Info Overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4">
-                          <h4 className="text-white font-bold text-lg mb-1">{slide.title}</h4>
-                          <p className="text-white/90 text-sm">{slide.description}</p>
-                        </div>
                       </div>
                     ))}
                     
                     {/* Navigation Arrows */}
                     <button
                       onClick={prevSlide}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors z-10"
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-600/80 hover:bg-blue-700/90 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                     
                     <button
                       onClick={nextSlide}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors z-10"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-600/80 hover:bg-blue-700/90 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
@@ -362,6 +356,16 @@ export const ThankYouPage: React.FC = () => {
                     <span className="text-blue-600 text-sm font-medium">
                       {currentSlide + 1} / {appSlides.length}
                     </span>
+                  </div>
+                  
+                  {/* Slide Title Below */}
+                  <div className="text-center mt-3">
+                    <h4 className="text-lg font-bold text-blue-900 mb-1">
+                      {appSlides[currentSlide].title}
+                    </h4>
+                    <p className="text-blue-700 text-sm">
+                      {appSlides[currentSlide].description}
+                    </p>
                   </div>
                 </div>
               </div>
