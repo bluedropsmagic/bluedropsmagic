@@ -14,6 +14,7 @@ export const ThankYouPage: React.FC = () => {
     currency: string;
     productType: string;
     purchaseSource?: string;
+    detectedProducts?: string[];
   } | null>(null);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
 
@@ -96,26 +97,54 @@ export const ThankYouPage: React.FC = () => {
     
     const currency = searchParams.get('currency') || 'USD'; // ✅ FIXED: Default to USD for international
     
-    // ✅ ENHANCED: Auto-detect product type from amount or explicit parameter
-    let productType = searchParams.get('product') || 
-                     searchParams.get('package') || 
-                     searchParams.get('variant') ||
-                     searchParams.get('item');
-    
-    // ✅ NEW: Auto-detect product type from amount if not explicitly provided
-    if (!productType) {
-      if (amount >= 290 && amount <= 300) {
-        productType = '6-bottle';
-      } else if (amount >= 190 && amount <= 210) {
-        productType = '3-bottle';
-      } else if (amount >= 70 && amount <= 90) {
-        productType = '1-bottle';
-      } else if (amount >= 130 && amount <= 150) {
-        productType = 'testosterone-support'; // ✅ NEW: Second upsell product
-      } else {
-        productType = '6-bottle'; // Default fallback
+    // ✅ NEW: Detect combined orders and individual products
+    const detectOrderProducts = () => {
+      const products = [];
+      
+      // Check for explicit product parameters
+      const explicitProduct = searchParams.get('product') || 
+                             searchParams.get('package') || 
+                             searchParams.get('variant') ||
+                             searchParams.get('item');
+      
+      if (explicitProduct) {
+        products.push(explicitProduct);
       }
-    }
+      
+      // ✅ NEW: Detect combined orders by amount ranges
+      if (amount >= 430 && amount <= 450) {
+        // $432 = 6 bottles ($294) + 3 more bottles ($138) = 9-bottle complete
+        products.push('6-bottle', 'upsell-3-more', 'combined-9-bottle');
+      } else if (amount >= 560 && amount <= 580) {
+        // $570 = 6 bottles ($294) + 3 more bottles ($138) + IgniteMen ($138) = Full combo
+        products.push('6-bottle', 'upsell-3-more', 'ignitemen', 'full-combo');
+      } else if (amount >= 330 && amount <= 350) {
+        // $336 = 3 bottles ($198) + 6 more bottles ($138) = 9-bottle complete
+        products.push('3-bottle', 'upsell-6-more', 'combined-9-bottle');
+      } else if (amount >= 470 && amount <= 490) {
+        // $474 = 3 bottles ($198) + 6 more bottles ($138) + IgniteMen ($138) = Full combo
+        products.push('3-bottle', 'upsell-6-more', 'ignitemen', 'full-combo');
+      } else if (amount >= 350 && amount <= 370) {
+        // $355 = 1 bottle ($79) + 8 more bottles ($138) + IgniteMen ($138) = Full combo
+        products.push('1-bottle', 'upsell-8-more', 'ignitemen', 'full-combo');
+      } else if (amount >= 290 && amount <= 300) {
+        products.push('6-bottle');
+      } else if (amount >= 190 && amount <= 210) {
+        products.push('3-bottle');
+      } else if (amount >= 70 && amount <= 90) {
+        products.push('1-bottle');
+      } else if (amount >= 130 && amount <= 150) {
+        products.push('ignitemen');
+      } else {
+        // Fallback: try to detect from referrer or default
+        products.push('6-bottle');
+      }
+      
+      return products;
+    };
+    
+    const detectedProducts = detectOrderProducts();
+    const productType = detectedProducts.join('+'); // Join multiple products
     
     // ✅ NEW: Detect upsell purchases from URL path or referrer
     const currentPath = window.location.pathname;
@@ -136,7 +165,8 @@ export const ThankYouPage: React.FC = () => {
       amount,
       currency,
       productType,
-      purchaseSource
+      purchaseSource,
+      detectedProducts // ✅ NEW: Store array of detected products
     });
 
     // Track Purchase event for both pixels
@@ -146,7 +176,8 @@ export const ThankYouPage: React.FC = () => {
         currency, 
         productType, 
         purchaseSource,
-        orderId 
+        orderId,
+        detectedProducts
       });
       trackPurchase(amount, currency);
     }
@@ -176,34 +207,81 @@ export const ThankYouPage: React.FC = () => {
   }, []);
 
   const getProductInfo = (productType: string) => {
+    // ✅ NEW: Handle combined orders
+    if (productType.includes('+')) {
+      const products = productType.split('+');
+      
+      // ✅ FULL COMBO: 6-bottle + upsell + IgniteMen
+      if (products.includes('full-combo')) {
+        return {
+          name: 'BlueDrops Complete Transformation Package',
+          image: 'https://i.imgur.com/hsfqxVP.png', // Use 6-bottle as main image
+          description: '9-month BlueDrops + IgniteMen Testosterone Support',
+          benefits: [
+            '✅ 9 bottles of BlueDrops (270-day supply)',
+            '✅ 2 bottles of IgniteMen Testosterone Support',
+            '✅ Complete transformation protocol',
+            '✅ 180-day money-back guarantee',
+            '✅ Free shipping worldwide',
+            '✅ Premium customer support'
+          ],
+          price: `$${orderDetails?.amount || 570} (Maximum savings package)`,
+          isCombo: true
+        };
+      }
+      
+      // ✅ 9-BOTTLE COMBO: Original + upsell (no IgniteMen)
+      if (products.includes('combined-9-bottle')) {
+        return {
+          name: 'BlueDrops 9-Bottle Complete Treatment',
+          image: 'https://i.imgur.com/hsfqxVP.png',
+          description: '9-month complete BlueDrops protocol',
+          benefits: [
+            '✅ 9 bottles of BlueDrops (270-day supply)',
+            '✅ Complete 9-month treatment protocol',
+            '✅ 180-day money-back guarantee',
+            '✅ Free shipping worldwide',
+            '✅ Maximum effectiveness guarantee'
+          ],
+          price: `$${orderDetails?.amount || 432} (Complete protocol)`,
+          isCombo: true
+        };
+      }
+    }
+    
+    // ✅ INDIVIDUAL PRODUCTS
     const products = {
       '6-bottle': {
         name: 'BlueDrops 6-Bottle Package',
         image: 'https://i.imgur.com/hsfqxVP.png',
         description: '180-day complete treatment',
         benefits: ['180-day money-back guarantee', 'Free shipping worldwide', 'Complete 6-month protocol'],
-        price: '$294 ($49 per bottle)'
+        price: '$294 ($49 per bottle)',
+        isCombo: false
       },
       '3-bottle': {
         name: 'BlueDrops 3-Bottle Package', 
         image: 'https://i.imgur.com/eXYnjhm.png',
         description: '90-day treatment package',
         benefits: ['180-day money-back guarantee', 'Free shipping', '3-month supply'],
-        price: '$198 ($66 per bottle)'
+        price: '$198 ($66 per bottle)',
+        isCombo: false
       },
       '1-bottle': {
         name: 'BlueDrops 1-Bottle Package',
         image: 'https://i.imgur.com/iWs7wy7.png', 
         description: '30-day trial package',
         benefits: ['180-day money-back guarantee', 'Fast shipping', '1-month supply'],
-        price: '$79 + $9.99 shipping'
+        price: '$79 + $9.99 shipping',
+        isCombo: false
       },
-      'testosterone-support': {
+      'ignitemen': {
         name: 'IgniteMen Testosterone Support',
         image: 'https://i.imgur.com/MKvvyGH.png',
         description: 'Premium testosterone support supplement',
         benefits: ['90-day money-back guarantee', 'Free shipping', '2-bottle package'],
-        price: '$138 ($69 per bottle)'
+        price: '$138 ($69 per bottle)',
+        isCombo: false
       }
     };
 
@@ -277,6 +355,15 @@ export const ThankYouPage: React.FC = () => {
                     />
                   </div>
                 )}
+                  
+                  {/* ✅ NEW: Show combo indicator */}
+                  {productInfo?.isCombo && (
+                    <div className="mt-2">
+                      <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        🎉 COMBO PACKAGE
+                      </span>
+                    </div>
+                  )}
                 
                 {/* Order Info */}
                 <div className="space-y-4">
@@ -351,8 +438,42 @@ export const ThankYouPage: React.FC = () => {
                 <div>
                   <h3 className="font-semibold text-blue-900">Start Your Protocol</h3>
                   <p className="text-blue-700 text-sm">Begin your BlueDrops protocol as soon as you receive your package</p>
+                  {/* ✅ NEW: Show detected products breakdown */}
+                  {orderDetails.detectedProducts && orderDetails.detectedProducts.length > 1 && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <span className="text-gray-600 text-xs font-medium block mb-2">Package Contents:</span>
+                      <div className="space-y-1">
+                        {orderDetails.detectedProducts.map((product, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-xs text-gray-700 capitalize">
+                              {product.replace('-', ' ').replace('upsell', 'Additional').replace('ignitemen', 'IgniteMen')}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
+              
+              {/* ✅ NEW: Enhanced benefits for combo packages */}
+              {productInfo?.isCombo && (
+                <div className="md:col-span-2 mt-4 pt-4 border-t border-gray-200">
+                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                    <Gift className="w-4 h-4 text-green-600" />
+                    Your Complete Package Includes:
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {productInfo.benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
