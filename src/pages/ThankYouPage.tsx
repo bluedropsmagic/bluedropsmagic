@@ -282,7 +282,7 @@ export const ThankYouPage: React.FC = () => {
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 via-indigo-500 to-blue-600 rounded-2xl blur-lg opacity-60 animate-pulse"></div>
                 
                 <a
-                  href="https://bluedrops.app"
+                  href="https://www.bluedrops.app"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative block w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-lg border-2 border-white/40 backdrop-blur-sm"
