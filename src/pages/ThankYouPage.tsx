@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CheckCircle, Shield, Truck, Star, Gift, Award, Clock } from 'lucide-react';
+import { CheckCircle, Shield, Truck, Star, Gift, Award, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { trackPurchase } from '../utils/facebookPixelTracking';
 import { BoltNavigation } from '../components/BoltNavigation';
 
 export const ThankYouPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [orderDetails, setOrderDetails] = useState<{
     orderId: string;
     email: string;
@@ -14,6 +15,49 @@ export const ThankYouPage: React.FC = () => {
     productType: string;
   } | null>(null);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
+
+  // App slider images
+  const appSlides = [
+    {
+      id: 1,
+      title: 'App Interface',
+      image: 'https://i.imgur.com/Nf7IQ47.png',
+      description: 'Intuitive dashboard to track your progress'
+    },
+    {
+      id: 2,
+      title: 'Exclusive Bonuses',
+      image: 'https://i.imgur.com/lfN5OF8.png',
+      description: 'Premium content only for BlueDrops customers'
+    },
+    {
+      id: 3,
+      title: 'Symptom Tracker',
+      image: 'https://i.imgur.com/wiUkHgw.png',
+      description: 'Monitor your improvements day by day'
+    }
+  ];
+
+  // Auto-advance slider every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % appSlides.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % appSlides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + appSlides.length) % appSlides.length);
+  };
 
   // Detect Bolt environment
   useEffect(() => {
@@ -249,6 +293,78 @@ export const ThankYouPage: React.FC = () => {
               <p className="text-blue-700 text-lg mb-6 leading-relaxed">
                 As a BlueDrops customer, you now have exclusive access to our premium mobile app with:
               </p>
+              
+              {/* App Screenshots Slider */}
+              <div className="mb-8">
+                <div className="relative max-w-sm mx-auto">
+                  {/* Slider Container */}
+                  <div className="relative aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-gray-900">
+                    {/* Slides */}
+                    {appSlides.map((slide, index) => (
+                      <div
+                        key={slide.id}
+                        className={`absolute inset-0 transition-all duration-500 ease-in-out ${
+                          index === currentSlide 
+                            ? 'opacity-100 transform translate-x-0' 
+                            : index < currentSlide 
+                              ? 'opacity-0 transform -translate-x-full'
+                              : 'opacity-0 transform translate-x-full'
+                        }`}
+                      >
+                        <img 
+                          src={slide.image}
+                          alt={slide.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                        
+                        {/* Slide Info Overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4">
+                          <h4 className="text-white font-bold text-lg mb-1">{slide.title}</h4>
+                          <p className="text-white/90 text-sm">{slide.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Navigation Arrows */}
+                    <button
+                      onClick={prevSlide}
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors z-10"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    
+                    <button
+                      onClick={nextSlide}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center transition-colors z-10"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {/* Slide Indicators */}
+                  <div className="flex justify-center gap-2 mt-4">
+                    {appSlides.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => goToSlide(index)}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                          index === currentSlide
+                            ? 'bg-blue-600 scale-110'
+                            : 'bg-blue-200 hover:bg-blue-400'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Slide Counter */}
+                  <div className="text-center mt-2">
+                    <span className="text-blue-600 text-sm font-medium">
+                      {currentSlide + 1} / {appSlides.length}
+                    </span>
+                  </div>
+                </div>
+              </div>
               
               {/* App Benefits */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
