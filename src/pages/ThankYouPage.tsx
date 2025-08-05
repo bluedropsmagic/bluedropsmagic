@@ -296,68 +296,66 @@ export const ThankYouPage: React.FC = () => {
               
               {/* App Screenshots Slider */}
               <div className="mb-8">
-                <div className="relative max-w-xs mx-auto">
-                  {/* Slider Container */}
-                  <div className="relative overflow-hidden rounded-lg shadow-lg bg-white">
-                    {/* Slides */}
-                    {appSlides.map((slide, index) => (
-                      <div
-                        key={slide.id}
-                        className={`transition-all duration-500 ease-in-out ${
-                          index === currentSlide 
-                            ? 'block opacity-100' 
-                            : 'hidden opacity-0'
-                        }`}
-                      >
-                        <img 
-                          src={slide.image}
-                          alt={slide.title}
-                          className="w-full h-auto object-contain"
-                          loading="lazy"
-                        />
-                      </div>
-                    ))}
+                <div className="max-w-sm mx-auto">
+                  {/* Natural Slider Container */}
+                  <div className="relative overflow-hidden">
+                    {/* Slides Track */}
+                    <div 
+                      className="flex transition-transform duration-700 ease-in-out"
+                      style={{
+                        transform: `translateX(-${currentSlide * 100}%)`
+                      }}
+                    >
+                      {appSlides.map((slide, index) => (
+                        <div
+                          key={slide.id}
+                          className="w-full flex-shrink-0 px-2"
+                        >
+                          <div className="relative">
+                            <img 
+                              src={slide.image}
+                              alt={slide.title}
+                              className="w-full h-auto object-contain drop-shadow-lg"
+                              loading="lazy"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                     
-                    {/* Navigation Arrows */}
+                    {/* Navigation Arrows - Subtle */}
                     <button
                       onClick={prevSlide}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-600/90 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
+                      className="absolute left-0 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white text-blue-600 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg z-10"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                     
                     <button
                       onClick={nextSlide}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-600/90 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
+                      className="absolute right-0 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white/80 hover:bg-white text-blue-600 rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg z-10"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
                   
-                  {/* Slide Indicators */}
-                  <div className="flex justify-center gap-2 mt-4">
+                  {/* Slide Indicators - Clean */}
+                  <div className="flex justify-center gap-2 mt-6">
                     {appSlides.map((_, index) => (
                       <button
                         key={index}
                         onClick={() => goToSlide(index)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
                           index === currentSlide
-                            ? 'bg-blue-600 scale-110'
+                            ? 'bg-blue-600 w-6'
                             : 'bg-blue-200 hover:bg-blue-400'
                         }`}
                       />
                     ))}
                   </div>
                   
-                  {/* Slide Counter */}
-                  <div className="text-center mt-2">
-                    <span className="text-blue-600 text-sm font-medium">
-                      {currentSlide + 1} / {appSlides.length}
-                    </span>
-                  </div>
-                  
-                  {/* Slide Title Below */}
-                  <div className="text-center mt-3">
+                  {/* Current Slide Info */}
+                  <div className="text-center mt-4">
                     <h4 className="text-lg font-bold text-blue-900 mb-1">
                       {appSlides[currentSlide].title}
                     </h4>
