@@ -296,9 +296,9 @@ export const ThankYouPage: React.FC = () => {
               
               {/* App Screenshots Slider */}
               <div className="mb-8">
-                <div className="relative max-w-sm mx-auto">
+                <div className="relative max-w-xs mx-auto">
                   {/* Slider Container */}
-                  <div className="relative aspect-[9/16] overflow-hidden">
+                  <div className="relative overflow-hidden rounded-lg shadow-lg">
                     {/* Slides */}
                     {appSlides.map((slide, index) => (
                       <div
@@ -310,11 +310,12 @@ export const ThankYouPage: React.FC = () => {
                               ? 'opacity-0 transform -translate-x-full'
                               : 'opacity-0 transform translate-x-full'
                         }`}
+                        style={{ display: index === currentSlide ? 'block' : 'none' }}
                       >
                         <img 
                           src={slide.image}
                           alt={slide.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto object-contain max-w-full"
                           loading="lazy"
                         />
                       </div>
@@ -323,16 +324,16 @@ export const ThankYouPage: React.FC = () => {
                     {/* Navigation Arrows */}
                     <button
                       onClick={prevSlide}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-600/80 hover:bg-blue-700/90 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-blue-600/90 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
                     >
-                      <ChevronLeft className="w-4 h-4" />
+                      <ChevronLeft className="w-3 h-3" />
                     </button>
                     
                     <button
                       onClick={nextSlide}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-blue-600/80 hover:bg-blue-700/90 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-blue-600/90 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition-colors z-10 shadow-lg"
                     >
-                      <ChevronRight className="w-4 h-4" />
+                      <ChevronRight className="w-3 h-3" />
                     </button>
                   </div>
                   
