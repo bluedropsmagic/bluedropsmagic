@@ -13,6 +13,7 @@ export const ThankYouPage: React.FC = () => {
     amount: number;
     currency: string;
     productType: string;
+    purchaseSource?: string;
   } | null>(null);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
 
@@ -73,23 +74,80 @@ export const ThankYouPage: React.FC = () => {
 
   // Extract order details from URL parameters
   useEffect(() => {
-    const orderId = searchParams.get('order_id') || searchParams.get('transaction_id') || 'BD' + Date.now();
-    const email = searchParams.get('email') || 'customer@example.com';
-    const amount = parseFloat(searchParams.get('amount') || searchParams.get('value') || '294');
-    const currency = searchParams.get('currency') || 'BRL';
-    const productType = searchParams.get('product') || searchParams.get('package') || '6-bottle';
+    // ✅ ENHANCED: Extract order details from multiple possible parameter names
+    const orderId = searchParams.get('order_id') || 
+                   searchParams.get('transaction_id') || 
+                   searchParams.get('orderid') ||
+                   searchParams.get('order') ||
+                   'BD' + Date.now();
+                   
+    const email = searchParams.get('email') || 
+                 searchParams.get('customer_email') ||
+                 searchParams.get('user_email') ||
+                 'customer@example.com';
+                 
+    // ✅ ENHANCED: Support multiple amount parameter names and detect product type from amount
+    const amountStr = searchParams.get('amount') || 
+                     searchParams.get('value') || 
+                     searchParams.get('total') ||
+                     searchParams.get('price') ||
+                     '294';
+    const amount = parseFloat(amountStr);
+    
+    const currency = searchParams.get('currency') || 'USD'; // ✅ FIXED: Default to USD for international
+    
+    // ✅ ENHANCED: Auto-detect product type from amount or explicit parameter
+    let productType = searchParams.get('product') || 
+                     searchParams.get('package') || 
+                     searchParams.get('variant') ||
+                     searchParams.get('item');
+    
+    // ✅ NEW: Auto-detect product type from amount if not explicitly provided
+    if (!productType) {
+      if (amount >= 290 && amount <= 300) {
+        productType = '6-bottle';
+      } else if (amount >= 190 && amount <= 210) {
+        productType = '3-bottle';
+      } else if (amount >= 70 && amount <= 90) {
+        productType = '1-bottle';
+      } else if (amount >= 130 && amount <= 150) {
+        productType = 'testosterone-support'; // ✅ NEW: Second upsell product
+      } else {
+        productType = '6-bottle'; // Default fallback
+      }
+    }
+    
+    // ✅ NEW: Detect upsell purchases from URL path or referrer
+    const currentPath = window.location.pathname;
+    const referrer = document.referrer || '';
+    
+    let purchaseSource = 'main';
+    if (referrer.includes('/up1bt') || referrer.includes('/up3bt') || referrer.includes('/up6bt')) {
+      purchaseSource = 'upsell';
+    } else if (referrer.includes('/upig1bt') || referrer.includes('/upig3bt') || referrer.includes('/upig6bt')) {
+      purchaseSource = 'second-upsell';
+    } else if (referrer.includes('/dws') || referrer.includes('/dw3')) {
+      purchaseSource = 'downsell';
+    }
 
     setOrderDetails({
       orderId,
       email,
       amount,
       currency,
-      productType
+      productType,
+      purchaseSource
     });
 
     // Track Purchase event for both pixels
     if (amount > 0) {
-      console.log('🛒 Tracking Purchase event on thank you page:', { amount, currency, productType });
+      console.log('🛒 Tracking Purchase event on thank you page:', { 
+        amount, 
+        currency, 
+        productType, 
+        purchaseSource,
+        orderId 
+      });
       trackPurchase(amount, currency);
     }
   }, [searchParams]);
@@ -123,19 +181,29 @@ export const ThankYouPage: React.FC = () => {
         name: 'BlueDrops 6-Bottle Package',
         image: 'https://i.imgur.com/hsfqxVP.png',
         description: '180-day complete treatment',
-        benefits: ['180-day money-back guarantee', 'Free shipping worldwide', 'Complete 6-month protocol']
+        benefits: ['180-day money-back guarantee', 'Free shipping worldwide', 'Complete 6-month protocol'],
+        price: '$294 ($49 per bottle)'
       },
       '3-bottle': {
         name: 'BlueDrops 3-Bottle Package', 
         image: 'https://i.imgur.com/eXYnjhm.png',
         description: '90-day treatment package',
-        benefits: ['180-day money-back guarantee', 'Free shipping', '3-month supply']
+        benefits: ['180-day money-back guarantee', 'Free shipping', '3-month supply'],
+        price: '$198 ($66 per bottle)'
       },
       '1-bottle': {
         name: 'BlueDrops 1-Bottle Package',
         image: 'https://i.imgur.com/iWs7wy7.png', 
         description: '30-day trial package',
-        benefits: ['180-day money-back guarantee', 'Fast shipping', '1-month supply']
+        benefits: ['180-day money-back guarantee', 'Fast shipping', '1-month supply'],
+        price: '$79 + $9.99 shipping'
+      },
+      'testosterone-support': {
+        name: 'IgniteMen Testosterone Support',
+        image: 'https://i.imgur.com/MKvvyGH.png',
+        description: 'Premium testosterone support supplement',
+        benefits: ['90-day money-back guarantee', 'Free shipping', '2-bottle package'],
+        price: '$138 ($69 per bottle)'
       }
     };
 
@@ -215,6 +283,7 @@ export const ThankYouPage: React.FC = () => {
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-2">{productInfo?.name}</h3>
                     <p className="text-gray-600 text-sm">{productInfo?.description}</p>
+                    <p className="text-blue-600 text-sm font-medium mt-1">{productInfo?.price}</p>
                   </div>
                   
                   <div className="space-y-2 text-sm">
@@ -229,9 +298,18 @@ export const ThankYouPage: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Amount:</span>
                       <span className="font-bold text-green-600">
-                        {orderDetails.currency === 'BRL' ? 'R$' : '$'}{orderDetails.amount}
+                        {orderDetails.currency === 'BRL' ? 'R$' : 
+                         orderDetails.currency === 'EUR' ? '€' : '$'}{orderDetails.amount}
                       </span>
                     </div>
+                    {orderDetails.purchaseSource && orderDetails.purchaseSource !== 'main' && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Purchase Type:</span>
+                        <span className="font-medium text-blue-600 capitalize">
+                          {orderDetails.purchaseSource.replace('-', ' ')}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
