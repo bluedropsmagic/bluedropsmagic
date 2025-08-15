@@ -135,6 +135,12 @@ export const VideoSection: React.FC = () => {
 
   return (
     <div className="w-full mb-6 sm:mb-8 animate-fadeInUp animation-delay-600">
+      {/* Watch instruction - moved from HeroSection */}
+      <div className="flex items-center justify-center gap-2 text-blue-700 text-sm mb-4">
+        <Play className="w-4 h-4" />
+        <span className="font-medium tracking-wider">WATCH BELOW AND SEE HOW IT WORKS</span>
+      </div>
+      
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ CRITICAL: Main video container with maximum isolation */}

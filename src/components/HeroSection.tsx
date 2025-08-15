@@ -22,11 +22,6 @@ export const HeroSection: React.FC = () => {
         This secret recipe can reverse Impotence in just{' '}
         <span className="text-yellow-600 font-bold">7 Days</span>
       </p>
-      
-      <div className="flex items-center justify-center gap-2 text-blue-700 text-sm">
-        <Play className="w-4 h-4" />
-        <span className="font-medium tracking-wider">WATCH BELOW AND SEE HOW IT WORKS</span>
-      </div>
     </div>
   );
 };
