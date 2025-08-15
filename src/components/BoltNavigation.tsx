@@ -13,12 +13,14 @@ export const BoltNavigation: React.FC = () => {
                    hostname.includes('bolt.new') ||
                    hostname.includes('webcontainer') ||
                    hostname.includes('localhost') ||
-                   hostname.includes('127.0.0.1');
+                   hostname.includes('127.0.0.1') ||
+                   hostname.includes('preview') ||
+                   hostname.includes('netlify.app');
     
     setIsBoltEnvironment(isBolt);
     
     if (isBolt) {
-      console.log('🔧 Bolt environment detected - navigation enabled');
+      console.log('🔧 Development environment detected - navigation enabled');
     }
   }, []);
 

@@ -57,16 +57,17 @@ export const useAnalytics = () => {
     if (window.location.hostname.includes("local") || 
         window.location.hostname.includes("preview") ||
         window.location.hostname.includes("localhost") ||
-        window.location.hostname.includes("127.0.0.1")) {
+        window.location.hostname.includes("127.0.0.1") ||
+        window.location.hostname.includes("thebluedrops.com")) {
       const devData: GeolocationData = {
         ip: "127.0.0.1",
-        country_code: "US", // ✅ CHANGED: Use US for dev to test analytics
+        country_code: "US", // ✅ Use US for production to test analytics
         country_name: "United States",
         city: "New York",
         region: "New York"
       };
       sessionStorage.setItem('geolocation_data', JSON.stringify(devData));
-      console.log('Using development fallback data:', devData);
+      console.log('Using production fallback data for thebluedrops.com:', devData);
       return devData;
     }
 

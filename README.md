@@ -1,5 +1,8 @@
 # BlueDrops VSL Project
 
+## 🌐 Production Domain
+**Live Site:** https://thebluedrops.com
+
 ## 🚀 Quick Start
 
 ### StackBlitz Development
