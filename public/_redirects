@@ -1,0 +1,27 @@
+# Netlify _redirects file for SPA routing
+# This ensures all routes work properly on thebluedrops.com
+
+# Clean URL redirects (remove trailing slashes)
+/home/    /    301
+/ftr/     /ftr  301
+/admin/   /admin 301
+/thankyou/ /thankyou 301
+/lpw/     /lpw  301
+
+# Upsell pages
+/up1bt/   /up1bt  301
+/up3bt/   /up3bt  301
+/up6bt/   /up6bt  301
+
+# Second upsell pages  
+/upig1bt/ /upig1bt 301
+/upig3bt/ /upig3bt 301
+/upig6bt/ /upig6bt 301
+
+# Downsell pages
+/dws1/    /dws1   301
+/dws2/    /dws2   301
+/dw3/     /dw3    301
+
+# SPA fallback - MUST be last
+/*        /index.html  200

@@ -140,7 +140,7 @@ export const VideoSection: React.FC = () => {
           {/* ✅ CRITICAL: Main video container with maximum isolation */}
           <div
             id="vid_683ba3d1b87ae17c6e07e7db"
-            className="absolute inset-0 w-full h-full z-30 cursor-pointer"
+            className="absolute inset-0 w-full h-full z-30 cursor-pointer main-video-container"
             style={{
               position: 'absolute',
               top: 0,
@@ -152,8 +152,11 @@ export const VideoSection: React.FC = () => {
               contain: 'layout style paint size',
               zIndex: 30,
               overflow: 'hidden',
-              borderRadius: '1rem'
+              borderRadius: '1rem',
+              backgroundColor: 'transparent'
             }}
+            data-main-video="true"
+            data-video-id="683ba3d1b87ae17c6e07e7db"
           >
             {/* ✅ CRITICAL: Thumbnail and backdrop structure for VTurb */}
             <img

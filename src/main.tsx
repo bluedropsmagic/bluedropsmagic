@@ -15,8 +15,11 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
+        {/* Main routes */}
         <Route path="/" element={<App />} />
         <Route path="/home" element={<App />} />
+        
+        {/* Core pages */}
         <Route path="/ftr" element={<FTRPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/lpw" element={<LandingPage />} />
@@ -36,6 +39,9 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/dws1" element={<DownsellPage variant="dws1" />} />
         <Route path="/dws2" element={<DownsellPage variant="dws2" />} />
         <Route path="/dw3" element={<DownsellPage variant="dw3" />} />
+        
+        {/* Catch-all route for any unmatched paths */}
+        <Route path="*" element={<App />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
