@@ -75,8 +75,7 @@ export const isMetaAdsTraffic = (): boolean => {
                    hostname.includes('127.0.0.1') || 
                    hostname.includes('stackblitz') ||
                    hostname.includes('bolt.new') ||
-                   hostname.includes('preview') ||
-                   hostname.includes('thebluedrops.com');
+                   hostname.includes('preview');
   
   if (isDevEnv) {
     console.log('🧪 Development environment - allowing all traffic for testing');

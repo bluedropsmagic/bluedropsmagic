@@ -37,13 +37,12 @@ function App() {
                    hostname.includes('bolt.new') ||
                    hostname.includes('webcontainer') ||
                    hostname.includes('localhost') ||
-                   hostname.includes('127.0.0.1') ||
-                   hostname.includes('thebluedrops.com');
+                   hostname.includes('127.0.0.1');
     
     setIsBoltEnvironment(isBolt);
     
     if (isBolt) {
-      console.log('🔧 Development environment detected - navigation buttons enabled');
+      console.log('🔧 Bolt environment detected - navigation buttons enabled');
     }
   }, []);
 

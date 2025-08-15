@@ -130,7 +130,7 @@ export const VideoSection: React.FC = () => {
       // Save current scroll position
       const scrollPos = window.scrollY;
       localStorage.setItem('scrollPosition', scrollPos.toString());
-        video_container_id: '689e7c030f018d362b0e239d',
+      
       // Reload page after a short delay
       setTimeout(() => {
         window.location.reload();
@@ -157,7 +157,7 @@ export const VideoSection: React.FC = () => {
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ FIXED: VTurb Video Container - Ensure container exists */}
           <div
-            id="vid-689e7c030f018d362b0e239d"
+            id="vid_683ba3d1b87ae17c6e07e7db"
             className="absolute inset-0 w-full h-full z-30 cursor-pointer"
             style={{
               position: 'absolute',
@@ -175,8 +175,8 @@ export const VideoSection: React.FC = () => {
           >
             {/* ✅ FIXED: Ensure thumbnail and backdrop are always present */}
             <img 
-              id="thumb_689e7c030f018d362b0e239d" 
-              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/thumbnail.jpg" 
+              id="thumb_683ba3d1b87ae17c6e07e7db" 
+              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/thumbnail.jpg" 
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
               loading="eager"
@@ -188,7 +188,7 @@ export const VideoSection: React.FC = () => {
             
             {/* ✅ FIXED: Backdrop with proper z-index */}
             <div 
-              id="backdrop_689e7c030f018d362b0e239d" 
+              id="backdrop_683ba3d1b87ae17c6e07e7db" 
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
@@ -200,7 +200,7 @@ export const VideoSection: React.FC = () => {
             
             {/* ✅ NEW: VTurb content will be injected here with higher z-index */}
             <div 
-              id="vturb-content-689e7c030f018d362b0e239d"
+              id="vturb-content-683ba3d1b87ae17c6e07e7db"
               className="absolute inset-0 w-full h-full"
               style={{
                 zIndex: 10,
@@ -272,7 +272,7 @@ export const VideoSection: React.FC = () => {
               }}
               onClick={() => {
                 console.log('🎬 Play button clicked');
-                const videoContainer = document.getElementById('vid-689e7c030f018d362b0e239d');
+                const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
                 if (videoContainer) {
                   videoContainer.click();
                 }
