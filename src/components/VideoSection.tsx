@@ -65,7 +65,7 @@ export const VideoSection: React.FC = () => {
     setHasError(false);
     
     // Force reload the VTurb script
-    const existingScript = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
+    const existingScript = document.getElementById('scr_689e7c030f018d362b0e239d');
     if (existingScript) {
       existingScript.remove();
       console.log('🔄 Removed existing VTurb script');
@@ -82,19 +82,19 @@ export const VideoSection: React.FC = () => {
     // Re-inject script
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.id = 'scr_683ba3d1b87ae17c6e07e7db';
+    script.id = 'scr_689e7c030f018d362b0e239d';
     script.async = true;
     script.innerHTML = `
       console.log('🔄 Retry #${retryCount + 1}: Executing VTurb script reload...');
       (function() {
         try {
-          // ✅ CRITICAL: Check if custom elements are already defined before proceeding
+          if (error && error.toString().includes('vturb')) {
           if (window.customElements && window.customElements.get('vturb-bezel')) {
             console.log('⚠️ Custom elements already registered, attempting safe reload');
           }
           
           var s = document.createElement("script");
-          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/player.js";
+          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/v4/player.js";
           s.async = true; 
           s.defer = true;
           
@@ -157,7 +157,7 @@ export const VideoSection: React.FC = () => {
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ FIXED: VTurb Video Container - Ensure container exists */}
           <div
-            id="vid_683ba3d1b87ae17c6e07e7db"
+            id="vid_689e7c030f018d362b0e239d"
             className="absolute inset-0 w-full h-full z-30 cursor-pointer"
             style={{
               position: 'absolute',
@@ -175,8 +175,8 @@ export const VideoSection: React.FC = () => {
           >
             {/* ✅ FIXED: Ensure thumbnail and backdrop are always present */}
             <img 
-              id="thumb_683ba3d1b87ae17c6e07e7db" 
-              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/thumbnail.jpg" 
+              id="thumb_689e7c030f018d362b0e239d" 
+              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/thumbnail.jpg" 
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
               loading="eager"
@@ -188,7 +188,7 @@ export const VideoSection: React.FC = () => {
             
             {/* ✅ FIXED: Backdrop with proper z-index */}
             <div 
-              id="backdrop_683ba3d1b87ae17c6e07e7db" 
+              id="backdrop_689e7c030f018d362b0e239d" 
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
@@ -200,7 +200,7 @@ export const VideoSection: React.FC = () => {
             
             {/* ✅ NEW: VTurb content will be injected here with higher z-index */}
             <div 
-              id="vturb-content-683ba3d1b87ae17c6e07e7db"
+              id="vturb-content-689e7c030f018d362b0e239d"
               className="absolute inset-0 w-full h-full"
               style={{
                 zIndex: 10,
@@ -272,7 +272,7 @@ export const VideoSection: React.FC = () => {
               }}
               onClick={() => {
                 console.log('🎬 Play button clicked');
-                const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+                const videoContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
                 if (videoContainer) {
                   videoContainer.click();
                 }
