@@ -6,14 +6,8 @@ export const HeroSection: React.FC = () => {
     <div className="mb-6 text-center w-full animate-fadeInUp animation-delay-400">
       {/* Warning Banner */}
       <div className="mb-4 animate-fadeInDown animation-delay-200">
-        <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg shadow-lg border border-red-400 inline-block">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">⚠️</span>
-            <span className="font-black text-sm sm:text-base tracking-wide">
-              THEY DON'T WANT YOU TO KNOW THIS
-            </span>
-            <span className="text-lg">⚠️</span>
-          </div>
+        <div className="bg-red-500 text-white px-4 py-2 rounded font-bold text-sm">
+          THEY DON'T WANT YOU TO KNOW THIS
         </div>
       </div>
       
