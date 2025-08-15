@@ -3,8 +3,18 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "https://www.thebluedrops.com/(.*)",
+      "source": "/www.thebluedrops.com/(.*)",
       "destination": "https://thebluedrops.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home/",
+      "destination": "/",
       "permanent": true
     },
     {
