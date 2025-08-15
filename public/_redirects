@@ -1,6 +1,9 @@
 # Netlify _redirects file for SPA routing
 # This ensures all routes work properly on thebluedrops.com
 
+# Force redirect from www to non-www
+https://www.thebluedrops.com/* https://thebluedrops.com/:splat 301!
+
 # Clean URL redirects (remove trailing slashes)
 /home/    /    301
 /ftr/     /ftr  301

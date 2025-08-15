@@ -13,7 +13,7 @@ export interface RedTrackConfig {
 export const REDTRACK_CONFIG: RedTrackConfig = {
   domain: 'rdt.obluemagicdrops.com',
   attribution: 'lastpaid',
-  cookieDomain: 'thebluedrops.com',
+  cookieDomain: '.thebluedrops.com',
   cookieDuration: 90,
   defaultCampaignId: '68685bcb51f1690d1f917171',
   regViewOnce: false

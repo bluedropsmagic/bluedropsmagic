@@ -3,6 +3,20 @@
   publish = "dist"
   command = "npm run build"
 
+# Force redirect from www to non-www
+[[redirects]]
+  from = "https://www.thebluedrops.com/*"
+  to = "https://thebluedrops.com/:splat"
+  status = 301
+  force = true
+
+# Alternative: Allow both www and non-www (comment out the above and use this instead)
+# [[redirects]]
+#   from = "https://thebluedrops.com/*"
+#   to = "https://www.thebluedrops.com/:splat"
+#   status = 301
+#   force = true
+
 # Redirect rules for clean URLs and slug support
 [[redirects]]
   from = "/home"

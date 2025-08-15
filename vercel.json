@@ -1,6 +1,13 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "https://www.thebluedrops.com/(.*)",
+      "destination": "https://thebluedrops.com/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/home",

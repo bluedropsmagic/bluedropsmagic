@@ -58,7 +58,8 @@ export const useAnalytics = () => {
         window.location.hostname.includes("preview") ||
         window.location.hostname.includes("localhost") ||
         window.location.hostname.includes("127.0.0.1") ||
-        window.location.hostname.includes("thebluedrops.com")) {
+        window.location.hostname === "thebluedrops.com" ||
+        window.location.hostname === "www.thebluedrops.com") {
       const devData: GeolocationData = {
         ip: "127.0.0.1",
         country_code: "US", // ✅ Use US for production to test analytics

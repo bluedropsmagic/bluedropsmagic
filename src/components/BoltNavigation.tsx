@@ -15,7 +15,9 @@ export const BoltNavigation: React.FC = () => {
                    hostname.includes('localhost') ||
                    hostname.includes('127.0.0.1') ||
                    hostname.includes('preview') ||
-                   hostname.includes('netlify.app');
+                   hostname.includes('netlify.app') ||
+                   hostname === 'thebluedrops.com' ||
+                   hostname === 'www.thebluedrops.com';
     
     setIsBoltEnvironment(isBolt);
     
