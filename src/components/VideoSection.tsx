@@ -11,7 +11,7 @@ export const VideoSection: React.FC = () => {
     let checkInterval: number;
 
     const checkVideoLoad = () => {
-      const videoContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
+      const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
       if (videoContainer) {
         const hasVideo =
           videoContainer.querySelector('video') ||
@@ -59,7 +59,7 @@ export const VideoSection: React.FC = () => {
     setIsLoading(true);
     setHasError(false);
 
-    const existingScript = document.getElementById('scr_689e7c030f018d362b0e239d');
+    const existingScript = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
     if (existingScript) {
       existingScript.remove();
       console.log('🔄 Removed existing VTurb script');
@@ -74,7 +74,7 @@ export const VideoSection: React.FC = () => {
 
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.id = 'scr_689e7c030f018d362b0e239d';
+    script.id = 'scr_683ba3d1b87ae17c6e07e7db';
     script.async = true;
     script.innerHTML = `
       console.log('🔄 Retry #${retryCount + 1}: Executing VTurb script reload...');
@@ -85,7 +85,7 @@ export const VideoSection: React.FC = () => {
           }
           
           var s = document.createElement("script");
-          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/v4/player.js";
+          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/player.js";
           s.async = true; 
           s.defer = true;
           
@@ -137,8 +137,9 @@ export const VideoSection: React.FC = () => {
     <div className="w-full mb-6 sm:mb-8 animate-fadeInUp animation-delay-600">
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
+          {/* ✅ CRITICAL: Main video container with maximum isolation */}
           <div
-            id="vid_689e7c030f018d362b0e239d"
+            id="vid_683ba3d1b87ae17c6e07e7db"
             className="absolute inset-0 w-full h-full z-30 cursor-pointer"
             style={{
               position: 'absolute',
@@ -148,12 +149,16 @@ export const VideoSection: React.FC = () => {
               height: '100%',
               touchAction: 'manipulation',
               isolation: 'isolate',
-              contain: 'layout style paint'
+              contain: 'layout style paint size',
+              zIndex: 30,
+              overflow: 'hidden',
+              borderRadius: '1rem'
             }}
           >
+            {/* ✅ CRITICAL: Thumbnail and backdrop structure for VTurb */}
             <img
-              id="thumb_689e7c030f018d362b0e239d"
-              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/thumbnail.jpg"
+              id="thumb_683ba3d1b87ae17c6e07e7db"
+              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/thumbnail.jpg"
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
               loading="eager"
@@ -163,7 +168,7 @@ export const VideoSection: React.FC = () => {
               }}
             />
             <div
-              id="backdrop_689e7c030f018d362b0e239d"
+              id="backdrop_683ba3d1b87ae17c6e07e7db"
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
@@ -172,14 +177,6 @@ export const VideoSection: React.FC = () => {
                 touchAction: 'manipulation'
               }}
             />
-            <div
-              id="vturb-content-689e7c030f018d362b0e239d"
-              className="absolute inset-0 w-full h-full"
-              style={{
-                zIndex: 10,
-                isolation: 'isolate'
-              }}
-            ></div>
 
             {(isLoading || !window.vslVideoLoaded) && !hasError && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>

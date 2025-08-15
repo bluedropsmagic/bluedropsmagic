@@ -314,6 +314,27 @@ function App() {
       
       console.log('✅ Main video container found:', mainContainer);
 
+      // ✅ CRITICAL: Setup container isolation BEFORE script injection
+      mainContainer.style.position = 'absolute';
+      mainContainer.style.top = '0';
+      mainContainer.style.left = '0';
+      mainContainer.style.width = '100%';
+      mainContainer.style.height = '100%';
+      mainContainer.style.zIndex = '30';
+      mainContainer.style.overflow = 'hidden';
+      mainContainer.style.borderRadius = '1rem';
+      mainContainer.style.isolation = 'isolate';
+      mainContainer.style.contain = 'layout style paint size';
+      mainContainer.setAttribute('data-main-video', 'true');
+      mainContainer.setAttribute('data-video-id', '683ba3d1b87ae17c6e07e7db');
+      
+      // ✅ CRITICAL: Clear any existing content to prevent conflicts
+      const existingContent = mainContainer.innerHTML;
+      if (existingContent && !existingContent.includes('thumb_683ba3d1b87ae17c6e07e7db')) {
+        console.log('🧹 Clearing existing content from main video container');
+        mainContainer.innerHTML = '';
+      }
+
       // Remove any existing script first
       const existingScript = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
       if (existingScript) {
@@ -331,13 +352,34 @@ function App() {
       script.innerHTML = `
         (function() {
           try {
-            // ✅ FIXED: Check if custom elements are already defined
-            // Removed custom element check to allow video to load properly
+            // ✅ CRITICAL: Ensure main video container isolation
+            console.log('🎬 MAIN VIDEO: Initializing container isolation for 683ba3d1b87ae17c6e07e7db');
             
-            // ✅ CRITICAL: Initialize main video container isolation
+            // ✅ CRITICAL: Mark this as the MAIN video to prevent conflicts
             window.mainVideoId = '683ba3d1b87ae17c6e07e7db';
             window.smartplayer = window.smartplayer || { instances: {} };
-            console.log('🎬 Initializing MAIN video player: 683ba3d1b87ae17c6e07e7db');
+            
+            // ✅ CRITICAL: Ensure target container exists and is isolated
+            var targetContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+            if (!targetContainer) {
+              console.error('❌ CRITICAL: Main video container not found during script injection');
+              return;
+            }
+            
+            // ✅ CRITICAL: Force container isolation
+            targetContainer.style.position = 'absolute';
+            targetContainer.style.top = '0';
+            targetContainer.style.left = '0';
+            targetContainer.style.width = '100%';
+            targetContainer.style.height = '100%';
+            targetContainer.style.zIndex = '30';
+            targetContainer.style.overflow = 'hidden';
+            targetContainer.style.isolation = 'isolate';
+            targetContainer.style.contain = 'layout style paint size';
+            targetContainer.setAttribute('data-main-video', 'true');
+            targetContainer.setAttribute('data-video-id', '683ba3d1b87ae17c6e07e7db');
+            
+            console.log('✅ MAIN VIDEO: Container isolation enforced');
 
             // ✅ FIXED: Check for existing scripts
             if (document.querySelector('script[src*="683ba3d1b87ae17c6e07e7db/player.js"]')) {
@@ -346,25 +388,35 @@ function App() {
               return;
             }
             
-            // ✅ FIXED: Ensure target container exists
-            var targetContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
-            if (!targetContainer) {
-              console.error('❌ Target container not found during script injection');
-              return;
-            }
-            
             var s = document.createElement("script");
             s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/player.js";
             s.async = true;
             s.onload = function() {
-              console.log('VTurb player script loaded successfully');
+              console.log('✅ MAIN VIDEO: VTurb player script loaded successfully');
               window.vslVideoLoaded = true;
               
-              // ✅ FIXED: Verify container still exists after load
+              // ✅ CRITICAL: Verify container still exists and is isolated after load
               var container = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
               if (!container) {
-                console.error('❌ Container disappeared after VTurb load!');
+                console.error('❌ CRITICAL: Main video container disappeared after VTurb load!');
+                return;
               }
+              
+              // ✅ CRITICAL: Re-enforce isolation after VTurb loads
+              container.style.position = 'absolute';
+              container.style.top = '0';
+              container.style.left = '0';
+              container.style.width = '100%';
+              container.style.height = '100%';
+              container.style.zIndex = '30';
+              container.style.overflow = 'hidden';
+              container.style.isolation = 'isolate';
+              container.style.contain = 'layout style paint size';
+              container.setAttribute('data-main-video', 'true');
+              container.setAttribute('data-video-id', '683ba3d1b87ae17c6e07e7db');
+              
+              console.log('✅ MAIN VIDEO: Container isolation re-enforced after VTurb load');
+              
               // ✅ AUTO-PLAY: Tentar dar play automaticamente no vídeo principal
               setTimeout(function() {
                 try {
@@ -373,7 +425,7 @@ function App() {
                     var player = window.smartplayer.instances['683ba3d1b87ae17c6e07e7db'];
                     if (player.play) {
                       player.play();
-                      console.log('✅ Auto-play via smartplayer instance');
+                      console.log('✅ MAIN VIDEO: Auto-play via smartplayer instance');
                     }
                   }
                   
@@ -382,9 +434,9 @@ function App() {
                   videoElements.forEach(function(video) {
                     if (video.play) {
                       video.play().then(function() {
-                        console.log('✅ Auto-play via video element');
+                        console.log('✅ MAIN VIDEO: Auto-play via video element');
                       }).catch(function(error) {
-                        console.log('⚠️ Auto-play blocked by browser:', error);
+                        console.log('⚠️ MAIN VIDEO: Auto-play blocked by browser:', error);
                       });
                     }
                   });
@@ -393,36 +445,59 @@ function App() {
                   var container = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
                   if (container) {
                     container.click();
-                    console.log('✅ Auto-play via container click');
+                    console.log('✅ MAIN VIDEO: Auto-play via container click');
                   }
                 } catch (error) {
-                  console.log('⚠️ Auto-play failed:', error);
+                  console.log('⚠️ MAIN VIDEO: Auto-play failed:', error);
                 }
               }, 3000); // Aguardar 3 segundos para o vídeo carregar
               
-              // ✅ CRITICAL: Ensure main video stays in its container
+              // ✅ CRITICAL: Final container security check
               setTimeout(function() {
                 var mainContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
                 if (mainContainer) {
-                  console.log('✅ Main video container secured');
-                  // Mark main video as protected
+                  console.log('✅ MAIN VIDEO: Container secured and protected');
+                  
+                  // ✅ CRITICAL: Final isolation enforcement
+                  mainContainer.style.position = 'absolute';
+                  mainContainer.style.top = '0';
+                  mainContainer.style.left = '0';
+                  mainContainer.style.width = '100%';
+                  mainContainer.style.height = '100%';
+                  mainContainer.style.zIndex = '30';
+                  mainContainer.style.overflow = 'hidden';
+                  mainContainer.style.isolation = 'isolate';
+                  mainContainer.style.contain = 'layout style paint size';
                   mainContainer.setAttribute('data-main-video', 'true');
                   mainContainer.setAttribute('data-video-id', '683ba3d1b87ae17c6e07e7db');
+                  
+                  // ✅ CRITICAL: Prevent any video elements from escaping
+                  var videoElements = document.querySelectorAll('video, iframe');
+                  videoElements.forEach(function(element) {
+                    var elementContainer = element.closest('[id*="vid"]');
+                    if (elementContainer && elementContainer.id !== 'vid_683ba3d1b87ae17c6e07e7db') {
+                      // This video belongs to another container, ensure it stays there
+                      if (element.parentNode !== elementContainer) {
+                        elementContainer.appendChild(element);
+                        console.log('🔄 MAIN VIDEO: Moved video element back to correct container:', elementContainer.id);
+                      }
+                    }
+                  });
                 }
               }, 2000);
             };
             s.onerror = function() {
-              console.error('Failed to load VTurb player script');
+              console.error('❌ MAIN VIDEO: Failed to load VTurb player script');
             };
             document.head.appendChild(s);
           } catch (error) {
-            console.error('Error injecting VTurb script:', error);
+            console.error('❌ MAIN VIDEO: Error injecting VTurb script:', error);
           }
         })();
       `;
       
       document.head.appendChild(script);
-      console.log('✅ VTurb script injected successfully');
+      console.log('✅ MAIN VIDEO: VTurb script injected successfully');
     };
 
     // Delay script injection to improve initial page load
