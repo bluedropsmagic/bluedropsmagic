@@ -1,8 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAnalytics } from '../hooks/useAnalytics';
-import { initializeRedTrack } from '../utils/redtrackIntegration';
-import { initializeFacebookPixelTracking } from '../utils/facebookPixelTracking';
+import { useAnalytics } from './hooks/useAnalytics';
+import { initializeRedTrack } from './utils/redtrackIntegration';
+import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
+
+// Import BoltNavigation
+import { BoltNavigation } from './components/BoltNavigation';
+
+// Import all components
+import { Header } from './components/Header';
+import { HeroSection } from './components/HeroSection';
+import { VideoSection } from './components/VideoSection';
+import { ProductOffers } from './components/ProductOffers';
+import { TestimonialsSection } from './components/TestimonialsSection';
+import { DoctorsSection } from './components/DoctorsSection';
+import { NewsSection } from './components/NewsSection';
+import { GuaranteeSection } from './components/GuaranteeSection';
+import { Footer } from './components/Footer';
+import { Modals } from './components/Modals';
 
 function App() {
   const [showPurchaseButton, setShowPurchaseButton] = useState(false); // ✅ CHANGED: Start hidden
@@ -206,7 +221,6 @@ function App() {
       clearTimeout(timer);
     };
   }, [isBoltEnvironment]); // Run when Bolt environment changes
-  
   // ✅ NEW: Function to scroll to 6-bottle purchase button
   const scrollToSixBottleButton = () => {
     try {
