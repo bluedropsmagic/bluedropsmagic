@@ -5,7 +5,86 @@ export const VideoSection: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [isCentered, setIsCentered] = useState(false);
 
+  // ✅ NEW: Function to center the video container
+  const centerVideoContainer = () => {
+    try {
+      const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+      if (videoContainer) {
+        console.log('📍 Centralizing video container on screen');
+        
+        videoContainer.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'center'
+        });
+        
+        // Add highlight effect to draw attention
+        videoContainer.style.transition = 'all 0.8s ease';
+        videoContainer.style.transform = 'scale(1.02)';
+        videoContainer.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.6)';
+        
+        // Remove highlight after 3 seconds
+        setTimeout(() => {
+          videoContainer.style.transform = 'scale(1)';
+          videoContainer.style.boxShadow = '';
+        }, 3000);
+        
+        setIsCentered(true);
+        console.log('✅ Video container centered successfully');
+      } else {
+        console.log('⚠️ Video container not found for centering');
+      }
+    } catch (error) {
+      console.error('Error centering video container:', error);
+    }
+  };
+
+  // ✅ NEW: Auto-center after 10 seconds if user hasn't clicked
+  useEffect(() => {
+    const autoCenterTimer = setTimeout(() => {
+      if (!isCentered) {
+        console.log('⏰ 10 seconds elapsed - auto-centering video');
+        centerVideoContainer();
+      }
+    }, 10000); // 10 seconds
+    
+    return () => clearTimeout(autoCenterTimer);
+  }, [isCentered]);
+
+  // ✅ NEW: Setup click listener for video container
+  useEffect(() => {
+    const setupClickListener = () => {
+      const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+      if (videoContainer) {
+        const handleVideoClick = () => {
+          console.log('🎬 User clicked on video - centering container');
+          centerVideoContainer();
+        };
+        
+        videoContainer.addEventListener('click', handleVideoClick);
+        videoContainer.addEventListener('touchstart', handleVideoClick);
+        
+        console.log('🎯 Click listeners added to video container for centering');
+        
+        return () => {
+          videoContainer.removeEventListener('click', handleVideoClick);
+          videoContainer.removeEventListener('touchstart', handleVideoClick);
+        };
+      }
+    };
+    
+    // Setup immediately if container exists
+    setupClickListener();
+    
+    // Also setup after a delay in case container loads later
+    const delayedSetup = setTimeout(setupClickListener, 2000);
+    
+    return () => {
+      clearTimeout(delayedSetup);
+    };
+  }, []);
   useEffect(() => {
     let loadingTimeout: number;
     let checkInterval: number;
