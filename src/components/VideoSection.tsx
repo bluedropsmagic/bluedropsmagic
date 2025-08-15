@@ -5,21 +5,19 @@ export const VideoSection: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const [isCentered, setIsCentered] = useState(false);
-  const [lastActivity, setLastActivity] = useState(Date.now());
-  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
-  // ✅ NEW: Function to center the video container
+  // ✅ FIXED: Simplified function to center the video container
   const centerVideoContainer = () => {
     try {
       const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
       if (videoContainer) {
-        console.log('📍 Centralizing video container on screen');
+        console.log('📍 AUTO-SCROLL: Centralizing video container on screen');
         
         videoContainer.scrollIntoView({ 
           behavior: 'smooth', 
           block: 'center',
-          inline: 'center'
+          inline: 'nearest'
         });
         
         // Add highlight effect to draw attention
@@ -29,87 +27,77 @@ export const VideoSection: React.FC = () => {
         
         // Remove highlight after 3 seconds
         setTimeout(() => {
-          videoContainer.style.transform = 'scale(1)';
-          videoContainer.style.boxShadow = '';
+          if (videoContainer) {
+            videoContainer.style.transform = 'scale(1)';
+            videoContainer.style.boxShadow = '';
+          }
         }, 3000);
         
-        setIsCentered(true);
-        console.log('✅ Video container centered successfully');
+        setHasUserInteracted(true);
+        console.log('✅ AUTO-SCROLL: Video container centered successfully');
       } else {
-        console.log('⚠️ Video container not found for centering');
+        console.log('⚠️ AUTO-SCROLL: Video container not found for centering');
       }
     } catch (error) {
-      console.error('Error centering video container:', error);
+      console.error('❌ AUTO-SCROLL: Error centering video container:', error);
     }
   };
 
-  // ✅ NEW: Reset inactivity timer on user activity
-  const resetInactivityTimer = () => {
-    setLastActivity(Date.now());
+  // ✅ FIXED: Simple 10-second autoscroll timer
+  useEffect(() => {
+    console.log('⏰ AUTO-SCROLL: Starting 10-second timer for video centering');
     
-    // Clear existing timer
-    if (inactivityTimer) {
-      clearTimeout(inactivityTimer);
-    }
-    
-    // Set new 10-second timer
-    const newTimer = setTimeout(() => {
-      if (!isCentered) {
-        console.log('⏰ 10 seconds of inactivity - auto-scrolling to center video');
+    // Set 10-second timer
+    const autoScrollTimer = setTimeout(() => {
+      if (!hasUserInteracted) {
+        console.log('⏰ AUTO-SCROLL: 10 seconds elapsed without interaction - centering video');
         centerVideoContainer();
+      } else {
+        console.log('⏰ AUTO-SCROLL: User already interacted, skipping auto-scroll');
       }
     }, 10000); // 10 seconds
     
-    setInactivityTimer(newTimer);
-  };
-
-  // ✅ NEW: Setup inactivity detection
-  useEffect(() => {
-    // Start initial timer
-    resetInactivityTimer();
+    // Activity event listeners to detect user interaction
+    const activityEvents = ['mousedown', 'touchstart', 'scroll', 'click', 'keydown'];
     
-    // Activity event listeners
-    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-    
-    const handleActivity = () => {
-      if (!isCentered) {
-        resetInactivityTimer();
+    const handleUserActivity = () => {
+      if (!hasUserInteracted) {
+        console.log('👆 AUTO-SCROLL: User activity detected - canceling auto-scroll');
+        setHasUserInteracted(true);
+        clearTimeout(autoScrollTimer);
       }
     };
     
     // Add event listeners
     activityEvents.forEach(event => {
-      document.addEventListener(event, handleActivity, { passive: true });
+      document.addEventListener(event, handleUserActivity, { passive: true });
     });
     
     // Cleanup
     return () => {
-      if (inactivityTimer) {
-        clearTimeout(inactivityTimer);
-      }
+      clearTimeout(autoScrollTimer);
       
       activityEvents.forEach(event => {
-        document.removeEventListener(event, handleActivity);
+        document.removeEventListener(event, handleUserActivity);
       });
     };
-  }, [isCentered, inactivityTimer]);
+  }, [hasUserInteracted]);
 
-  // ✅ NEW: Auto-center after 10 seconds if user hasn't clicked
-
-  // ✅ NEW: Setup click listener for video container
+  // ✅ FIXED: Setup click listener for video container
   useEffect(() => {
     const setupClickListener = () => {
       const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
       if (videoContainer) {
         const handleVideoClick = () => {
-          console.log('🎬 User clicked on video - centering container');
+          console.log('🎬 AUTO-SCROLL: User clicked on video - centering container');
+          setHasUserInteracted(true);
           centerVideoContainer();
         };
         
         videoContainer.addEventListener('click', handleVideoClick);
         videoContainer.addEventListener('touchstart', handleVideoClick);
         
-        console.log('🎯 Click listeners added to video container for centering');
+        console.log('🎯 AUTO-SCROLL: Click listeners added to video container');
         
         return () => {
           videoContainer.removeEventListener('click', handleVideoClick);
@@ -119,12 +107,16 @@ export const VideoSection: React.FC = () => {
     };
     
     // Setup immediately if container exists
-    setupClickListener();
+    const cleanup1 = setupClickListener();
     
     // Also setup after a delay in case container loads later
-    const delayedSetup = setTimeout(setupClickListener, 2000);
+    const delayedSetup = setTimeout(() => {
+      const cleanup2 = setupClickListener();
+      return cleanup2;
+    }, 2000);
     
     return () => {
+      if (cleanup1) cleanup1();
       clearTimeout(delayedSetup);
     };
   }, []);
