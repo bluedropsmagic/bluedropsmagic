@@ -370,22 +370,40 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     trackInitiateCheckout(content.acceptUrl);
     trackOfferClick(`downsell-${variant}-accept`);
     
-    // Build URL with all tracking parameters
+    // ✅ ENHANCED: Build URL with ALL tracking parameters preserved
     let url = content.acceptUrl;
-    
-    // Add preserved CartPanda parameters
-    if (cartParams) {
-      url += (url.includes('?') ? '&' : '?') + cartParams;
-    }
-    
-    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
-    const cid = urlParams.get('cid');
-    if (cid && !url.includes('cid=')) {
-      url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    
+    // ✅ CRITICAL: Preserve ALL parameters from current URL
+    const allParams = new URLSearchParams();
+    
+    // Add all current URL parameters first
+    urlParams.forEach((value, key) => {
+      allParams.set(key, value);
+    });
+    
+    // ✅ CRITICAL: Add CartPanda parameters from searchParams
+    if (cartParams) {
+      const cartParamsObj = new URLSearchParams(cartParams);
+      cartParamsObj.forEach((value, key) => {
+        allParams.set(key, value); // Override with CartPanda values if present
+      });
     }
     
-    console.log('🎯 Downsell Accept URL with all params:', url);
+    // ✅ CRITICAL: Ensure CID is preserved
+    const cid = urlParams.get('cid');
+    if (cid) {
+      allParams.set('cid', cid);
+    }
+    
+    // ✅ Build final URL
+    const finalParams = allParams.toString();
+    if (finalParams) {
+      url += (url.includes('?') ? '&' : '?') + finalParams;
+    }
+    
+    console.log('🎯 Downsell Accept URL with ALL params preserved:', url);
+    console.log('📊 Parameters count:', allParams.size);
     
     setTimeout(() => {
       window.location.href = url;
@@ -396,22 +414,40 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
     trackInitiateCheckout(content.rejectUrl);
     trackOfferClick(`downsell-${variant}-reject`);
     
-    // Build URL with all tracking parameters
+    // ✅ ENHANCED: Build URL with ALL tracking parameters preserved
     let url = content.rejectUrl;
-    
-    // Add preserved CartPanda parameters
-    if (cartParams) {
-      url += (url.includes('?') ? '&' : '?') + cartParams;
-    }
-    
-    // Add CID parameter if present
     const urlParams = new URLSearchParams(window.location.search);
-    const cid = urlParams.get('cid');
-    if (cid && !url.includes('cid=')) {
-      url += (url.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    
+    // ✅ CRITICAL: Preserve ALL parameters from current URL
+    const allParams = new URLSearchParams();
+    
+    // Add all current URL parameters first
+    urlParams.forEach((value, key) => {
+      allParams.set(key, value);
+    });
+    
+    // ✅ CRITICAL: Add CartPanda parameters from searchParams
+    if (cartParams) {
+      const cartParamsObj = new URLSearchParams(cartParams);
+      cartParamsObj.forEach((value, key) => {
+        allParams.set(key, value); // Override with CartPanda values if present
+      });
     }
     
-    console.log('🎯 Downsell Reject URL with all params:', url);
+    // ✅ CRITICAL: Ensure CID is preserved
+    const cid = urlParams.get('cid');
+    if (cid) {
+      allParams.set('cid', cid);
+    }
+    
+    // ✅ Build final URL
+    const finalParams = allParams.toString();
+    if (finalParams) {
+      url += (url.includes('?') ? '&' : '?') + finalParams;
+    }
+    
+    console.log('🎯 Downsell Reject URL with ALL params preserved:', url);
+    console.log('📊 Parameters count:', allParams.size);
     
     setTimeout(() => {
       window.location.href = url;

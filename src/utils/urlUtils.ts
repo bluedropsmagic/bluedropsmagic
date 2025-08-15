@@ -82,8 +82,20 @@ export const getAllTrackingParams = (): UTMParams => {
  * Build URL with tracking parameters
  */
 export const buildUrlWithParams = (baseUrl: string, additionalParams?: Record<string, string>): string => {
-  const trackingParams = getAllTrackingParams();
-  const allParams = { ...trackingParams, ...additionalParams };
+  // ✅ ENHANCED: Get ALL current URL parameters, not just tracking ones
+  const currentUrlParams = new URLSearchParams(window.location.search);
+  const allCurrentParams: Record<string, string> = {};
+  
+  // Add all current URL parameters
+  currentUrlParams.forEach((value, key) => {
+    allCurrentParams[key] = value;
+  });
+  
+  // Add stored tracking parameters
+  const storedParams = getAllTrackingParams();
+  
+  // Merge all parameters (current URL takes precedence)
+  const allParams = { ...storedParams, ...allCurrentParams, ...additionalParams };
   
   if (Object.keys(allParams).length === 0) {
     return baseUrl;
@@ -103,8 +115,20 @@ export const buildUrlWithParams = (baseUrl: string, additionalParams?: Record<st
  * Get parameters as query string
  */
 export const getParamsAsQueryString = (additionalParams?: Record<string, string>): string => {
-  const trackingParams = getAllTrackingParams();
-  const allParams = { ...trackingParams, ...additionalParams };
+  // ✅ ENHANCED: Get ALL current URL parameters, not just tracking ones
+  const currentUrlParams = new URLSearchParams(window.location.search);
+  const allCurrentParams: Record<string, string> = {};
+  
+  // Add all current URL parameters
+  currentUrlParams.forEach((value, key) => {
+    allCurrentParams[key] = value;
+  });
+  
+  // Add stored tracking parameters
+  const storedParams = getAllTrackingParams();
+  
+  // Merge all parameters (current URL takes precedence)
+  const allParams = { ...storedParams, ...allCurrentParams, ...additionalParams };
   
   const params = new URLSearchParams();
   Object.entries(allParams).forEach(([key, value]) => {

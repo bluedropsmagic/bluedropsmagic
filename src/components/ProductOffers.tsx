@@ -40,15 +40,26 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
     // Call the original onPurchase handler
     onPurchase(packageType);
     
-    // ✅ UPDATED: Build URL with tracking parameters + CID if present
-    let urlWithParams = buildUrlWithParams(targetUrl);
-    
-    // Add CID parameter if present in current URL
+    // ✅ ENHANCED: Build URL with ALL tracking parameters preserved
+    let urlWithParams = targetUrl;
     const urlParams = new URLSearchParams(window.location.search);
-    const cid = urlParams.get('cid');
-    if (cid && !urlWithParams.includes('cid=')) {
-      urlWithParams += (urlWithParams.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    
+    // ✅ CRITICAL: Preserve ALL parameters from current URL
+    const allParams = new URLSearchParams();
+    
+    // Add all current URL parameters
+    urlParams.forEach((value, key) => {
+      allParams.set(key, value);
+    });
+    
+    // ✅ Build final URL
+    const finalParams = allParams.toString();
+    if (finalParams) {
+      urlWithParams += (urlWithParams.includes('?') ? '&' : '?') + finalParams;
     }
+    
+    console.log('🎯 Main Purchase URL with ALL params preserved:', urlWithParams);
+    console.log('📊 Parameters count:', allParams.size);
     
     // ✅ UPDATED: Small delay to ensure Facebook Pixel event is sent
     setTimeout(() => {

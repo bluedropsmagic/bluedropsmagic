@@ -36,8 +36,26 @@ export const addCidToUrl = (url: string, cid?: string): string => {
     return url;
   }
   
-  const separator = url.includes('?') ? '&' : '?';
-  return `${url}${separator}cid=${encodeURIComponent(cidValue)}`;
+  // ✅ ENHANCED: Preserve ALL current URL parameters when adding CID
+  const currentUrlParams = new URLSearchParams(window.location.search);
+  const allParams = new URLSearchParams();
+  
+  // Add all current URL parameters
+  currentUrlParams.forEach((value, key) => {
+    allParams.set(key, value);
+  });
+  
+  // Ensure CID is set
+  allParams.set('cid', cidValue);
+  
+  // Build final URL
+  const finalParams = allParams.toString();
+  if (finalParams) {
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}${finalParams}`;
+  }
+  
+  return url;
 };
 
 /**

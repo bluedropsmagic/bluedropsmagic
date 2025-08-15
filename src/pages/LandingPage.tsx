@@ -43,24 +43,25 @@ export const LandingPage: React.FC = () => {
     // Build URL with all tracking parameters
     let finalUrl = url;
     
-    // Add UTM and tracking parameters
+    // ✅ ENHANCED: Build URL with ALL tracking parameters preserved
     const urlParams = new URLSearchParams(window.location.search);
-    const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid', 'affiliate_id', 'sub_id'];
     
-    trackingParams.forEach(param => {
-      const value = urlParams.get(param);
-      if (value && !finalUrl.includes(`${param}=`)) {
-        finalUrl += (finalUrl.includes('?') ? '&' : '?') + `${param}=${encodeURIComponent(value)}`;
-      }
+    // ✅ CRITICAL: Preserve ALL parameters from current URL
+    const allParams = new URLSearchParams();
+    
+    // Add all current URL parameters
+    urlParams.forEach((value, key) => {
+      allParams.set(key, value);
     });
     
-    // Add CID if present
-    const cid = urlParams.get('cid');
-    if (cid && !finalUrl.includes('cid=')) {
-      finalUrl += (finalUrl.includes('?') ? '&' : '?') + 'cid=' + encodeURIComponent(cid);
+    // ✅ Build final URL
+    const finalParams = allParams.toString();
+    if (finalParams) {
+      finalUrl += (finalUrl.includes('?') ? '&' : '?') + finalParams;
     }
     
-    console.log('🎯 Landing Page URL with all params:', finalUrl);
+    console.log('🎯 Landing Page URL with ALL params preserved:', finalUrl);
+    console.log('📊 Parameters count:', allParams.size);
     
     setTimeout(() => {
       window.location.href = finalUrl;
