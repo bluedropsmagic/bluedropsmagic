@@ -152,12 +152,27 @@ export const DoctorsSection: React.FC = () => {
               var doctorContainer = document.getElementById('vid-${videoId}');
               
               if (mainVideoContainer && doctorContainer) {
-                // ✅ Move any doctor video elements that ended up in main container
-                var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"]');
+                // ✅ CRITICAL: Move any doctor video elements that ended up in main container
+                var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"], video, iframe');
                 orphanedElements.forEach(function(element) {
-                  if (element.parentNode === mainVideoContainer) {
+                  // Check if this element belongs to the doctor video
+                  var elementSrc = element.src || element.getAttribute('src') || '';
+                  var isDoctorvideo = elementSrc.includes('${videoId}') || 
+                                     element.getAttribute('data-video-id') === '${videoId}' ||
+                                     element.closest('[id*="${videoId}"]');
+                  
+                  if (isDoctorvideo && element.parentNode === mainVideoContainer) {
                     doctorContainer.appendChild(element);
-                    console.log('🔄 Moved doctor video element back to correct container');
+                    console.log('🔄 DOCTOR VIDEO: Moved doctor video element back to correct container');
+                  }
+                });
+                
+                // ✅ CRITICAL: Ensure main video elements stay in main container
+                var mainVideoElements = doctorContainer.querySelectorAll('[src*="683ba3d1b87ae17c6e07e7db"], [data-video-id="683ba3d1b87ae17c6e07e7db"]');
+                mainVideoElements.forEach(function(element) {
+                  if (element.parentNode === doctorContainer) {
+                    mainVideoContainer.appendChild(element);
+                    console.log('🔄 MAIN VIDEO: Moved main video element back to main container');
                   }
                 });
               }
