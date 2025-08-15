@@ -13,7 +13,7 @@ export interface RedTrackConfig {
 export const REDTRACK_CONFIG: RedTrackConfig = {
   domain: 'rdt.obluemagicdrops.com',
   attribution: 'lastpaid',
-  cookieDomain: 'elaborate-smakager-4592e9.netlify.app',
+  cookieDomain: 'thebluedrops.com',
   cookieDuration: 90,
   defaultCampaignId: '68685bcb51f1690d1f917171',
   regViewOnce: false
