@@ -6,6 +6,8 @@ export const VideoSection: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [isCentered, setIsCentered] = useState(false);
+  const [lastActivity, setLastActivity] = useState(Date.now());
+  const [inactivityTimer, setInactivityTimer] = useState<NodeJS.Timeout | null>(null);
 
   // ✅ NEW: Function to center the video container
   const centerVideoContainer = () => {
@@ -41,17 +43,58 @@ export const VideoSection: React.FC = () => {
     }
   };
 
-  // ✅ NEW: Auto-center after 10 seconds if user hasn't clicked
-  useEffect(() => {
-    const autoCenterTimer = setTimeout(() => {
+  // ✅ NEW: Reset inactivity timer on user activity
+  const resetInactivityTimer = () => {
+    setLastActivity(Date.now());
+    
+    // Clear existing timer
+    if (inactivityTimer) {
+      clearTimeout(inactivityTimer);
+    }
+    
+    // Set new 10-second timer
+    const newTimer = setTimeout(() => {
       if (!isCentered) {
-        console.log('⏰ 10 seconds elapsed - auto-centering video');
+        console.log('⏰ 10 seconds of inactivity - auto-scrolling to center video');
         centerVideoContainer();
       }
     }, 10000); // 10 seconds
     
-    return () => clearTimeout(autoCenterTimer);
-  }, [isCentered]);
+    setInactivityTimer(newTimer);
+  };
+
+  // ✅ NEW: Setup inactivity detection
+  useEffect(() => {
+    // Start initial timer
+    resetInactivityTimer();
+    
+    // Activity event listeners
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    const handleActivity = () => {
+      if (!isCentered) {
+        resetInactivityTimer();
+      }
+    };
+    
+    // Add event listeners
+    activityEvents.forEach(event => {
+      document.addEventListener(event, handleActivity, { passive: true });
+    });
+    
+    // Cleanup
+    return () => {
+      if (inactivityTimer) {
+        clearTimeout(inactivityTimer);
+      }
+      
+      activityEvents.forEach(event => {
+        document.removeEventListener(event, handleActivity);
+      });
+    };
+  }, [isCentered, inactivityTimer]);
+
+  // ✅ NEW: Auto-center after 10 seconds if user hasn't clicked
 
   // ✅ NEW: Setup click listener for video container
   useEffect(() => {
