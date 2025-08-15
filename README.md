@@ -79,6 +79,8 @@ When working in StackBlitz:
 - Row Level Security (RLS) enabled on Supabase
 - Admin authentication required for dashboard
 - Analytics data filtered (excludes Brazilian IPs)
+- CORS and security headers configured
+- Domain-specific RedTrack integration
 
 ## 📈 Analytics Events
 

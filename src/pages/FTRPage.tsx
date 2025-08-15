@@ -37,12 +37,13 @@ function FTRPage() {
                    hostname.includes('bolt.new') ||
                    hostname.includes('webcontainer') ||
                    hostname.includes('localhost') ||
-                   hostname.includes('127.0.0.1');
+                   hostname.includes('127.0.0.1') ||
+                   hostname.includes('thebluedrops.com');
     
     setIsBoltEnvironment(isBolt);
     
     if (isBolt) {
-      console.log('🔧 Bolt environment detected - navigation buttons enabled');
+      console.log('🔧 Development environment detected - navigation buttons enabled');
     }
   }, []);
 

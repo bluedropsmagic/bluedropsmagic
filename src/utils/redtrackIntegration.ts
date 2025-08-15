@@ -13,7 +13,7 @@ export interface RedTrackConfig {
 export const REDTRACK_CONFIG: RedTrackConfig = {
   domain: 'rdt.obluemagicdrops.com',
   attribution: 'lastpaid',
-  cookieDomain: 'elaborate-smakager-4592e9.netlify.app',
+  cookieDomain: 'thebluedrops.com',
   cookieDuration: 90,
   defaultCampaignId: '68685bcb51f1690d1f917171',
   regViewOnce: false
@@ -124,11 +124,11 @@ export const showDebugInfo = (cid: string): void => {
   const hostname = window.location.hostname;
   const isDebugEnv = hostname === 'localhost' || 
                      hostname.includes('127.0.0.1') || 
-                     hostname.includes('admin.getmagicbluedrops.com') ||
+                     hostname.includes('thebluedrops.com') ||
                      hostname.includes('preview') ||
                      hostname.includes('stackblitz') ||
                      hostname.includes('bolt.new') ||
-                     hostname.includes('elaborate-smakager-4592e9.netlify.app');
+                     hostname.includes('thebluedrops.com');
   
   if (isDebugEnv) {
     // Remove existing log if present
