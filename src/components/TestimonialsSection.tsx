@@ -522,15 +522,30 @@ const TestimonialCard: React.FC<{
                 setTimeout(function() {
                   // ✅ CRITICAL: Prevent video from appearing in main video container
                   var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
-                  var testimonialContainer = document.getElementById('vid-${testimonial.videoId}');
+                  var testimonialContainer = document.getElementById('vid-${testimonial.videoId}-${pageType}');
                   
                   if (mainVideoContainer && testimonialContainer) {
-                    // ✅ Move any testimonial video elements that ended up in main container
-                    var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${testimonial.videoId}"], [data-video-id="${testimonial.videoId}"]');
+                    // ✅ CRITICAL: Move any testimonial video elements that ended up in main container
+                    var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${testimonial.videoId}"], [data-video-id="${testimonial.videoId}"], video, iframe');
                     orphanedElements.forEach(function(element) {
-                      if (element.parentNode === mainVideoContainer) {
+                      // Check if this element belongs to the testimonial video
+                      var elementSrc = element.src || element.getAttribute('src') || '';
+                      var isTestimonialVideo = elementSrc.includes('${testimonial.videoId}') || 
+                                             element.getAttribute('data-video-id') === '${testimonial.videoId}' ||
+                                             element.closest('[id*="${testimonial.videoId}"]');
+                      
+                      if (isTestimonialVideo && element.parentNode === mainVideoContainer) {
                         testimonialContainer.appendChild(element);
-                        console.log('🔄 Moved testimonial video element back to correct container');
+                        console.log('🔄 TESTIMONIAL VIDEO: Moved testimonial video element back to correct container');
+                      }
+                    });
+                    
+                    // ✅ CRITICAL: Ensure main video elements stay in main container
+                    var mainVideoElements = testimonialContainer.querySelectorAll('[src*="683ba3d1b87ae17c6e07e7db"], [data-video-id="683ba3d1b87ae17c6e07e7db"]');
+                    mainVideoElements.forEach(function(element) {
+                      if (element.parentNode === testimonialContainer) {
+                        mainVideoContainer.appendChild(element);
+                        console.log('🔄 MAIN VIDEO: Moved main video element back to main container');
                       }
                     });
                   }
