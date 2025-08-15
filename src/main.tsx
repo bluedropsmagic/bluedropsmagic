@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import App from './App.tsx';
 import FTRPage from './pages/FTRPage.tsx';
 import { AdminDashboard } from './components/AdminDashboard.tsx';
@@ -13,11 +13,11 @@ import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/">
       <Routes>
         {/* Main routes */}
         <Route path="/" element={<App />} />
-        <Route path="/home" element={<App />} />
+        <Route path="/home" element={<Navigate to="/" replace />} />
         
         {/* Core pages */}
         <Route path="/ftr" element={<FTRPage />} />
@@ -40,7 +40,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/dws2" element={<DownsellPage variant="dws2" />} />
         <Route path="/dw3" element={<DownsellPage variant="dw3" />} />
         
-        {/* Catch-all route for any unmatched paths */}
+        {/* Catch-all route - redirect to home */}
         <Route path="*" element={<App />} />
       </Routes>
     </BrowserRouter>

@@ -9,6 +9,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
+    emptyOutDir: true,
     rollupOptions: {
       output: {
         manualChunks: undefined,
@@ -16,11 +17,14 @@ export default defineConfig({
     },
   },
   server: {
-    historyApiFallback: true,
+    host: true,
+    port: 5173,
+    strictPort: false,
   },
   preview: {
     port: 4173,
     strictPort: true,
+    host: true,
   },
   optimizeDeps: {
     exclude: ['lucide-react'],

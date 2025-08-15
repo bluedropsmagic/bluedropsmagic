@@ -3,21 +3,14 @@
   publish = "dist"
   command = "npm run build"
 
-# Force redirect from www to non-www
+# Force redirect from www to non-www (MUST be first)
 [[redirects]]
   from = "https://www.thebluedrops.com/*"
   to = "https://thebluedrops.com/:splat"
   status = 301
   force = true
 
-# Alternative: Allow both www and non-www (comment out the above and use this instead)
-# [[redirects]]
-#   from = "https://thebluedrops.com/*"
-#   to = "https://www.thebluedrops.com/:splat"
-#   status = 301
-#   force = true
-
-# Redirect rules for clean URLs and slug support
+# Clean URL redirects (remove trailing slashes)
 [[redirects]]
   from = "/home"
   to = "/"
@@ -28,7 +21,7 @@
   to = "/"
   status = 301
 
-# Upsell pages
+# Remove trailing slashes from all pages
 [[redirects]]
   from = "/up1bt/"
   to = "/up1bt"
@@ -44,7 +37,6 @@
   to = "/up6bt"
   status = 301
 
-# Second upsell pages
 [[redirects]]
   from = "/upig1bt/"
   to = "/upig1bt"
@@ -60,7 +52,6 @@
   to = "/upig6bt"
   status = 301
 
-# Downsell pages
 [[redirects]]
   from = "/dws1/"
   to = "/dws1"
@@ -76,7 +67,6 @@
   to = "/dw3"
   status = 301
 
-# Other pages
 [[redirects]]
   from = "/ftr/"
   to = "/ftr"
@@ -97,7 +87,7 @@
   to = "/lpw"
   status = 301
 
-# SPA fallback - must be last
+# SPA fallback - MUST be last and MOST IMPORTANT
 [[redirects]]
   from = "/*"
   to = "/index.html"
