@@ -164,11 +164,11 @@ export const DoctorsSection: React.FC = () => {
                   if (isDoctorvideo && element.parentNode === mainVideoContainer) {
                     doctorContainer.appendChild(element);
                     console.log('🔄 DOCTOR VIDEO: Moved doctor video element back to correct container');
-                  }
+                var mainVideoContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
                 });
                 
                 // ✅ CRITICAL: Ensure main video elements stay in main container
-                var mainVideoElements = doctorContainer.querySelectorAll('[src*="683ba3d1b87ae17c6e07e7db"], [data-video-id="683ba3d1b87ae17c6e07e7db"]');
+                var mainVideoElements = doctorContainer.querySelectorAll('[src*="689e7c030f018d362b0e239d"], [data-video-id="689e7c030f018d362b0e239d"]');
                 mainVideoElements.forEach(function(element) {
                   if (element.parentNode === doctorContainer) {
                     mainVideoContainer.appendChild(element);
