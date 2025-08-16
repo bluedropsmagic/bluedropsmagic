@@ -152,7 +152,7 @@ function App() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { trackVideoPlay, trackVideoProgress, trackOfferClick } = useAnalytics(isBoltEnvironment);
+  const { trackVideoPlay, trackVideoProgress, trackOfferClick } = useAnalytics();
 
   // Check if we're on the main page (show popup only on main page)
   const isMainPage = location.pathname === '/' || location.pathname === '/home';

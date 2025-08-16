@@ -33,7 +33,7 @@ interface UpsellContent {
 
 export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const [searchParams] = useSearchParams();
-  const { trackOfferClick } = useAnalytics(false); // Upsell pages are not Bolt environment
+  const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
   const [showPurchaseSection, setShowPurchaseSection] = useState(false);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);

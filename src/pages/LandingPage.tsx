@@ -7,7 +7,7 @@ import { Star, Shield, Truck, CreditCard, CheckCircle, Clock, Award } from 'luci
 
 export const LandingPage: React.FC = () => {
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
-  const { trackOfferClick } = useAnalytics(isBoltEnvironment);
+  const { trackOfferClick } = useAnalytics();
 
   // Detect Bolt environment
   useEffect(() => {

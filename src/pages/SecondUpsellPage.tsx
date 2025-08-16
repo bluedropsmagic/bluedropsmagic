@@ -32,7 +32,7 @@ interface SecondUpsellContent {
 
 export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) => {
   const [searchParams] = useSearchParams();
-  const { trackOfferClick } = useAnalytics(false); // Second upsell pages are not Bolt environment
+  const { trackOfferClick } = useAnalytics();
   const [cartParams, setCartParams] = useState<string>('');
   const [showPurchaseSection, setShowPurchaseSection] = useState(false);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
