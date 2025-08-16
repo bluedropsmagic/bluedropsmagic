@@ -11,7 +11,7 @@ export const VideoSection: React.FC = () => {
     let checkInterval: number;
 
     const checkVideoLoad = () => {
-      const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+      const videoContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
       if (videoContainer) {
         const hasVideo =
           videoContainer.querySelector('video') ||
@@ -59,7 +59,7 @@ export const VideoSection: React.FC = () => {
     setIsLoading(true);
     setHasError(false);
 
-    const existingScript = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
+    const existingScript = document.getElementById('scr_689e7c030f018d362b0e239d');
     if (existingScript) {
       existingScript.remove();
       console.log('🔄 Removed existing VTurb script');
@@ -74,7 +74,7 @@ export const VideoSection: React.FC = () => {
 
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.id = 'scr_683ba3d1b87ae17c6e07e7db';
+    script.id = 'scr_689e7c030f018d362b0e239d';
     script.async = true;
     script.innerHTML = `
       console.log('🔄 Retry #${retryCount + 1}: Executing VTurb script reload...');
@@ -85,7 +85,7 @@ export const VideoSection: React.FC = () => {
           }
           
           var s = document.createElement("script");
-          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/player.js";
+          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/v4/player.js";
           s.async = true; 
           s.defer = true;
           
@@ -145,7 +145,7 @@ export const VideoSection: React.FC = () => {
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ CRITICAL: Main video container with maximum isolation */}
           <div
-            id="vid_683ba3d1b87ae17c6e07e7db"
+            id="vid_689e7c030f018d362b0e239d"
             className="absolute inset-0 w-full h-full z-30 cursor-pointer main-video-container"
             style={{
               position: 'absolute',
@@ -162,12 +162,12 @@ export const VideoSection: React.FC = () => {
               backgroundColor: 'transparent'
             }}
             data-main-video="true"
-            data-video-id="683ba3d1b87ae17c6e07e7db"
+            data-video-id="689e7c030f018d362b0e239d"
           >
             {/* ✅ CRITICAL: Thumbnail and backdrop structure for VTurb */}
             <img
-              id="thumb_683ba3d1b87ae17c6e07e7db"
-              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/thumbnail.jpg"
+              id="thumb_689e7c030f018d362b0e239d"
+              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/thumbnail.jpg"
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
               loading="eager"
@@ -177,7 +177,7 @@ export const VideoSection: React.FC = () => {
               }}
             />
             <div
-              id="backdrop_683ba3d1b87ae17c6e07e7db"
+              id="backdrop_689e7c030f018d362b0e239d"
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
