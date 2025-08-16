@@ -25,7 +25,7 @@ interface DownsellContent {
 
 export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const [searchParams] = useSearchParams();
-  const { trackOfferClick } = useAnalytics();
+  const { trackOfferClick } = useAnalytics(false); // Downsell pages are not Bolt environment
   const [cartParams, setCartParams] = useState<string>('');
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
   const [showEmailSection, setShowEmailSection] = useState(false);

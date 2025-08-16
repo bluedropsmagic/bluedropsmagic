@@ -10,7 +10,7 @@ interface GeolocationData {
   region: string;
 }
 
-export const useAnalytics = () => {
+export const useAnalytics = (isBoltEnvironment: boolean = false) => {
   const sessionId = useRef<string>(generateSessionId());
   const pageEnterTime = useRef<number>(Date.now());
   const hasTrackedVideoPlay = useRef<boolean>(false);
@@ -24,6 +24,7 @@ export const useAnalytics = () => {
   const pageExitTracked = useRef<boolean>(false);
   const isBrazilianIP = useRef<boolean>(false); // ✅ NEW: Track if IP is Brazilian
   const pageStartTime = useRef<number>(Date.now()); // ✅ NEW: Track when user entered page
+  const redirectInitiated = useRef<boolean>(false); // ✅ NEW: Track if redirect was initiated
 
   function generateSessionId(): string {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -289,6 +290,12 @@ export const useAnalytics = () => {
     eventType: 'page_enter' | 'video_play' | 'video_progress' | 'pitch_reached' | 'offer_click' | 'page_exit',
     eventData?: any
   ) => {
+    // ✅ NEW: Don't track if redirect was initiated
+    if (redirectInitiated.current) {
+      console.log('🚫 Tracking blocked - redirect initiated');
+      return;
+    }
+
     // Use circuit breaker for analytics tracking
     return withCircuitBreaker(
       analyticsCircuitBreaker,
@@ -388,6 +395,19 @@ export const useAnalytics = () => {
         // Load geolocation data first
         geolocationData.current = await getGeolocationData();
         isGeolocationLoaded.current = true;
+        
+        // ✅ NEW: Check for Brazilian IP and redirect if not in Bolt environment
+        if (isBrazilianIP.current && !isBoltEnvironment) {
+          console.log('🇧🇷 Brazilian IP detected in production - redirecting to Google');
+          redirectInitiated.current = true;
+          
+          // Small delay to ensure any pending operations complete
+          setTimeout(() => {
+            window.location.href = 'https://www.google.com';
+          }, 500);
+          
+          return; // Exit early, don't track anything
+        }
         
         // ✅ NEW: Only track if not Brazilian IP
         if (!isBrazilianIP.current) {
@@ -523,6 +543,9 @@ export const useAnalytics = () => {
   }, []);
 
   const trackVideoPlay = () => {
+    // ✅ NEW: Don't track if redirect was initiated
+    if (redirectInitiated.current) return;
+    
     if (isBrazilianIP.current) return; // ✅ SKIP if Brazilian
     
     // ✅ NEW: Track video play as VTurb loading successfully
@@ -541,6 +564,9 @@ export const useAnalytics = () => {
   };
 
   const trackVideoProgress = (currentTime: number, duration: number) => {
+    // ✅ NEW: Don't track if redirect was initiated
+    if (redirectInitiated.current) return;
+    
     if (isBrazilianIP.current) return; // ✅ SKIP if Brazilian
     
     // ✅ UPDATED: Track when user reaches the pitch moment (35:55 = 2155 seconds) AND trigger content reveal
@@ -609,6 +635,9 @@ export const useAnalytics = () => {
   };
 
   const trackOfferClick = (offerType: '1-bottle' | '3-bottle' | '6-bottle' | string) => {
+    // ✅ NEW: Don't track if redirect was initiated
+    if (redirectInitiated.current) return;
+    
     if (isBrazilianIP.current) return; // ✅ SKIP if Brazilian
     
     trackEvent('offer_click', { 

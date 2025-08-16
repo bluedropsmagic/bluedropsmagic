@@ -175,7 +175,7 @@ function FTRPage() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { trackVideoPlay, trackVideoProgress, trackOfferClick } = useAnalytics();
+  const { trackVideoPlay, trackVideoProgress, trackOfferClick } = useAnalytics(isBoltEnvironment);
 
   // Check if we're on the FTR page (show popup only on FTR page)
   const isFTRPage = location.pathname === '/ftr';
