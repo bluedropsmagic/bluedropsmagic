@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAnalytics } from './hooks/useAnalytics';
-import { initializeRedTrack } from './utils/redtrackIntegration';
-import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
+import { useAnalytics } from '../hooks/useAnalytics';
+import { initializeRedTrack } from '../utils/redtrackIntegration';
+import { initializeFacebookPixelTracking } from '../utils/facebookPixelTracking';
 
 // Import BoltNavigation
-import { BoltNavigation } from './components/BoltNavigation';
+import { BoltNavigation } from '../components/BoltNavigation';
 
 // Import all components
-import { Header } from './components/Header';
-import { HeroSection } from './components/HeroSection';
-import { VideoSection } from './components/VideoSection';
-import { ProductOffers } from './components/ProductOffers';
-import { TestimonialsSection } from './components/TestimonialsSection';
-import { DoctorsSection } from './components/DoctorsSection';
-import { NewsSection } from './components/NewsSection';
-import { GuaranteeSection } from './components/GuaranteeSection';
-import { Footer } from './components/Footer';
-import { Modals } from './components/Modals';
+import { Header } from '../components/Header';
+import { HeroSection } from '../components/HeroSection';
+import { VideoSection } from '../components/VideoSection';
+import { ProductOffers } from '../components/ProductOffers';
+import { TestimonialsSection } from '../components/TestimonialsSection';
+import { DoctorsSection } from '../components/DoctorsSection';
+import { NewsSection } from '../components/NewsSection';
+import { GuaranteeSection } from '../components/GuaranteeSection';
+import { Footer } from '../components/Footer';
+import { Modals } from '../components/Modals';
 
-function App() {
+function FTRPage() {
   const [showPurchaseButton, setShowPurchaseButton] = useState(false); // ✅ CHANGED: Start hidden
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [showPopup, setShowPopup] = useState(false); // ✅ DISABLED: Popup removido
@@ -48,18 +48,18 @@ function App() {
     }
   }, []);
 
-  // ✅ NEW: Load Hotjar for main page only
+  // ✅ NEW: Load Hotjar for FTR page
   useEffect(() => {
-    // Only load Hotjar if we're on the main page (not upsell/downsell)
+    // Only load Hotjar if we're on the FTR page
     const path = window.location.pathname;
-    const isMainPage = path === '/' || path === '/home';
+    const isFTRPage = path === '/ftr';
     
-    if (isMainPage) {
+    if (isFTRPage) {
       // Remove any existing Hotjar scripts
       const existingHotjar = document.querySelectorAll('script[src*="hotjar"]');
       existingHotjar.forEach(script => script.remove());
       
-      // Load Hotjar for main page
+      // Load Hotjar for FTR page (same ID as main page)
       const hotjarScript = document.createElement('script');
       hotjarScript.innerHTML = `
         (function(h,o,t,j,a,r){
@@ -73,8 +73,31 @@ function App() {
       `;
       
       document.head.appendChild(hotjarScript);
-      console.log('🔥 Hotjar main page tracking loaded (ID: 6457423)');
+      console.log('🔥 Hotjar FTR page tracking loaded (ID: 6457423)');
     }
+  }, []);
+
+  // ✅ NEW: Inject FTTrack script specifically for FTR page
+  useEffect(() => {
+    // Remove any existing FTTrack scripts to prevent conflicts
+    const existingFTTrack = document.querySelectorAll('script[src*="fttrack.com"]');
+    existingFTTrack.forEach(script => script.remove());
+    
+    // Inject FTTrack script specifically for FTR page
+    const fttrackScript = document.createElement('script');
+    fttrackScript.src = 'https://cdn.fttrack.com/scripts/fb-handler.js';
+    fttrackScript.setAttribute('data-product-id', '23850309-b356-4fec-8b8b-7e4f1281a183');
+    fttrackScript.async = true;
+    
+    document.head.appendChild(fttrackScript);
+    console.log('🎯 FTTrack script loaded specifically for FTR page');
+
+    // Cleanup on unmount
+    return () => {
+      const scriptsToRemove = document.querySelectorAll('script[src*="fttrack.com"]');
+      scriptsToRemove.forEach(script => script.remove());
+      console.log('🧹 FTTrack script removed when leaving FTR page');
+    };
   }, []);
 
   // ✅ NEW: Prevent white page after errors
@@ -154,8 +177,8 @@ function App() {
   const location = useLocation();
   const { trackVideoPlay, trackVideoProgress, trackOfferClick } = useAnalytics();
 
-  // Check if we're on the main page (show popup only on main page)
-  const isMainPage = location.pathname === '/' || location.pathname === '/home';
+  // Check if we're on the FTR page (show popup only on FTR page)
+  const isFTRPage = location.pathname === '/ftr';
 
   // ✅ FIXED: Check admin authentication on mount
   useEffect(() => {
@@ -314,27 +337,6 @@ function App() {
       
       console.log('✅ Main video container found:', mainContainer);
 
-      // ✅ CRITICAL: Setup container isolation BEFORE script injection
-      mainContainer.style.position = 'absolute';
-      mainContainer.style.top = '0';
-      mainContainer.style.left = '0';
-      mainContainer.style.width = '100%';
-      mainContainer.style.height = '100%';
-      mainContainer.style.zIndex = '30';
-      mainContainer.style.overflow = 'hidden';
-      mainContainer.style.borderRadius = '1rem';
-      mainContainer.style.isolation = 'isolate';
-      mainContainer.style.contain = 'layout style paint size';
-      mainContainer.setAttribute('data-main-video', 'true');
-      mainContainer.setAttribute('data-video-id', '689e7c030f018d362b0e239d');
-      
-      // ✅ CRITICAL: Clear any existing content to prevent conflicts
-      const existingContent = mainContainer.innerHTML;
-      if (existingContent && !existingContent.includes('thumb_689e7c030f018d362b0e239d')) {
-        console.log('🧹 Clearing existing content from main video container');
-        mainContainer.innerHTML = '';
-      }
-
       // Remove any existing script first
       const existingScript = document.getElementById('scr_689e7c030f018d362b0e239d');
       if (existingScript) {
@@ -352,34 +354,13 @@ function App() {
       script.innerHTML = `
         (function() {
           try {
-            // ✅ CRITICAL: Ensure main video container isolation
-            console.log('🎬 MAIN VIDEO: Initializing container isolation for 689e7c030f018d362b0e239d');
+            // ✅ FIXED: Check if custom elements are already defined
+            // Removed custom element check to allow video to load properly
             
-            // ✅ CRITICAL: Mark this as the MAIN video to prevent conflicts
+            // ✅ CRITICAL: Initialize main video container isolation
             window.mainVideoId = '689e7c030f018d362b0e239d';
             window.smartplayer = window.smartplayer || { instances: {} };
-            
-            // ✅ CRITICAL: Ensure target container exists and is isolated
-            var targetContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
-            if (!targetContainer) {
-              console.error('❌ CRITICAL: Main video container not found during script injection');
-              return;
-            }
-            
-            // ✅ CRITICAL: Force container isolation
-            targetContainer.style.position = 'absolute';
-            targetContainer.style.top = '0';
-            targetContainer.style.left = '0';
-            targetContainer.style.width = '100%';
-            targetContainer.style.height = '100%';
-            targetContainer.style.zIndex = '30';
-            targetContainer.style.overflow = 'hidden';
-            targetContainer.style.isolation = 'isolate';
-            targetContainer.style.contain = 'layout style paint size';
-            targetContainer.setAttribute('data-main-video', 'true');
-            targetContainer.setAttribute('data-video-id', '689e7c030f018d362b0e239d');
-            
-            console.log('✅ MAIN VIDEO: Container isolation enforced');
+            console.log('🎬 Initializing MAIN video player: 689e7c030f018d362b0e239d');
 
             // ✅ FIXED: Check for existing scripts
             if (document.querySelector('script[src*="689e7c030f018d362b0e239d/v4/player.js"]')) {
@@ -388,35 +369,25 @@ function App() {
               return;
             }
             
+            // ✅ FIXED: Ensure target container exists
+            var targetContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
+            if (!targetContainer) {
+              console.error('❌ Target container not found during script injection');
+              return;
+            }
+            
             var s = document.createElement("script");
             s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/v4/player.js";
             s.async = true;
             s.onload = function() {
-              console.log('✅ MAIN VIDEO: VTurb player script loaded successfully');
+              console.log('VTurb player script loaded successfully');
               window.vslVideoLoaded = true;
               
-              // ✅ CRITICAL: Verify container still exists and is isolated after load
+              // ✅ FIXED: Verify container still exists after load
               var container = document.getElementById('vid_689e7c030f018d362b0e239d');
               if (!container) {
-                console.error('❌ CRITICAL: Main video container disappeared after VTurb load!');
-                return;
+                console.error('❌ Container disappeared after VTurb load!');
               }
-              
-              // ✅ CRITICAL: Re-enforce isolation after VTurb loads
-              container.style.position = 'absolute';
-              container.style.top = '0';
-              container.style.left = '0';
-              container.style.width = '100%';
-              container.style.height = '100%';
-              container.style.zIndex = '30';
-              container.style.overflow = 'hidden';
-              container.style.isolation = 'isolate';
-              container.style.contain = 'layout style paint size';
-              container.setAttribute('data-main-video', 'true');
-              container.setAttribute('data-video-id', '689e7c030f018d362b0e239d');
-              
-              console.log('✅ MAIN VIDEO: Container isolation re-enforced after VTurb load');
-              
               // ✅ AUTO-PLAY: Tentar dar play automaticamente no vídeo principal
               setTimeout(function() {
                 try {
@@ -425,7 +396,7 @@ function App() {
                     var player = window.smartplayer.instances['689e7c030f018d362b0e239d'];
                     if (player.play) {
                       player.play();
-                      console.log('✅ MAIN VIDEO: Auto-play via smartplayer instance');
+                      console.log('✅ Auto-play via smartplayer instance');
                     }
                   }
                   
@@ -434,9 +405,9 @@ function App() {
                   videoElements.forEach(function(video) {
                     if (video.play) {
                       video.play().then(function() {
-                        console.log('✅ MAIN VIDEO: Auto-play via video element');
+                        console.log('✅ Auto-play via video element');
                       }).catch(function(error) {
-                        console.log('⚠️ MAIN VIDEO: Auto-play blocked by browser:', error);
+                        console.log('⚠️ Auto-play blocked by browser:', error);
                       });
                     }
                   });
@@ -445,59 +416,36 @@ function App() {
                   var container = document.getElementById('vid_689e7c030f018d362b0e239d');
                   if (container) {
                     container.click();
-                    console.log('✅ MAIN VIDEO: Auto-play via container click');
+                    console.log('✅ Auto-play via container click');
                   }
                 } catch (error) {
-                  console.log('⚠️ MAIN VIDEO: Auto-play failed:', error);
+                  console.log('⚠️ Auto-play failed:', error);
                 }
               }, 3000); // Aguardar 3 segundos para o vídeo carregar
               
-              // ✅ CRITICAL: Final container security check
+              // ✅ CRITICAL: Ensure main video stays in its container
               setTimeout(function() {
                 var mainContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
                 if (mainContainer) {
-                  console.log('✅ MAIN VIDEO: Container secured and protected');
-                  
-                  // ✅ CRITICAL: Final isolation enforcement
-                  mainContainer.style.position = 'absolute';
-                  mainContainer.style.top = '0';
-                  mainContainer.style.left = '0';
-                  mainContainer.style.width = '100%';
-                  mainContainer.style.height = '100%';
-                  mainContainer.style.zIndex = '30';
-                  mainContainer.style.overflow = 'hidden';
-                  mainContainer.style.isolation = 'isolate';
-                  mainContainer.style.contain = 'layout style paint size';
+                  console.log('✅ Main video container secured');
+                  // Mark main video as protected
                   mainContainer.setAttribute('data-main-video', 'true');
                   mainContainer.setAttribute('data-video-id', '689e7c030f018d362b0e239d');
-                  
-                  // ✅ CRITICAL: Prevent any video elements from escaping
-                  var videoElements = document.querySelectorAll('video, iframe');
-                  videoElements.forEach(function(element) {
-                    var elementContainer = element.closest('[id*="vid"]');
-                    if (elementContainer && elementContainer.id !== 'vid_689e7c030f018d362b0e239d') {
-                      // This video belongs to another container, ensure it stays there
-                      if (element.parentNode !== elementContainer) {
-                        elementContainer.appendChild(element);
-                        console.log('🔄 MAIN VIDEO: Moved video element back to correct container:', elementContainer.id);
-                      }
-                    }
-                  });
                 }
               }, 2000);
             };
             s.onerror = function() {
-              console.error('❌ MAIN VIDEO: Failed to load VTurb player script');
+              console.error('Failed to load VTurb player script');
             };
             document.head.appendChild(s);
           } catch (error) {
-            console.error('❌ MAIN VIDEO: Error injecting VTurb script:', error);
+            console.error('Error injecting VTurb script:', error);
           }
         })();
       `;
       
       document.head.appendChild(script);
-      console.log('✅ MAIN VIDEO: VTurb script injected successfully');
+      console.log('✅ VTurb script injected successfully');
     };
 
     // Delay script injection to improve initial page load
@@ -506,7 +454,7 @@ function App() {
       
       // ✅ FIXED: Check if video actually loaded
       const checkVideoLoaded = () => {
-        const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+        const videoContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
         if (videoContainer && (videoContainer.querySelector('video') || videoContainer.querySelector('iframe') || window.vslVideoLoaded)) {
           setIsVideoLoaded(true);
           console.log('✅ Video container has video element, marking as loaded');
@@ -582,10 +530,10 @@ function App() {
         console.log(`🔍 Attempt ${trackingAttempts}/${maxAttempts} - Looking for MAIN video player...`);
         
         // Multiple ways to detect VTurb player
-        const playerContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+        const playerContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
         
         if (!playerContainer) {
-          console.error('❌ MAIN video container not found (vid_683ba3d1b87ae17c6e07e7db)');
+          console.error('❌ MAIN video container not found (vid_689e7c030f018d362b0e239d)');
           console.log('🔍 Available elements with "vid" in ID:', 
             Array.from(document.querySelectorAll('[id*="vid"]')).map(el => el.id)
           );
@@ -605,7 +553,7 @@ function App() {
         
         // Method 1: Check for smartplayer instances
         if (window.smartplayer && window.smartplayer.instances) {
-          const playerInstance = window.smartplayer.instances['683ba3d1b87ae17c6e07e7db'];
+          const playerInstance = window.smartplayer.instances['689e7c030f018d362b0e239d'];
           if (playerInstance) {
             console.log('✅ VTurb player instance found');
             
@@ -1110,7 +1058,7 @@ function App() {
         <Footer />
       </div>
 
-      {/* All Modals - Only show popup on main page */}
+      {/* All Modals - Only show popup on FTR page */}
       <Modals 
         showPopup={false} // ✅ DISABLED: Popup completamente removido
         showUpsellPopup={showUpsellPopup}
@@ -1147,4 +1095,4 @@ declare global {
   }
 }
 
-export default App;
+export default FTRPage;

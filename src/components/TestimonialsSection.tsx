@@ -521,7 +521,7 @@ const TestimonialCard: React.FC<{
                 // ✅ FIXED: Ensure video elements stay in correct container
                 setTimeout(function() {
                   // ✅ CRITICAL: Prevent video from appearing in main video container
-                  var mainVideoContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
+                  var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
                   var testimonialContainer = document.getElementById('vid-${testimonial.videoId}-${pageType}');
                   
                   if (mainVideoContainer && testimonialContainer) {
@@ -541,7 +541,7 @@ const TestimonialCard: React.FC<{
                     });
                     
                     // ✅ CRITICAL: Ensure main video elements stay in main container
-                    var mainVideoElements = testimonialContainer.querySelectorAll('[src*="689e7c030f018d362b0e239d"], [data-video-id="689e7c030f018d362b0e239d"]');
+                    var mainVideoElements = testimonialContainer.querySelectorAll('[src*="683ba3d1b87ae17c6e07e7db"], [data-video-id="683ba3d1b87ae17c6e07e7db"]');
                     mainVideoElements.forEach(function(element) {
                       if (element.parentNode === testimonialContainer) {
                         mainVideoContainer.appendChild(element);
