@@ -506,7 +506,7 @@ function App() {
       
       // ✅ FIXED: Check if video actually loaded
       const checkVideoLoaded = () => {
-        const videoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+        const videoContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
         if (videoContainer && (videoContainer.querySelector('video') || videoContainer.querySelector('iframe') || window.vslVideoLoaded)) {
           setIsVideoLoaded(true);
           console.log('✅ Video container has video element, marking as loaded');
@@ -582,10 +582,10 @@ function App() {
         console.log(`🔍 Attempt ${trackingAttempts}/${maxAttempts} - Looking for MAIN video player...`);
         
         // Multiple ways to detect VTurb player
-        const playerContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+        const playerContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
         
         if (!playerContainer) {
-          console.error('❌ MAIN video container not found (vid_683ba3d1b87ae17c6e07e7db)');
+          console.error('❌ MAIN video container not found (vid_689e7c030f018d362b0e239d)');
           console.log('🔍 Available elements with "vid" in ID:', 
             Array.from(document.querySelectorAll('[id*="vid"]')).map(el => el.id)
           );
@@ -605,7 +605,7 @@ function App() {
         
         // Method 1: Check for smartplayer instances
         if (window.smartplayer && window.smartplayer.instances) {
-          const playerInstance = window.smartplayer.instances['683ba3d1b87ae17c6e07e7db'];
+          const playerInstance = window.smartplayer.instances['689e7c030f018d362b0e239d'];
           if (playerInstance) {
             console.log('✅ VTurb player instance found');
             
