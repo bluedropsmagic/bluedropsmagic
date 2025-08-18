@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { initializeRedTrack } from '../utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from '../utils/facebookPixelTracking';
+import { buildUrlWithParams, initializeTracking } from '../utils/urlUtils';
 
 // Import BoltNavigation
 import { BoltNavigation } from '../components/BoltNavigation';
@@ -284,40 +285,9 @@ function FTRPage() {
 
   useEffect(() => {
     // Initialize URL tracking parameters
-    const initializeUrlTracking = () => {
-      try {
-        // Store URL parameters in sessionStorage for persistence
-        const urlParams = new URLSearchParams(window.location.search);
-        const trackingParams: Record<string, string> = {};
-        
-        // Common tracking parameters to preserve
-        const trackingKeys = [
-          'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
-          'fbclid', 'gclid', 'ttclid', 'twclid', 'li_fat_id',
-          'affiliate_id', 'sub_id', 'click_id', 'transaction_id'
-        ];
-        
-        trackingKeys.forEach(key => {
-          const value = urlParams.get(key);
-          if (value) {
-            trackingParams[key] = value;
-          }
-        });
-        
-        if (Object.keys(trackingParams).length > 0) {
-          sessionStorage.setItem('tracking_params', JSON.stringify(trackingParams));
-        }
-        
-        // Track page view with external pixels
-        if (typeof window !== 'undefined' && (window as any).utmify) {
-          (window as any).utmify('track', 'PageView');
-        }
-      } catch (error) {
-        console.error('Error initializing URL tracking:', error);
-      }
-    };
 
-    initializeUrlTracking();
+    // ✅ FIXED: Use centralized tracking initialization
+    initializeTracking();
 
     // ✅ NEW: Initialize RedTrack integration
     initializeRedTrack();
@@ -795,8 +765,13 @@ function FTRPage() {
       '6-bottle': 'https://pagamento.paybluedrops.com/checkout/176849703:1'
     };
     
+    // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
+    const finalUrl = buildUrlWithParams(links[packageType]);
+    
+    console.log('🎯 FTR Purchase URL with ALL params preserved:', finalUrl);
+    
     // Open in same tab instead of new tab
-    window.location.href = links[packageType];
+    window.location.href = finalUrl;
   };
 
   const handleUpsellAccept = () => {

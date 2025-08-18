@@ -82,7 +82,7 @@ export const getAllTrackingParams = (): UTMParams => {
  * Build URL with tracking parameters
  */
 export const buildUrlWithParams = (baseUrl: string, additionalParams?: Record<string, string>): string => {
-  // ✅ ENHANCED: Get ALL current URL parameters, not just tracking ones
+  // ✅ CRITICAL: Get ALL current URL parameters AND stored parameters
   const currentUrlParams = new URLSearchParams(window.location.search);
   const allCurrentParams: Record<string, string> = {};
   
@@ -91,13 +91,23 @@ export const buildUrlWithParams = (baseUrl: string, additionalParams?: Record<st
     allCurrentParams[key] = value;
   });
   
-  // Add stored tracking parameters
-  const storedParams = getAllTrackingParams();
+  // ✅ CRITICAL: Add stored tracking parameters from sessionStorage
+  const storedParams = getStoredTrackingParams();
   
-  // Merge all parameters (current URL takes precedence)
+  // ✅ CRITICAL: Merge all parameters (current URL takes precedence over stored)
   const allParams = { ...storedParams, ...allCurrentParams, ...additionalParams };
   
+  // ✅ CRITICAL: Log parameter preservation for debugging
+  console.log('🔍 URL Building Debug:', {
+    baseUrl,
+    currentParams: Object.keys(allCurrentParams).length,
+    storedParams: Object.keys(storedParams).length,
+    totalParams: Object.keys(allParams).length,
+    finalParams: allParams
+  });
+  
   if (Object.keys(allParams).length === 0) {
+    console.log('⚠️ No parameters to preserve, returning base URL');
     return baseUrl;
   }
   
@@ -108,6 +118,7 @@ export const buildUrlWithParams = (baseUrl: string, additionalParams?: Record<st
     }
   });
   
+  console.log('✅ Final URL with ALL parameters preserved:', url.toString());
   return url.toString();
 };
 
@@ -145,8 +156,16 @@ export const getParamsAsQueryString = (additionalParams?: Record<string, string>
  * Initialize tracking parameter storage on page load
  */
 export const initializeTracking = (): void => {
-  // Store current URL parameters
+  // ✅ CRITICAL: Store current URL parameters immediately on page load
   storeTrackingParams();
+  
+  // ✅ CRITICAL: Log what was stored for debugging
+  const stored = getStoredTrackingParams();
+  console.log('🔍 Tracking Initialization:', {
+    currentUrl: window.location.href,
+    storedParams: stored,
+    paramCount: Object.keys(stored).length
+  });
   
   // Track page view with Utmify if available
   if (typeof window !== 'undefined' && (window as any).utmify) {

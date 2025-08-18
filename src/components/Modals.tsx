@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
+import { buildUrlWithParams } from '../utils/urlUtils';
 
 interface ModalsProps {
   showPopup: boolean;
@@ -70,26 +71,10 @@ export const Modals: React.FC<ModalsProps> = ({
       // Track InitiateCheckout for the original product
       trackInitiateCheckout(targetUrl);
       
-      // ✅ ENHANCED: Build URL with ALL tracking parameters preserved
-      let finalUrl = targetUrl;
-      const urlParams = new URLSearchParams(window.location.search);
-      
-      // ✅ CRITICAL: Preserve ALL parameters from current URL
-      const allParams = new URLSearchParams();
-      
-      // Add all current URL parameters
-      urlParams.forEach((value, key) => {
-        allParams.set(key, value);
-      });
-      
-      // ✅ Build final URL
-      const finalParams = allParams.toString();
-      if (finalParams) {
-        finalUrl += (finalUrl.includes('?') ? '&' : '?') + finalParams;
-      }
+      // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
+      const finalUrl = buildUrlWithParams(targetUrl);
       
       console.log('🎯 Modal Auto-refuse URL with ALL params preserved:', finalUrl);
-      console.log('📊 Parameters count:', allParams.size);
       
       // Small delay to ensure tracking is sent
       setTimeout(() => {

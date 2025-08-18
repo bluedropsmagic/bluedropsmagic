@@ -4,6 +4,7 @@ import { initializeRedTrack } from '../utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from '../utils/facebookPixelTracking';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 import { Star, Shield, Truck, CreditCard, CheckCircle, Clock, Award } from 'lucide-react';
+import { buildUrlWithParams } from '../utils/urlUtils';
 
 export const LandingPage: React.FC = () => {
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
@@ -40,28 +41,10 @@ export const LandingPage: React.FC = () => {
     trackOfferClick(`landing-${packageType}`);
     trackInitiateCheckout(url);
     
-    // Build URL with all tracking parameters
-    let finalUrl = url;
-    
-    // ✅ ENHANCED: Build URL with ALL tracking parameters preserved
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // ✅ CRITICAL: Preserve ALL parameters from current URL
-    const allParams = new URLSearchParams();
-    
-    // Add all current URL parameters
-    urlParams.forEach((value, key) => {
-      allParams.set(key, value);
-    });
-    
-    // ✅ Build final URL
-    const finalParams = allParams.toString();
-    if (finalParams) {
-      finalUrl += (finalUrl.includes('?') ? '&' : '?') + finalParams;
-    }
+    // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
+    const finalUrl = buildUrlWithParams(url);
     
     console.log('🎯 Landing Page URL with ALL params preserved:', finalUrl);
-    console.log('📊 Parameters count:', allParams.size);
     
     setTimeout(() => {
       window.location.href = finalUrl;

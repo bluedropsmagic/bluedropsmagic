@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Star, Shield, Truck, CreditCard } from 'lucide-react';
-import { buildUrlWithParams, trackPurchase } from '../utils/urlUtils';
 import { trackInitiateCheckout, buildRedirectUrl } from '../utils/facebookPixelTracking';
 
 interface ProductOffersProps {
@@ -34,37 +33,8 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
     // ✅ FIXED: ONLY track InitiateCheckout - NO Purchase event
     trackInitiateCheckout(targetUrl);
     
-    // ✅ REMOVED: trackPurchase call - Purchase should only be tracked on thank you page
-    // trackPurchase(purchaseValues[packageType], 'BRL', packageType);
-    
-    // Call the original onPurchase handler
+    // ✅ FIXED: Call the original onPurchase handler which now handles URL building centrally
     onPurchase(packageType);
-    
-    // ✅ ENHANCED: Build URL with ALL tracking parameters preserved
-    let urlWithParams = targetUrl;
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // ✅ CRITICAL: Preserve ALL parameters from current URL
-    const allParams = new URLSearchParams();
-    
-    // Add all current URL parameters
-    urlParams.forEach((value, key) => {
-      allParams.set(key, value);
-    });
-    
-    // ✅ Build final URL
-    const finalParams = allParams.toString();
-    if (finalParams) {
-      urlWithParams += (urlWithParams.includes('?') ? '&' : '?') + finalParams;
-    }
-    
-    console.log('🎯 Main Purchase URL with ALL params preserved:', urlWithParams);
-    console.log('📊 Parameters count:', allParams.size);
-    
-    // ✅ UPDATED: Small delay to ensure Facebook Pixel event is sent
-    setTimeout(() => {
-      window.location.href = urlWithParams;
-    }, 150); // 150ms delay to ensure pixel tracking
   };
 
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {

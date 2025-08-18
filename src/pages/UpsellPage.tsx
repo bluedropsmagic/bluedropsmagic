@@ -5,6 +5,7 @@ import { AlertTriangle, CheckCircle, Shield, Truck, Clock } from 'lucide-react';
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 import { TestimonialsSection } from '../components/TestimonialsSection';
 import { BoltNavigation } from '../components/BoltNavigation';
+import { buildUrlWithParams } from '../utils/urlUtils';
 
 interface UpsellPageProps {
   variant: '1-bottle' | '3-bottle' | '6-bottle';
@@ -293,40 +294,10 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
     trackInitiateCheckout(content.acceptUrl);
     trackOfferClick(`upsell-${variant}-accept`);
     
-    // ✅ ENHANCED: Build URL with ALL tracking parameters preserved
-    let url = content.acceptUrl;
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // ✅ CRITICAL: Preserve ALL parameters from current URL
-    const allParams = new URLSearchParams();
-    
-    // Add all current URL parameters first
-    urlParams.forEach((value, key) => {
-      allParams.set(key, value);
-    });
-    
-    // ✅ CRITICAL: Add CartPanda parameters from searchParams
-    if (cartParams) {
-      const cartParamsObj = new URLSearchParams(cartParams);
-      cartParamsObj.forEach((value, key) => {
-        allParams.set(key, value); // Override with CartPanda values if present
-      });
-    }
-    
-    // ✅ CRITICAL: Ensure CID is preserved
-    const cid = urlParams.get('cid');
-    if (cid) {
-      allParams.set('cid', cid);
-    }
-    
-    // ✅ Build final URL
-    const finalParams = allParams.toString();
-    if (finalParams) {
-      url += (url.includes('?') ? '&' : '?') + finalParams;
-    }
+    // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
+    const url = buildUrlWithParams(content.acceptUrl);
     
     console.log('🎯 Upsell Accept URL with ALL params preserved:', url);
-    console.log('📊 Parameters count:', allParams.size);
     
     setTimeout(() => {
       window.location.href = url;
@@ -337,40 +308,10 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
     trackInitiateCheckout(content.rejectUrl);
     trackOfferClick(`upsell-${variant}-reject`);
     
-    // ✅ ENHANCED: Build URL with ALL tracking parameters preserved
-    let url = content.rejectUrl;
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // ✅ CRITICAL: Preserve ALL parameters from current URL
-    const allParams = new URLSearchParams();
-    
-    // Add all current URL parameters first
-    urlParams.forEach((value, key) => {
-      allParams.set(key, value);
-    });
-    
-    // ✅ CRITICAL: Add CartPanda parameters from searchParams
-    if (cartParams) {
-      const cartParamsObj = new URLSearchParams(cartParams);
-      cartParamsObj.forEach((value, key) => {
-        allParams.set(key, value); // Override with CartPanda values if present
-      });
-    }
-    
-    // ✅ CRITICAL: Ensure CID is preserved
-    const cid = urlParams.get('cid');
-    if (cid) {
-      allParams.set('cid', cid);
-    }
-    
-    // ✅ Build final URL
-    const finalParams = allParams.toString();
-    if (finalParams) {
-      url += (url.includes('?') ? '&' : '?') + finalParams;
-    }
+    // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
+    const url = buildUrlWithParams(content.rejectUrl);
     
     console.log('🎯 Upsell Reject URL with ALL params preserved:', url);
-    console.log('📊 Parameters count:', allParams.size);
     
     setTimeout(() => {
       window.location.href = url;
