@@ -1,6 +1,6 @@
 // Facebook Pixel Tracking Utilities
-// Handles ONLY InitiateCheckout events for Meta Ads traffic
-// Filters out organic traffic and limits to one event per session
+// Handles InitiateCheckout events with proper deduplication
+// Prevents duplicate events and ensures accurate tracking
 
 export interface FacebookPixelConfig {
   pixelId: string;
@@ -12,6 +12,36 @@ export const FACEBOOK_PIXEL_CONFIG: FacebookPixelConfig = {
   enabled: true
 };
 
+/**
+ * Track processed URLs to prevent duplicate InitiateCheckout events
+ */
+const processedUrls = new Set<string>();
+const lastEventTime = { initiate: 0 };
+const DEBOUNCE_TIME = 2000; // 2 seconds debounce
+
+/**
+ * Generate a unique key for tracking events
+ */
+const generateEventKey = (url: string, eventType: string): string => {
+  const baseUrl = url.split('?')[0]; // Remove query parameters for key
+  return `${eventType}_${baseUrl}_${Date.now()}`;
+};
+
+/**
+ * Check if enough time has passed since last event (debounce)
+ */
+const canTrackEvent = (eventType: 'initiate'): boolean => {
+  const now = Date.now();
+  const lastTime = lastEventTime[eventType];
+  
+  if (now - lastTime < DEBOUNCE_TIME) {
+    console.log(`🚫 DEBOUNCED: ${eventType} event blocked (${now - lastTime}ms since last)`);
+    return false;
+  }
+  
+  lastEventTime[eventType] = now;
+  return true;
+};
 /**
  * Check if current traffic is from Meta Ads (Facebook/Instagram paid ads)
  */
@@ -88,20 +118,6 @@ export const isMetaAdsTraffic = (): boolean => {
   return false;
 };
 
-/**
- * Check if InitiateCheckout was already tracked for this session
- */
-export const hasTrackedInitiateCheckoutThisSession = (): boolean => {
-  return sessionStorage.getItem('initiate_checkout_tracked') === 'true';
-};
-
-/**
- * Mark InitiateCheckout as tracked for this session
- */
-export const markInitiateCheckoutTracked = (): void => {
-  sessionStorage.setItem('initiate_checkout_tracked', 'true');
-  console.log('✅ InitiateCheckout marked as tracked for this session');
-};
 
 /**
  * Check if Facebook Pixel is properly loaded and initialized
@@ -127,7 +143,7 @@ export const isCartPandaUrl = (url: string): boolean => {
 
 /**
  * Track InitiateCheckout event with Facebook Pixel
- * ✅ CRITICAL: ONLY for Meta Ads traffic and once per session
+ * ✅ UPDATED: With proper deduplication and debouncing
  */
 export const trackInitiateCheckout = (url?: string): void => {
   if (!FACEBOOK_PIXEL_CONFIG.enabled) {
@@ -135,15 +151,8 @@ export const trackInitiateCheckout = (url?: string): void => {
     return;
   }
   
-  // ✅ NEW: Check if traffic is from Meta Ads
-  if (!isMetaAdsTraffic()) {
-    console.log('🚫 BLOCKED InitiateCheckout: Not Meta Ads traffic');
-    return;
-  }
-  
-  // ✅ NEW: Check if already tracked this session
-  if (hasTrackedInitiateCheckoutThisSession()) {
-    console.log('🚫 BLOCKED InitiateCheckout: Already tracked this session');
+  // ✅ UPDATED: Apply debounce to prevent rapid-fire clicks
+  if (!canTrackEvent('initiate')) {
     return;
   }
   
@@ -152,15 +161,29 @@ export const trackInitiateCheckout = (url?: string): void => {
     return;
   }
   
-  try {
-    // ✅ Mark as tracked for this session
-    markInitiateCheckoutTracked();
+  // ✅ NEW: Check if this URL was already processed recently
+  if (url) {
+    const eventKey = generateEventKey(url, 'InitiateCheckout');
+    const baseUrl = url.split('?')[0];
     
+    if (processedUrls.has(baseUrl)) {
+      console.log('🚫 BLOCKED InitiateCheckout: URL already processed recently:', baseUrl);
+      return;
+    }
+    
+    // Mark URL as processed (expires after 5 minutes)
+    processedUrls.add(baseUrl);
+    setTimeout(() => {
+      processedUrls.delete(baseUrl);
+    }, 300000); // 5 minutes
+  }
+  
+  try {
     // ✅ Track InitiateCheckout event
     const fbq = (window as any).fbq;
     fbq('track', 'InitiateCheckout');
     
-    console.log('✅ Meta Pixel: InitiateCheckout tracked successfully (Meta Ads traffic only)');
+    console.log('✅ Meta Pixel: InitiateCheckout tracked successfully');
     
     // ✅ NEW: Send InitiateCheckout to Utmify
     if (typeof window !== 'undefined' && (window as any).utmify) {
@@ -180,7 +203,7 @@ export const trackInitiateCheckout = (url?: string): void => {
     }
     
     if (url) {
-      console.log('🔗 Target URL:', url);
+      console.log('🔗 InitiateCheckout tracked for URL:', url);
     }
     
   } catch (error) {
@@ -268,21 +291,14 @@ export const buildRedirectUrl = (originalUrl: string): string => {
 
 /**
  * Initialize Facebook Pixel tracking
- * ✅ CRITICAL: Only Meta Ads traffic, once per session
+ * ✅ UPDATED: With proper deduplication and debouncing
  */
 export const initializeFacebookPixelTracking = (): void => {
   if (typeof window === 'undefined') return;
   
   console.log('🚀 Facebook Pixel tracking initialized');
-  console.log('🎯 ONLY Meta Ads traffic: FBCLID, UTM CPC, Campaign IDs');
-  console.log('🔒 ONE InitiateCheckout per session maximum');
-  console.log('❌ Organic social traffic BLOCKED');
+  console.log('🎯 InitiateCheckout with deduplication and debouncing');
+  console.log('🔒 Prevents duplicate events with 2-second debounce');
+  console.log('🔗 URL-based deduplication for 5 minutes');
   console.log('🎯 Purchase events ONLY on thank you pages');
-  
-  // ✅ Show current traffic status
-  if (isMetaAdsTraffic()) {
-    console.log('✅ Current session: Meta Ads traffic detected');
-  } else {
-    console.log('❌ Current session: Not Meta Ads traffic');
-  }
 };
