@@ -42,6 +42,17 @@ const canTrackEvent = (eventType: 'initiate'): boolean => {
   lastEventTime[eventType] = now;
   return true;
 };
+
+/**
+ * Check if InitiateCheckout was already tracked in this session
+ */
+export const hasTrackedInitiateCheckoutThisSession = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  
+  const sessionKey = 'fb_pixel_initiate_checkout_tracked';
+  return sessionStorage.getItem(sessionKey) === 'true';
+};
+
 /**
  * Check if current traffic is from Meta Ads (Facebook/Instagram paid ads)
  */
