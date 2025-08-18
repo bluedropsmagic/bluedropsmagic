@@ -112,7 +112,7 @@ function App() {
       
       // Auto-remove after 5 seconds
       setTimeout(() => {
-        if (document.body.contains(errorDiv)) {
+        if (errorDiv && document.body.contains(errorDiv)) {
           document.body.removeChild(errorDiv);
         }
       }, 5000);
@@ -133,9 +133,7 @@ function App() {
     
     return () => {
       window.removeEventListener('error', handleGlobalError);
-      window.removeEventListener('unhandledrejection', (event) => {
-        event.preventDefault();
-      });
+      window.removeEventListener('unhandledrejection', () => {});
     };
   }, []);
 
