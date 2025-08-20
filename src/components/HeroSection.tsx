@@ -4,13 +4,13 @@ import { Play } from 'lucide-react';
 export const HeroSection: React.FC = () => {
   return (
     <div className="mb-6 text-center w-full animate-fadeInUp animation-delay-400">
-      <h1 className="text-6xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.75] mb-4 px-2">
-        <div className="text-blue-900 mb-3">
+      <h1 className="text-8xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.75] mb-4 px-2">
+        <span className="text-blue-900 block mb-3">
           VIAGRA? <span className="text-red-600">NOPE!</span>
-        </div>
-        <div className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent">
+        </span>
+        <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
           BAKING SODA!
-        </div>
+        </span>
       </h1>
       
       <p className="text-base sm:text-lg md:text-xl text-blue-800 mb-2 font-medium px-2 leading-relaxed">
