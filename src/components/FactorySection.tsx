@@ -6,7 +6,6 @@ interface FactorySlide {
   title: string;
   description: string;
   videoId: string; // VTurb video ID
-  badge: string;
 }
 
 export const FactorySection: React.FC = () => {
@@ -27,22 +26,19 @@ export const FactorySection: React.FC = () => {
       id: 1,
       title: "State-of-the-Art Manufacturing",
       description: "Our FDA-registered facility uses cutting-edge technology to ensure every bottle meets pharmaceutical-grade standards.",
-      videoId: "factory_video_1", // Replace with actual VTurb video ID
-      badge: "FDA REGISTERED"
+      videoId: "factory_video_1" // Replace with actual VTurb video ID
     },
     {
       id: 2,
       title: "Rigorous Quality Control",
       description: "Every batch undergoes extensive testing for purity, potency, and safety before reaching your doorstep.",
-      videoId: "factory_video_2", // Replace with actual VTurb video ID
-      badge: "QUALITY TESTED"
+      videoId: "factory_video_2" // Replace with actual VTurb video ID
     },
     {
       id: 3,
       title: "Premium Ingredient Sourcing",
       description: "We source only the highest-grade natural ingredients from trusted suppliers worldwide.",
-      videoId: "factory_video_3", // Replace with actual VTurb video ID
-      badge: "PREMIUM GRADE"
+      videoId: "factory_video_3" // Replace with actual VTurb video ID
     }
   ];
 
@@ -498,15 +494,11 @@ const FactoryCard: React.FC<{
       isDragging ? 'shadow-2xl' : 'shadow-lg'
     } ${isActive ? 'ring-2 ring-blue-300' : ''}`}>
       
-      {/* Factory Title and Badge */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg sm:text-xl font-bold text-blue-900 leading-tight">
+      {/* Factory Title */}
+      <div className="mb-4">
+        <h3 className="text-lg sm:text-xl font-bold text-blue-900 leading-tight text-center">
           {slide.title}
         </h3>
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
-          <Shield className="w-3 h-3" />
-          <span className="text-xs font-bold">{slide.badge}</span>
-        </div>
       </div>
 
       {/* VTurb Video container with proper z-index layering */}
@@ -565,18 +557,6 @@ const FactoryCard: React.FC<{
         <p className="text-sm sm:text-base text-blue-800 leading-relaxed">
           {slide.description}
         </p>
-      </div>
-
-      {/* Quality Indicators */}
-      <div className="flex items-center justify-center gap-2">
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
-          <Award className="w-3 h-3" />
-          <span className="text-xs font-bold">ISO CERTIFIED</span>
-        </div>
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
-          <CheckCircle className="w-3 h-3" />
-          <span className="text-xs font-bold">GMP COMPLIANT</span>
-        </div>
       </div>
     </div>
   );
