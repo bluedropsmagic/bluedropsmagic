@@ -4,7 +4,7 @@ import { Play } from 'lucide-react';
 export const HeroSection: React.FC = () => {
   return (
     <div className="mb-6 text-center w-full animate-fadeInUp animation-delay-400">
-      <h1 className="text-8xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.75] mb-4 px-2">
+      <h1 className="text-6xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.75] mb-4 px-2">
         <span className="text-blue-900 block mb-3">
           VIAGRA? <span className="text-red-600">NOPE!</span>
         </span>
