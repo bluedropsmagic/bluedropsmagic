@@ -15,40 +15,26 @@ export const FACEBOOK_PIXEL_CONFIG: FacebookPixelConfig = {
 /**
  * Track processed URLs to prevent duplicate InitiateCheckout events
  */
-const processedUrls = new Set<string>();
-const lastEventTime = { initiate: 0 };
-const DEBOUNCE_TIME = 5000; // 5 seconds debounce - increased
-const sessionTrackedUrls = new Set<string>(); // Track URLs per session
-
-/**
- * Generate a unique key for tracking events
- */
-const generateEventKey = (url: string, eventType: string): string => {
-  const baseUrl = url.split('?')[0]; // Remove query parameters for key
-  return `${eventType}_${baseUrl}_${Date.now()}`;
-};
-
-/**
- * Check if enough time has passed since last event (debounce)
- */
-const canTrackEvent = (eventType: 'initiate'): boolean => {
-  const now = Date.now();
-  const lastTime = lastEventTime[eventType];
-  
-  if (now - lastTime < DEBOUNCE_TIME) {
-    console.log(`🚫 DEBOUNCED: ${eventType} event blocked (${now - lastTime}ms since last)`);
-    return false;
-  }
-  
-  lastEventTime[eventType] = now;
-  return true;
-};
+// ✅ ULTRA-STRICT: Only ONE InitiateCheckout per session, period
+const SESSION_KEY = 'initiate_checkout_tracked_this_session';
+let hasTrackedInThisSession = false;
 
 /**
  * Check if InitiateCheckout was already tracked in this session
  */
 export const hasTrackedInitiateCheckoutThisSession = (): boolean => {
-  return sessionTrackedUrls.size > 0;
+  // Check both memory and sessionStorage
+  const sessionStored = sessionStorage.getItem(SESSION_KEY) === 'true';
+  return hasTrackedInThisSession || sessionStored;
+};
+
+/**
+ * Mark InitiateCheckout as tracked for this session
+ */
+const markInitiateCheckoutAsTracked = (): void => {
+  hasTrackedInThisSession = true;
+  sessionStorage.setItem(SESSION_KEY, 'true');
+  console.log('🔒 InitiateCheckout marked as tracked for this session');
 };
 
 /**
@@ -152,7 +138,7 @@ export const isCartPandaUrl = (url: string): boolean => {
 
 /**
  * Track InitiateCheckout event with Facebook Pixel
- * ✅ FIXED: Ultra-strict deduplication to prevent any duplicates
+ * ✅ ULTRA-STRICT: Only ONE per session, no exceptions
  */
 export const trackInitiateCheckout = (url?: string): void => {
   if (!FACEBOOK_PIXEL_CONFIG.enabled) {
@@ -160,9 +146,10 @@ export const trackInitiateCheckout = (url?: string): void => {
     return;
   }
   
-  // ✅ CRITICAL: Apply strict debounce to prevent rapid-fire clicks
-  if (!canTrackEvent('initiate')) {
-    console.log('🚫 BLOCKED InitiateCheckout: Debounce active (5 seconds)');
+  // ✅ ULTRA-CRITICAL: Check if already tracked in this session
+  if (hasTrackedInitiateCheckoutThisSession()) {
+    console.log('🚫 BLOCKED InitiateCheckout: Already tracked in this session');
+    console.log('🔒 RULE: Only ONE InitiateCheckout per user session allowed');
     return;
   }
   
@@ -171,41 +158,10 @@ export const trackInitiateCheckout = (url?: string): void => {
     return;
   }
   
-  // ✅ CRITICAL: Multiple layers of deduplication
-  if (url) {
-    const baseUrl = url.split('?')[0];
-    
-    // Layer 1: Check if URL was processed recently (global)
-    if (processedUrls.has(baseUrl)) {
-      console.log('🚫 BLOCKED InitiateCheckout: URL already processed globally:', baseUrl);
-      return;
-    }
-    
-    // Layer 2: Check if URL was processed in this session
-    if (sessionTrackedUrls.has(baseUrl)) {
-      console.log('🚫 BLOCKED InitiateCheckout: URL already processed in this session:', baseUrl);
-      return;
-    }
-    
-    // Layer 3: Check session storage as backup
-    const sessionKey = `initiate_checkout_${baseUrl.replace(/[^a-zA-Z0-9]/g, '_')}`;
-    if (sessionStorage.getItem(sessionKey) === 'true') {
-      console.log('🚫 BLOCKED InitiateCheckout: URL already tracked in session storage:', baseUrl);
-      return;
-    }
-    
-    // Mark URL as processed in all layers
-    processedUrls.add(baseUrl);
-    sessionTrackedUrls.add(baseUrl);
-    sessionStorage.setItem(sessionKey, 'true');
-    
-    // Global expires after 10 minutes
-    setTimeout(() => {
-      processedUrls.delete(baseUrl);
-    }, 600000); // 10 minutes
-  }
-  
   try {
+    // ✅ MARK AS TRACKED BEFORE SENDING EVENT
+    markInitiateCheckoutAsTracked();
+    
     // ✅ Track InitiateCheckout event
     const fbq = (window as any).fbq;
     fbq('track', 'InitiateCheckout');
@@ -213,7 +169,7 @@ export const trackInitiateCheckout = (url?: string): void => {
     console.log('✅ Meta Pixel: InitiateCheckout tracked successfully', {
       url: url || 'no-url',
       timestamp: new Date().toISOString(),
-      sessionTrackedCount: sessionTrackedUrls.size
+      sessionStatus: 'FIRST_AND_ONLY_EVENT'
     });
     
     // ✅ NEW: Send InitiateCheckout to Utmify
@@ -235,6 +191,9 @@ export const trackInitiateCheckout = (url?: string): void => {
     
   } catch (error) {
     console.error('❌ Error tracking InitiateCheckout:', error);
+    // ✅ ROLLBACK: If error occurs, allow retry
+    hasTrackedInThisSession = false;
+    sessionStorage.removeItem(SESSION_KEY);
   }
 };
 
@@ -318,14 +277,27 @@ export const buildRedirectUrl = (originalUrl: string): string => {
 
 /**
  * Initialize Facebook Pixel tracking
- * ✅ UPDATED: With proper deduplication and debouncing
+ * ✅ ULTRA-STRICT: One InitiateCheckout per session only
  */
 export const initializeFacebookPixelTracking = (): void => {
   if (typeof window === 'undefined') return;
   
+  // ✅ Check if already tracked on page load
+  const sessionStored = sessionStorage.getItem(SESSION_KEY) === 'true';
+  if (sessionStored) {
+    hasTrackedInThisSession = true;
+    console.log('🔒 Session already has InitiateCheckout tracked');
+  }
+  
+  // ✅ Expose reset function for admin testing
+  (window as any).resetInitiateCheckoutSession = () => {
+    hasTrackedInThisSession = false;
+    sessionStorage.removeItem(SESSION_KEY);
+    console.log('🔄 InitiateCheckout session reset for testing');
+  };
+  
   console.log('🚀 Facebook Pixel tracking initialized');
-  console.log('🎯 InitiateCheckout with deduplication and debouncing');
-  console.log('🔒 Prevents duplicate events with 2-second debounce');
-  console.log('🔗 URL-based deduplication for 5 minutes');
+  console.log('🔒 ULTRA-STRICT: Only ONE InitiateCheckout per session');
+  console.log('🎯 Session status:', hasTrackedInThisSession ? 'ALREADY_TRACKED' : 'AVAILABLE');
   console.log('🎯 Purchase events ONLY on thank you pages');
 };

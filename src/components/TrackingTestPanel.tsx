@@ -545,7 +545,11 @@ export const TrackingTestPanel: React.FC = () => {
               <button
                 onClick={() => {
                   switch (index) {
-                    case 0: testHotjar(index); break;
+                  sessionStorage.removeItem('initiate_checkout_tracked_this_session');
+                  // ✅ RESET: Also reset memory flag
+                  if (typeof window !== 'undefined' && (window as any).resetInitiateCheckoutSession) {
+                    (window as any).resetInitiateCheckoutSession();
+                  }
                     case 1: testMetaPixel(index); break;
                     case 2: testMetaAdsFilter(index); break;
                     case 3: testUtmify(index); break;
