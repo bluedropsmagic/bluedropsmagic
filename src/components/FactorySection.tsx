@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Shield, Award, CheckCircle } from 'lucide-react';
+import { Shield, Award, CheckCircle, Play } from 'lucide-react';
 
 interface FactorySlide {
   id: number;
   title: string;
   description: string;
-  image: string;
+  videoId: string; // VTurb video ID
   badge: string;
 }
 
@@ -18,6 +18,7 @@ export const FactorySection: React.FC = () => {
   const [velocity, setVelocity] = useState(0);
   const [lastMoveTime, setLastMoveTime] = useState(0);
   const [lastMoveX, setLastMoveX] = useState(0);
+  const [videoLoaded, setVideoLoaded] = useState<{[key: string]: boolean}>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
 
@@ -26,24 +27,162 @@ export const FactorySection: React.FC = () => {
       id: 1,
       title: "State-of-the-Art Manufacturing",
       description: "Our FDA-registered facility uses cutting-edge technology to ensure every bottle meets pharmaceutical-grade standards.",
-      image: "https://images.pexels.com/photos/3735747/pexels-photo-3735747.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoId: "factory_video_1", // Replace with actual VTurb video ID
       badge: "FDA REGISTERED"
     },
     {
       id: 2,
       title: "Rigorous Quality Control",
       description: "Every batch undergoes extensive testing for purity, potency, and safety before reaching your doorstep.",
-      image: "https://images.pexels.com/photos/3786126/pexels-photo-3786126.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoId: "factory_video_2", // Replace with actual VTurb video ID
       badge: "QUALITY TESTED"
     },
     {
       id: 3,
       title: "Premium Ingredient Sourcing",
       description: "We source only the highest-grade natural ingredients from trusted suppliers worldwide.",
-      image: "https://images.pexels.com/photos/3735780/pexels-photo-3735780.jpeg?auto=compress&cs=tinysrgb&w=800",
+      videoId: "factory_video_3", // Replace with actual VTurb video ID
       badge: "PREMIUM GRADE"
     }
   ];
+
+  // Function to inject VTurb factory videos
+  const injectFactoryVideo = (videoId: string) => {
+    console.log('🎬 Injecting factory video:', videoId);
+    
+    // Remove existing script if any
+    const existingScript = document.getElementById(`scr_${videoId}`);
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Ensure container exists and is properly isolated BEFORE injecting script
+    const targetContainer = document.getElementById(`vid-${videoId}`);
+    if (!targetContainer) {
+      console.error('❌ Target container not found for factory video:', videoId);
+      return;
+    }
+
+    // Setup container isolation and positioning
+    targetContainer.style.position = 'absolute';
+    targetContainer.style.top = '0';
+    targetContainer.style.left = '0';
+    targetContainer.style.width = '100%';
+    targetContainer.style.height = '100%';
+    targetContainer.style.zIndex = '20';
+    targetContainer.style.overflow = 'hidden';
+    targetContainer.style.borderRadius = '0.75rem';
+    targetContainer.style.isolation = 'isolate';
+    targetContainer.innerHTML = ''; // Clear any existing content
+    
+    // Add the HTML structure for VTurb
+    targetContainer.innerHTML = `
+      <div id="vid_${videoId}" style="position:relative;width:100%;padding: 56.25% 0 0 0;">
+        <img id="thumb_${videoId}" src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;">
+        <div id="backdrop_${videoId}" style="position:absolute;top:0;width:100%;height:100%;-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);"></div>
+      </div>
+      <style>
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border-width:0;}
+      </style>
+    `;
+
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.id = `scr_${videoId}`;
+    script.async = true;
+    script.innerHTML = `
+      (function() {
+        try {
+          console.log('🎬 Loading factory video: ${videoId}');
+          
+          var s = document.createElement("script");
+          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/${videoId}/player.js";
+          s.async = true;
+          
+          s.onload = function() {
+            console.log('✅ VTurb factory video loaded: ${videoId}');
+            
+            // Ensure video elements stay in correct container
+            setTimeout(function() {
+              // Prevent video from appearing in main video container
+              var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+              var factoryContainer = document.getElementById('vid-${videoId}');
+              
+              if (mainVideoContainer && factoryContainer) {
+                // Move any factory video elements that ended up in main container
+                var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${videoId}"], [data-video-id="${videoId}"], video, iframe');
+                orphanedElements.forEach(function(element) {
+                  var elementSrc = element.src || element.getAttribute('src') || '';
+                  var isFactoryVideo = elementSrc.includes('${videoId}') || 
+                                     element.getAttribute('data-video-id') === '${videoId}' ||
+                                     element.closest('[id*="${videoId}"]');
+                  
+                  if (isFactoryVideo && element.parentNode === mainVideoContainer) {
+                    factoryContainer.appendChild(element);
+                    console.log('🔄 FACTORY VIDEO: Moved factory video element back to correct container');
+                  }
+                });
+                
+                // Ensure main video elements stay in main container
+                var mainVideoElements = factoryContainer.querySelectorAll('[src*="683ba3d1b87ae17c6e07e7db"], [data-video-id="683ba3d1b87ae17c6e07e7db"]');
+                mainVideoElements.forEach(function(element) {
+                  if (element.parentNode === factoryContainer) {
+                    mainVideoContainer.appendChild(element);
+                    console.log('🔄 MAIN VIDEO: Moved main video element back to main container');
+                  }
+                });
+              }
+              
+            }, 2000);
+            window.factoryVideoLoaded_${videoId} = true;
+          };
+          s.onerror = function() {
+            console.error('❌ Failed to load VTurb factory video: ${videoId}');
+          };
+          document.head.appendChild(s);
+        } catch (error) {
+          console.error('Error injecting factory video script:', error);
+        }
+      })();
+    `;
+    
+    document.head.appendChild(script);
+
+    // Check for video load status
+    setTimeout(() => {
+      if ((window as any)[`factoryVideoLoaded_${videoId}`]) {
+        setVideoLoaded(prev => ({ ...prev, [videoId]: true }));
+      } else {
+        console.log('⚠️ Factory video not loaded yet, will retry...');
+        // Retry once if not loaded
+        setTimeout(() => injectFactoryVideo(videoId), 2000);
+      }
+    }, 5000);
+  };
+
+  // Inject current factory video when slide changes
+  useEffect(() => {
+    const currentSlideData = factorySlides[currentSlide];
+    if (currentSlideData.videoId) {
+      setTimeout(() => {
+        injectFactoryVideo(currentSlideData.videoId);
+      }, 500);
+    }
+
+    // Cleanup function
+    return () => {
+      factorySlides.forEach((slide) => {
+        const scriptToRemove = document.getElementById(`scr_${slide.videoId}`);
+        if (scriptToRemove) {
+          try {
+            scriptToRemove.remove();
+          } catch (error) {
+            console.error('Error removing factory video script:', error);
+          }
+        }
+      });
+    };
+  }, [currentSlide]);
 
   // Improved mobile drag mechanics (same as DoctorsSection)
   const animateDragOffset = (targetOffset: number, duration: number = 200) => {
@@ -313,6 +452,7 @@ export const FactorySection: React.FC = () => {
               slide={slide} 
               isActive={index === currentSlide}
               isDragging={isDragging}
+              videoLoaded={videoLoaded[slide.videoId] || false}
             />
           </div>
         ))}
@@ -341,64 +481,101 @@ export const FactorySection: React.FC = () => {
   );
 };
 
-// Factory Card Component
+// Factory Card Component with VTurb video
 const FactoryCard: React.FC<{ 
   slide: FactorySlide; 
   isActive: boolean; 
   isDragging: boolean;
+  videoLoaded: boolean;
 }> = ({ 
   slide, 
   isActive, 
-  isDragging
+  isDragging,
+  videoLoaded
 }) => {
   return (
     <div className={`bg-white backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-blue-200 hover:bg-white/95 transition-all duration-300 max-w-md w-full mx-4 ${
       isDragging ? 'shadow-2xl' : 'shadow-lg'
     } ${isActive ? 'ring-2 ring-blue-300' : ''}`}>
       
-      {/* Factory Image */}
-      <div className="mb-4">
-        <div className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-100 relative">
-          <img 
-            src={slide.image}
-            alt={slide.title}
-            className="w-full h-full object-cover"
-            draggable={false}
-            loading="lazy"
-          />
-          
-          {/* Quality Badge Overlay */}
-          <div className="absolute top-3 right-3">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-3 py-1.5 rounded-full flex items-center gap-1 shadow-lg">
-              <Shield className="w-3 h-3" />
-              <span className="text-xs font-bold">{slide.badge}</span>
-            </div>
-          </div>
+      {/* Factory Title and Badge */}
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg sm:text-xl font-bold text-blue-900 leading-tight">
+          {slide.title}
+        </h3>
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
+          <Shield className="w-3 h-3" />
+          <span className="text-xs font-bold">{slide.badge}</span>
         </div>
       </div>
 
-      {/* Factory Info */}
-      <div className="text-center">
-        <h3 className="text-lg sm:text-xl font-bold text-blue-900 leading-tight mb-3">
-          {slide.title}
-        </h3>
-        
-        <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 mb-4 border border-blue-100">
-          <p className="text-sm sm:text-base text-blue-800 leading-relaxed">
-            {slide.description}
-          </p>
+      {/* VTurb Video container with proper z-index layering */}
+      {isActive && (
+        <div className="mb-4">
+          <div 
+            className="aspect-video rounded-xl overflow-hidden shadow-lg bg-gray-900 relative" 
+            style={{ 
+              isolation: 'isolate',
+              contain: 'layout style paint'
+            }}
+          >
+            {/* Container with maximum isolation */}
+            <div
+              id={`vid-${slide.videoId}`}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                zIndex: 20,
+                overflow: 'hidden',
+                borderRadius: '0.75rem',
+                isolation: 'isolate',
+                contain: 'layout style paint size'
+              }}
+            ></div>
+            
+            {/* Placeholder - Show while loading */}
+            {!videoLoaded && (
+              <div 
+                id={`placeholder_${slide.videoId}`}
+                className="absolute inset-0 bg-gradient-to-br from-blue-800 to-blue-900 flex items-center justify-center"
+                style={{ zIndex: 10 }}
+              >
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <Play className="w-6 h-6 text-white ml-0.5" />
+                  </div>
+                  <p className="text-white/90 text-base font-medium mb-1">
+                    Factory Video
+                  </p>
+                  <p className="text-white/70 text-sm">
+                    Loading...
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+      )}
 
-        {/* Quality Indicators */}
-        <div className="flex items-center justify-center gap-2">
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
-            <Award className="w-3 h-3" />
-            <span className="text-xs font-bold">ISO CERTIFIED</span>
-          </div>
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
-            <CheckCircle className="w-3 h-3" />
-            <span className="text-xs font-bold">GMP COMPLIANT</span>
-          </div>
+      {/* Factory Description */}
+      <div className="bg-white/50 backdrop-blur-sm rounded-xl p-3 mb-4 border border-blue-100">
+        <p className="text-sm sm:text-base text-blue-800 leading-relaxed">
+          {slide.description}
+        </p>
+      </div>
+
+      {/* Quality Indicators */}
+      <div className="flex items-center justify-center gap-2">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
+          <Award className="w-3 h-3" />
+          <span className="text-xs font-bold">ISO CERTIFIED</span>
+        </div>
+        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full flex items-center gap-1 shadow-md">
+          <CheckCircle className="w-3 h-3" />
+          <span className="text-xs font-bold">GMP COMPLIANT</span>
         </div>
       </div>
     </div>
