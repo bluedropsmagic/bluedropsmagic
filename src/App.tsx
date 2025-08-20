@@ -31,6 +31,18 @@ function App() {
   const [adminDelayOverride, setAdminDelayOverride] = useState(false); // ✅ CHANGED: Default false
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false); // ✅ NEW: Detect Bolt environment
 
+  // ✅ NEW: Function to show content immediately (for news CTA)
+  const showContentImmediately = () => {
+    console.log('📰 News CTA clicked - showing content immediately');
+    setShowRestOfContent(true);
+    setShowPurchaseButton(true);
+    
+    // Auto-scroll to purchase section after content loads
+    setTimeout(() => {
+      scrollToSixBottleButton();
+    }, 500);
+  };
+
   // ✅ NEW: Detect Bolt environment
   useEffect(() => {
     const hostname = window.location.hostname;
@@ -519,6 +531,9 @@ function App() {
     // ✅ NEW: Expose function to show rest of content after 35:55
     (window as any).showRestOfContentAfterDelay = showRestOfContentAfterDelay;
     
+    // ✅ NEW: Expose function to show content immediately (for news CTA)
+    (window as any).showContentImmediately = showContentImmediately;
+    
     // Make tracking functions available globally for debugging
     (window as any).trackVideoPlay = trackVideoPlay;
     (window as any).trackVideoProgress = trackVideoProgress;
@@ -533,6 +548,7 @@ function App() {
     return () => {
       // Cleanup
       delete (window as any).showRestOfContentAfterDelay;
+      delete (window as any).showContentImmediately;
       delete (window as any).trackVideoPlay;
       delete (window as any).trackVideoProgress;
       delete (window as any).trackOfferClick;

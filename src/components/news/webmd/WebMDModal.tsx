@@ -11,6 +11,12 @@ interface WebMDModalProps {
 export const WebMDModal: React.FC<WebMDModalProps> = ({ onClose, article }) => {
   // ✅ FIXED: Redirect to home page function
   const redirectToHome = () => {
+    // ✅ NEW: Show content immediately when coming from news
+    if (typeof window !== 'undefined' && (window as any).showContentImmediately) {
+      (window as any).showContentImmediately();
+    }
+    
+    // Close modal and go to home
     window.location.href = '/';
   };
 
