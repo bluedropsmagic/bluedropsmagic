@@ -548,14 +548,6 @@ export const DoctorsSection: React.FC = () => {
 
       {/* Trust Badge */}
       <div className="text-center">
-        <div className="bg-white/20 backdrop-blur-sm rounded-xl p-3 border border-blue-200 inline-block">
-          <p className="text-sm text-blue-700 font-medium mb-1">
-            🏥 <strong>Medical Advisory Board</strong>
-          </p>
-          <p className="text-xs text-blue-600">
-            Reviewed and approved by licensed medical professionals
-          </p>
-        </div>
       </div>
     </section>
   );
