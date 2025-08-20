@@ -11,13 +11,44 @@ interface MayoModalProps {
 export const MayoModal: React.FC<MayoModalProps> = ({ onClose, article }) => {
   // ✅ FIXED: Redirect to home page function
   const redirectToHome = () => {
-    // ✅ NEW: Use the same function as the 35:55 timer
+    // ✅ NEW: Close modal and scroll to purchase section
+    onClose();
+    
+    // ✅ NEW: Show content if not already visible
     if (typeof window !== 'undefined' && (window as any).showRestOfContentAfterDelay) {
       (window as any).showRestOfContentAfterDelay();
     }
     
-    // Close modal and go to home
-    window.location.href = '/';
+    // ✅ NEW: Auto-scroll to 6-bottle button after modal closes
+    setTimeout(() => {
+      const purchaseSection = document.getElementById('six-bottle-package') || 
+                            document.querySelector('[data-purchase-section="true"]') ||
+                            document.querySelector('.purchase-button-main');
+      
+      if (purchaseSection) {
+        purchaseSection.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center',
+          inline: 'nearest'
+        });
+        
+        // Add highlight effect
+        const element = purchaseSection as HTMLElement;
+        element.style.transition = 'all 0.8s ease';
+        element.style.transform = 'scale(1.02)';
+        element.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+        
+        // Remove highlight after 4 seconds
+        setTimeout(() => {
+          element.style.transform = 'scale(1)';
+          element.style.boxShadow = '';
+        }, 4000);
+        
+        console.log('📍 Auto-scrolled to 6-bottle purchase button from Mayo news');
+      } else {
+        console.log('⚠️ Purchase button not found for auto-scroll from Mayo news');
+      }
+    }, 500); // Wait for modal to close
   };
 
   return (
