@@ -175,16 +175,16 @@ export const CNNModal: React.FC<CNNModalProps> = ({ onClose }) => {
                 </div>
                 <div className="flex-1 text-center md:text-left">
                   <h3 className="text-xl font-bold text-blue-900 mb-2">
-                    Try BlueDrops Risk-Free
+                    Experience BlueDrops Today
                   </h3>
                   <p className="text-blue-700 mb-4">
-                    Experience the natural solution that's changing men's lives. Protected by our 180-day guarantee.
+                    Discover the breakthrough natural formula featured in this report. Backed by our comprehensive 180-day guarantee.
                   </p>
                   <button
                     onClick={redirectToHome}
                     className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
                   >
-                    Get BlueDrops Now
+                    Start Your Transformation
                   </button>
                 </div>
               </div>

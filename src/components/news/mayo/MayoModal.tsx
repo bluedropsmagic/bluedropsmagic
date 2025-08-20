@@ -229,16 +229,16 @@ export const MayoModal: React.FC<MayoModalProps> = ({ onClose, article }) => {
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h3 className="text-xl font-bold text-blue-900 mb-2">
-                  Try BlueDrops Risk-Free
+                  Secure Your BlueDrops Package
                 </h3>
                 <p className="text-blue-700 mb-4">
-                  Experience the natural solution that's changing men's lives. Protected by our 180-day guarantee.
+                  Access the same natural solution discussed by Mayo Clinic experts. Risk-free with our 180-day money-back promise.
                 </p>
                 <button
                   onClick={redirectToHome}
                   className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
                 >
-                  Get BlueDrops Now
+                  Get BlueDrops Risk-Free
                 </button>
               </div>
             </div>
