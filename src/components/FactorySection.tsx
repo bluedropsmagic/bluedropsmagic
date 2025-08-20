@@ -405,18 +405,6 @@ export const FactorySection: React.FC = () => {
   return (
     <section className="mt-16 sm:mt-20 w-full max-w-5xl mx-auto px-4 animate-fadeInUp animation-delay-1500">
       {/* Section Header */}
-      <div className="text-center mb-4">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-2">
-          <span className="block">Built for Performance.</span>
-          <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
-            Crafted with Precision.
-          </span>
-        </h2>
-        <p className="text-lg sm:text-xl text-blue-700 font-semibold">
-          Every bottle is produced under strict quality standards to deliver consistent results you can trust.
-        </p>
-      </div>
-
       {/* Drag Instructions */}
       <div className="text-center mb-4">
         <p className="text-sm text-blue-600 font-medium">
