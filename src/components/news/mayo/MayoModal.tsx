@@ -232,7 +232,7 @@ export const MayoModal: React.FC<MayoModalProps> = ({ onClose, article }) => {
                   Try BlueDrops Risk-Free
                 </h3>
                 <p className="text-blue-700 mb-4">
-                  Experience the natural solution that's changing men's lives. Start with our 30-day trial package.
+                  Experience the natural solution that's changing men's lives. Protected by our 180-day guarantee.
                 </p>
                 <button
                   onClick={redirectToHome}
