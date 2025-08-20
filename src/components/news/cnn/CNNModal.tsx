@@ -126,6 +126,33 @@ export const CNNModal: React.FC<CNNModalProps> = ({ onClose }) => {
               As research continues to validate natural approaches to men's health, products like BlueDrops represent a promising direction for those seeking effective, natural solutions without the complexity or side effects often associated with traditional treatments.
             </p>
 
+            {/* Product CTA Section */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 my-8">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex-shrink-0">
+                  <img 
+                    src="https://i.imgur.com/iWs7wy7.png" 
+                    alt="BlueDrops 1 Bottle Pack"
+                    className="w-32 h-auto object-contain drop-shadow-lg"
+                  />
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                  <h3 className="text-xl font-bold text-blue-900 mb-2">
+                    Try BlueDrops Risk-Free
+                  </h3>
+                  <p className="text-blue-700 mb-4">
+                    Experience the natural solution that's changing men's lives. Start with our 30-day trial package.
+                  </p>
+                  <button
+                    onClick={redirectToHome}
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
+                  >
+                    Get BlueDrops Now
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {/* Related Articles */}
             <div className="mt-12 pt-8 border-t border-gray-200">
               <h3 className="text-xl font-bold text-gray-900 mb-6">Related Articles</h3>
