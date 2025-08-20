@@ -17,7 +17,8 @@ export const FACEBOOK_PIXEL_CONFIG: FacebookPixelConfig = {
  */
 const processedUrls = new Set<string>();
 const lastEventTime = { initiate: 0 };
-const DEBOUNCE_TIME = 2000; // 2 seconds debounce
+const DEBOUNCE_TIME = 5000; // 5 seconds debounce - increased
+const sessionTrackedUrls = new Set<string>(); // Track URLs per session
 
 /**
  * Generate a unique key for tracking events
@@ -47,10 +48,7 @@ const canTrackEvent = (eventType: 'initiate'): boolean => {
  * Check if InitiateCheckout was already tracked in this session
  */
 export const hasTrackedInitiateCheckoutThisSession = (): boolean => {
-  if (typeof window === 'undefined') return false;
-  
-  const sessionKey = 'fb_pixel_initiate_checkout_tracked';
-  return sessionStorage.getItem(sessionKey) === 'true';
+  return sessionTrackedUrls.size > 0;
 };
 
 /**
@@ -154,7 +152,7 @@ export const isCartPandaUrl = (url: string): boolean => {
 
 /**
  * Track InitiateCheckout event with Facebook Pixel
- * ✅ UPDATED: With proper deduplication and debouncing
+ * ✅ FIXED: Ultra-strict deduplication to prevent any duplicates
  */
 export const trackInitiateCheckout = (url?: string): void => {
   if (!FACEBOOK_PIXEL_CONFIG.enabled) {
@@ -162,8 +160,9 @@ export const trackInitiateCheckout = (url?: string): void => {
     return;
   }
   
-  // ✅ UPDATED: Apply debounce to prevent rapid-fire clicks
+  // ✅ CRITICAL: Apply strict debounce to prevent rapid-fire clicks
   if (!canTrackEvent('initiate')) {
+    console.log('🚫 BLOCKED InitiateCheckout: Debounce active (5 seconds)');
     return;
   }
   
@@ -172,21 +171,38 @@ export const trackInitiateCheckout = (url?: string): void => {
     return;
   }
   
-  // ✅ NEW: Check if this URL was already processed recently
+  // ✅ CRITICAL: Multiple layers of deduplication
   if (url) {
-    const eventKey = generateEventKey(url, 'InitiateCheckout');
     const baseUrl = url.split('?')[0];
     
+    // Layer 1: Check if URL was processed recently (global)
     if (processedUrls.has(baseUrl)) {
-      console.log('🚫 BLOCKED InitiateCheckout: URL already processed recently:', baseUrl);
+      console.log('🚫 BLOCKED InitiateCheckout: URL already processed globally:', baseUrl);
       return;
     }
     
-    // Mark URL as processed (expires after 5 minutes)
+    // Layer 2: Check if URL was processed in this session
+    if (sessionTrackedUrls.has(baseUrl)) {
+      console.log('🚫 BLOCKED InitiateCheckout: URL already processed in this session:', baseUrl);
+      return;
+    }
+    
+    // Layer 3: Check session storage as backup
+    const sessionKey = `initiate_checkout_${baseUrl.replace(/[^a-zA-Z0-9]/g, '_')}`;
+    if (sessionStorage.getItem(sessionKey) === 'true') {
+      console.log('🚫 BLOCKED InitiateCheckout: URL already tracked in session storage:', baseUrl);
+      return;
+    }
+    
+    // Mark URL as processed in all layers
     processedUrls.add(baseUrl);
+    sessionTrackedUrls.add(baseUrl);
+    sessionStorage.setItem(sessionKey, 'true');
+    
+    // Global expires after 10 minutes
     setTimeout(() => {
       processedUrls.delete(baseUrl);
-    }, 300000); // 5 minutes
+    }, 600000); // 10 minutes
   }
   
   try {
@@ -194,7 +210,11 @@ export const trackInitiateCheckout = (url?: string): void => {
     const fbq = (window as any).fbq;
     fbq('track', 'InitiateCheckout');
     
-    console.log('✅ Meta Pixel: InitiateCheckout tracked successfully');
+    console.log('✅ Meta Pixel: InitiateCheckout tracked successfully', {
+      url: url || 'no-url',
+      timestamp: new Date().toISOString(),
+      sessionTrackedCount: sessionTrackedUrls.size
+    });
     
     // ✅ NEW: Send InitiateCheckout to Utmify
     if (typeof window !== 'undefined' && (window as any).utmify) {
@@ -211,10 +231,6 @@ export const trackInitiateCheckout = (url?: string): void => {
       window.dispatchEvent(utmifyEvent);
     } else {
       console.warn('⚠️ Utmify not ready for InitiateCheckout tracking');
-    }
-    
-    if (url) {
-      console.log('🔗 InitiateCheckout tracked for URL:', url);
     }
     
   } catch (error) {

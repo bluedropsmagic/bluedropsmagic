@@ -140,8 +140,13 @@ export const CheckoutButtons: React.FC<CheckoutButtonsProps> = ({
 
   // Handler para clique nos botões
   const handleButtonClick = (buttonConfig: ButtonConfig) => {
-    // ✅ FIXED: ONLY track InitiateCheckout - NO Purchase event
+    // ✅ CRITICAL: Only track InitiateCheckout for accept buttons, not reject buttons
+    if (buttonConfig.action.includes('accept') || buttonConfig.action.includes('main')) {
+      console.log('🎯 Checkout button clicked (accept/main):', buttonConfig.action);
     trackInitiateCheckout(buttonConfig.url);
+    } else {
+      console.log('🚫 Checkout button clicked (reject) - NOT tracking InitiateCheckout:', buttonConfig.action);
+    }
     
     const urlWithCid = addCidToUrl(buttonConfig.url);
     
@@ -156,7 +161,7 @@ export const CheckoutButtons: React.FC<CheckoutButtonsProps> = ({
       onButtonClick(urlWithCid, buttonConfig.action);
     }
     
-    // ✅ FIXED: Small delay to ensure ONLY InitiateCheckout event is sent
+    // Small delay to ensure tracking is sent
     setTimeout(() => {
       window.location.href = urlWithCid;
     }, 150);

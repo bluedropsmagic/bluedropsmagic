@@ -30,25 +30,26 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   const handlePurchaseClick = (packageType: '1-bottle' | '3-bottle' | '6-bottle') => {
     const targetUrl = purchaseUrls[packageType];
     
-    // ✅ FIXED: ONLY track InitiateCheckout - NO Purchase event
+    // ✅ CRITICAL: Only track InitiateCheckout once per URL
+    console.log('🎯 Purchase button clicked:', packageType, 'URL:', targetUrl);
     trackInitiateCheckout(targetUrl);
     
-    // ✅ FIXED: Call the original onPurchase handler which now handles URL building centrally
+    // Call the original onPurchase handler
     onPurchase(packageType);
   };
 
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
     const targetUrl = purchaseUrls[packageType];
     
-    // ✅ Track InitiateCheckout for the popup interaction
-    trackInitiateCheckout(targetUrl);
+    // ✅ REMOVED: Don't track InitiateCheckout for popup - only for final purchase
+    console.log('🎯 Secondary package clicked (popup):', packageType, '- NOT tracking InitiateCheckout');
     
-    // ✅ Track offer click for analytics (popup opened)
+    // Track offer click for analytics (popup opened)
     if (typeof window !== 'undefined' && (window as any).trackOfferClick) {
       (window as any).trackOfferClick(`${packageType}-popup-opened`);
     }
     
-    // ✅ RESTORED: Open upsell popup as before
+    // Open upsell popup as before
     console.log('🎯 Secondary package clicked:', packageType, '- Opening upsell popup');
     onSecondaryPackageClick(packageType);
   };
