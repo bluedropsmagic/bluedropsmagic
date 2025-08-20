@@ -173,10 +173,13 @@ export const MayoModal: React.FC<MayoModalProps> = ({ onClose, article }) => {
         {/* ✅ FIXED: Hero Image - VOLTOU A IMAGEM ANTERIOR */}
         <div className="mb-8">
           <img 
-            src="https://images.pexels.com/photos/3683107/pexels-photo-3683107.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop" 
+            src="https://i.imgur.com/LDXspIL.jpeg" 
             alt="Men's health research" 
             className="w-full h-80 object-cover rounded"
           />
+          <p className="text-sm text-gray-500 mt-3 italic">
+            Mayo Clinic researchers continue to explore natural approaches to men's health and wellness. (Mayo Clinic)
+          </p>
         </div>
 
         {/* Article Body */}

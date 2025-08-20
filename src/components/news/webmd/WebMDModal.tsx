@@ -144,6 +144,18 @@ export const WebMDModal: React.FC<WebMDModalProps> = ({ onClose, article }) => {
               Natural Male Enhancers Gaining Ground in 2025
             </h1>
             
+            {/* Hero Image */}
+            <div className="mb-6">
+              <img 
+                src="https://i.imgur.com/USKdLy9.png" 
+                alt="Men's health research" 
+                className="w-full h-64 object-cover rounded"
+              />
+              <p className="text-sm text-gray-500 mt-3 italic">
+                Natural supplements are gaining popularity among men seeking alternatives to traditional treatments. (WebMD)
+              </p>
+            </div>
+            
             <div className="text-gray-600 text-sm mb-6 bg-blue-50 p-3 rounded border-l-4 border-blue-400">
               <strong>WebMD Medical Review: June 22, 2025</strong>
             </div>

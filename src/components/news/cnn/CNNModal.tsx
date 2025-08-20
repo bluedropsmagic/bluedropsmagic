@@ -100,7 +100,7 @@ export const CNNModal: React.FC<CNNModalProps> = ({ onClose }) => {
           {/* Hero Image */}
           <div className="mb-8">
             <img 
-              src="https://images.pexels.com/photos/3683107/pexels-photo-3683107.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600&fit=crop" 
+              src="https://i.imgur.com/W7PYgoQ.jpeg" 
               alt="Men's health research" 
               className="w-full h-80 object-cover rounded"
             />
