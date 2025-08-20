@@ -544,18 +544,21 @@ export const TrackingTestPanel: React.FC = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => {
-                  switch (index) {
+                  // ✅ RESET: Reset InitiateCheckout session for testing
                   sessionStorage.removeItem('initiate_checkout_tracked_this_session');
-                  // ✅ RESET: Also reset memory flag
                   if (typeof window !== 'undefined' && (window as any).resetInitiateCheckoutSession) {
                     (window as any).resetInitiateCheckoutSession();
                   }
+                  
+                  switch (index) {
+                    case 0: testHotjar(index); break;
                     case 1: testMetaPixel(index); break;
                     case 2: testMetaAdsFilter(index); break;
                     case 3: testUtmify(index); break;
                     case 4: testUTMParams(index); break;
                     case 5: testVideoTracking(index); break;
                     case 6: testSupabase(index); break;
+                    default: break;
                   }
                 }}
                 disabled={tracking.status === 'loading'}
