@@ -15,6 +15,7 @@ import { VideoSection } from '../components/VideoSection';
 import { ProductOffers } from '../components/ProductOffers';
 import { TestimonialsSection } from '../components/TestimonialsSection';
 import { DoctorsSection } from '../components/DoctorsSection';
+import { FactorySection } from '../components/FactorySection';
 import { NewsSection } from '../components/NewsSection';
 import { GuaranteeSection } from '../components/GuaranteeSection';
 import { Footer } from '../components/Footer';
@@ -842,6 +843,11 @@ function FTRPage() {
         {/* Doctors Section - Only show after 35:55 or admin override */}
         {(showRestOfContent || isAdmin || isBoltEnvironment) && (
         <DoctorsSection />
+        )}
+
+        {/* Factory Section - Only show after 35:55 or admin override */}
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
+        <FactorySection />
         )}
 
         {/* Doctors Trust Button - Only show after 35:55 or admin override */}
