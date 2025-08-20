@@ -37,10 +37,10 @@ function App() {
     setShowRestOfContent(true);
     setShowPurchaseButton(true);
     
-    // Auto-scroll to purchase section after content loads
+    // Auto-scroll to purchase section after content loads with longer delay
     setTimeout(() => {
       scrollToSixBottleButton();
-    }, 500);
+    }, 1500); // Increased delay to ensure content is fully rendered
   };
 
   // ✅ NEW: Detect Bolt environment
@@ -237,14 +237,29 @@ function App() {
   // ✅ NEW: Function to scroll to 6-bottle purchase button
   const scrollToSixBottleButton = () => {
     try {
-      // Look for the 6-bottle package specifically
-      const sixBottlePackage = document.getElementById('six-bottle-package') || 
-                              document.querySelector('[data-purchase-section="true"]') ||
-                              document.querySelector('.purchase-button-main') ||
-                              document.querySelector('button[class*="yellow"]');
+      console.log('📍 Starting scroll to 6-bottle button...');
+      
+      // Multiple selectors to find the purchase section
+      const selectors = [
+        '#six-bottle-package',
+        '[data-purchase-section="true"]',
+        '.purchase-button-main',
+        'button[class*="yellow"]',
+        '.checkout-button',
+        '[id*="purchase"]'
+      ];
+      
+      let sixBottlePackage = null;
+      for (const selector of selectors) {
+        sixBottlePackage = document.querySelector(selector);
+        if (sixBottlePackage) {
+          console.log('📍 Found purchase element with selector:', selector);
+          break;
+        }
+      }
       
       if (sixBottlePackage) {
-        console.log('📍 Auto-scrolling to 6-bottle purchase button after pitch moment');
+        console.log('📍 Auto-scrolling to 6-bottle purchase button');
         
         // Smooth scroll to the 6-bottle package
         sixBottlePackage.scrollIntoView({ 
@@ -254,18 +269,20 @@ function App() {
         });
         
         // Add a subtle highlight effect to draw attention
-        sixBottlePackage.style.transition = 'all 0.8s ease';
-        sixBottlePackage.style.transform = 'scale(1.02)';
-        sixBottlePackage.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+        const element = sixBottlePackage as HTMLElement;
+        element.style.transition = 'all 0.8s ease';
+        element.style.transform = 'scale(1.02)';
+        element.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
         
         // Remove highlight after 4 seconds
         setTimeout(() => {
-          sixBottlePackage.style.transform = 'scale(1)';
-          sixBottlePackage.style.boxShadow = '';
+          element.style.transform = 'scale(1)';
+          element.style.boxShadow = '';
         }, 4000);
         
       } else {
-        console.log('⚠️ 6-bottle purchase button not found for auto-scroll');
+        console.log('⚠️ Purchase button not found for auto-scroll');
+        console.log('🔍 Available elements:', document.querySelectorAll('[id*="bottle"], [class*="purchase"], [class*="checkout"]'));
       }
     } catch (error) {
       console.error('Error scrolling to 6-bottle purchase button:', error);
