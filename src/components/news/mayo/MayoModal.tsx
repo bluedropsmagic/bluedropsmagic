@@ -11,9 +11,9 @@ interface MayoModalProps {
 export const MayoModal: React.FC<MayoModalProps> = ({ onClose, article }) => {
   // ✅ FIXED: Redirect to home page function
   const redirectToHome = () => {
-    // ✅ NEW: Show content immediately when coming from news
-    if (typeof window !== 'undefined' && (window as any).showContentImmediately) {
-      (window as any).showContentImmediately();
+    // ✅ NEW: Use the same function as the 35:55 timer
+    if (typeof window !== 'undefined' && (window as any).showRestOfContentAfterDelay) {
+      (window as any).showRestOfContentAfterDelay();
     }
     
     // Close modal and go to home
