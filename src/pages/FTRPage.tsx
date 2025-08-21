@@ -31,6 +31,7 @@ function FTRPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminDelayOverride, setAdminDelayOverride] = useState(false); // ✅ CHANGED: Default false
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false); // ✅ NEW: Detect Bolt environment
+  const [showFactorySection, setShowFactorySection] = useState(false); // ✅ NEW: Control factory section visibility
 
   // ✅ NEW: Detect Bolt environment
   useEffect(() => {
@@ -804,7 +805,10 @@ function FTRPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50 overflow-x-hidden">
       {/* Bolt Navigation */}
-      <BoltNavigation />
+      <BoltNavigation 
+        onToggleFactory={() => setShowFactorySection(!showFactorySection)}
+        showFactorySection={showFactorySection}
+      />
 
       {/* ✅ NEW: Admin DTC Button - For content override */}
       {(isAdmin || isBoltEnvironment) && (
@@ -846,7 +850,7 @@ function FTRPage() {
         )}
 
         {/* Factory Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && showFactorySection && (
         <FactorySection />
         )}
 
