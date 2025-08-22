@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, Users, TrendingUp, Globe, RefreshCw, LogOut, Settings, Target, Edit } from 'lucide-react';
+import { BarChart3, Users, TrendingUp, Clock, Globe, RefreshCw, LogOut, Eye, Settings, Target, Activity, MapPin, Calendar, Shield, AlertTriangle, Monitor, Edit } from 'lucide-react';
 import { Users, TrendingUp, Globe, Clock, LogOut, Settings, Eye, RefreshCw, Calendar, Target, ShoppingCart, Monitor, Edit } from 'lucide-react';
 import { SalesChart } from './SalesChart';
 import { ConversionFunnel } from './ConversionFunnel';
