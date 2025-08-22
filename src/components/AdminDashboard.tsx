@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, Users, TrendingUp, Clock, Globe, RefreshCw, LogOut, Eye, Settings, Target, Activity, MapPin, Calendar, Shield, AlertTriangle, Monitor, Edit, ShoppingCart } from 'lucide-react';
+import { BarChart3, Users, TrendingUp, Globe, RefreshCw, LogOut, Settings, Target, Edit } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { SalesChart } from './SalesChart';
 import { ConversionFunnel } from './ConversionFunnel';
 import { ConversionHeatmap } from './ConversionHeatmap';
