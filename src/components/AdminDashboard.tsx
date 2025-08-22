@@ -10,6 +10,7 @@ import { UpsellDownsellSessions } from './UpsellDownsellSessions';
 import { RedTrackTestPanel } from './RedTrackTestPanel';
 import { BoltNavigation } from './BoltNavigation';
 import { AdminTestingEnvironment } from './AdminTestingEnvironment';
+import { InlineEditor } from './InlineEditor';
 import { 
   BarChart3, 
   Users, 
