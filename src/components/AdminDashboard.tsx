@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { BarChart3, Users, TrendingUp, Globe, RefreshCw, LogOut, Settings, Target, Edit } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { SalesChart } from './SalesChart';
 import { ConversionFunnel } from './ConversionFunnel';
@@ -106,7 +106,7 @@ export const AdminDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [liveSessions, setLiveSessions] = useState<LiveSession[]>([]);
-  const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'testing' | 'settings' | 'editor'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'tracking' | 'redtrack' | 'testing' | 'settings'>('analytics');
   const [contentDelay, setContentDelay] = useState(2155); // ✅ CHANGED: Default to 35:55 (2155 seconds)
 
   const navigate = useNavigate();
@@ -816,17 +816,6 @@ export const AdminDashboard: React.FC = () => {
                   <Clock className="w-4 h-4 inline mr-2" />
                   Settings
                 </button>
-                <button
-                  onClick={() => setActiveTab('editor')}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                    activeTab === 'editor'
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Settings className="w-4 h-4 inline mr-2" />
-                  Editor
-                </button>
               </nav>
             </div>
           </div>
@@ -1081,8 +1070,6 @@ export const AdminDashboard: React.FC = () => {
             <RedTrackTestPanel />
           ) : activeTab === 'testing' ? (
             <AdminTestingEnvironment />
-          ) : activeTab === 'editor' ? (
-            <InlineEditor />
           ) : (
             // ✅ NEW: Settings Tab - Delay Controller
             <div className="space-y-6">
