@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, Users, TrendingUp, Globe, RefreshCw, LogOut, Settings, Target, Edit } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { SalesChart } from './SalesChart';
 import { ConversionFunnel } from './ConversionFunnel';
@@ -10,7 +10,6 @@ import { UpsellDownsellSessions } from './UpsellDownsellSessions';
 import { RedTrackTestPanel } from './RedTrackTestPanel';
 import { BoltNavigation } from './BoltNavigation';
 import { AdminTestingEnvironment } from './AdminTestingEnvironment';
-import { InlineEditor } from './InlineEditor';
 import { 
   BarChart3, 
   Users, 

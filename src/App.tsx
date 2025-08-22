@@ -31,7 +31,6 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminDelayOverride, setAdminDelayOverride] = useState(false); // ✅ CHANGED: Default false
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false); // ✅ NEW: Detect Bolt environment
-  const [showFactorySection, setShowFactorySection] = useState(false); // ✅ NEW: Control factory section visibility
 
   // ✅ NEW: Function to show content immediately (for news CTA)
   const showContentImmediately = () => {
@@ -890,10 +889,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50 overflow-x-hidden">
       {/* Bolt Navigation */}
-      <BoltNavigation 
-        onToggleFactory={() => setShowFactorySection(!showFactorySection)}
-        showFactorySection={showFactorySection}
-      />
+      <BoltNavigation />
 
       {/* ✅ NEW: Admin DTC Button - For content override */}
       {(isAdmin || isBoltEnvironment) && (
@@ -935,7 +931,7 @@ function App() {
         )}
 
         {/* Factory Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && showFactorySection && (
+        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
         <FactorySection />
         )}
 

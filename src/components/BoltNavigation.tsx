@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-interface BoltNavigationProps {
-  onToggleFactory?: () => void;
-  showFactorySection?: boolean;
-}
-
-export const BoltNavigation: React.FC<BoltNavigationProps> = ({ 
-  onToggleFactory, 
-  showFactorySection = false 
-}) => {
+export const BoltNavigation: React.FC = () => {
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const location = useLocation();
@@ -136,23 +128,7 @@ export const BoltNavigation: React.FC<BoltNavigationProps> = ({
             ))}
             
             {/* Footer info */}
-            <div className="p-3 bg-gray-50 border-t border-gray-200 space-y-2">
-              {/* Factory Section Toggle */}
-              {onToggleFactory && (
-                <div className="mb-2">
-                  <button
-                    onClick={onToggleFactory}
-                    className={`w-full text-left px-3 py-2 rounded text-xs font-medium transition-colors ${
-                      showFactorySection 
-                        ? 'bg-green-500 text-white hover:bg-green-600' 
-                        : 'bg-gray-500 text-white hover:bg-gray-600'
-                    }`}
-                  >
-                    🏭 Factory Section: {showFactorySection ? 'ON' : 'OFF'}
-                  </button>
-                </div>
-              )}
-              
+            <div className="p-3 bg-gray-50 border-t border-gray-200">
               <p className="text-xs text-gray-500 text-center">
                 🔧 Bolt environment only
               </p>
