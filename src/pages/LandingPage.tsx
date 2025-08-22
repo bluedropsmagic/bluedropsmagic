@@ -5,6 +5,7 @@ import { initializeFacebookPixelTracking } from '../utils/facebookPixelTracking'
 import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
 import { Star, Shield, Truck, CreditCard, CheckCircle, Clock, Award } from 'lucide-react';
 import { buildUrlWithParams } from '../utils/urlUtils';
+import { NewsSection } from '../components/NewsSection';
 
 export const LandingPage: React.FC = () => {
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
@@ -188,6 +189,11 @@ export const LandingPage: React.FC = () => {
             />
           </div>
         </div>
+      </section>
+
+      {/* News Section */}
+      <section className="py-16 px-4 bg-gradient-to-br from-blue-50 to-white">
+        <NewsSection />
       </section>
 
       {/* Purchase Section */}
