@@ -405,9 +405,11 @@ const TestimonialCard: React.FC<{
       console.log('🎬 Injecting TESTIMONIAL VTurb for:', testimonial.name, 'VideoID:', testimonial.videoId);
       
       const injectTestimonialVideo = () => {
-        // ✅ UPDATED: Different logic for upsell pages
-        if (pageType === 'main' && !window.vslVideoLoaded) {
-          console.log('⏳ Waiting for main video to load before injecting testimonial video');
+        // ✅ UPDATED: Different logic for upsell pages and VS2
+        const isMainVideoLoaded = window.location.pathname === '/vs2' ? window.vs2VideoLoaded : window.vslVideoLoaded;
+        
+        if (pageType === 'main' && !isMainVideoLoaded) {
+          console.log(`⏳ Waiting for ${window.location.pathname === '/vs2' ? 'VS2' : 'main'} video to load before injecting testimonial video`);
           setTimeout(injectTestimonialVideo, 2000);
           return;
         } else if (pageType === 'upsell') {

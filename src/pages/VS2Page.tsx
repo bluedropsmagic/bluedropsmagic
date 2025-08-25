@@ -559,8 +559,9 @@ function VS2Page() {
     (window as any).trackVideoProgress = trackVideoProgress;
     (window as any).trackOfferClick = trackOfferClick;
     
-    console.log('🧪 VS2 Funções de tracking expostas globalmente para debug:');
+    console.log('🧪 VS2: Funções de tracking expostas globalmente para debug:');
     console.log('- window.showRestOfContentAfterDelay()');
+    console.log('- window.showContentImmediately()');
     console.log('- window.trackVideoPlay()');
     console.log('- window.trackVideoProgress(currentTime, duration)');
     console.log('- window.trackOfferClick(offerType)');
@@ -585,26 +586,26 @@ function VS2Page() {
     const checkForPlayer = () => {
       try {
         trackingAttempts++;
-        console.log(`🔍 VS2 Attempt ${trackingAttempts}/${maxAttempts} - Looking for VS2 video player...`);
+        console.log(`🔍 VS2: Attempt ${trackingAttempts}/${maxAttempts} - Looking for VS2 MAIN video player...`);
         
         // ✅ DIFFERENT: Look for VS2 video container
         const playerContainer = document.getElementById('vid_VS2_MAIN_VIDEO');
         
         if (!playerContainer) {
-          console.error('❌ VS2 video container not found (vid_VS2_MAIN_VIDEO)');
+          console.error('❌ VS2 MAIN video container not found (vid_VS2_MAIN_VIDEO)');
           console.log('🔍 Available elements with "vid" in ID:', 
             Array.from(document.querySelectorAll('[id*="vid"]')).map(el => el.id)
           );
           return;
         }
         
-        console.log('✅ VS2 video container found:', playerContainer);
+        console.log('✅ VS2 MAIN video container found:', playerContainer);
 
-        // ✅ FIXED: Force tracking if video is loaded
+        // ✅ FIXED: Force tracking if VS2 video is loaded
         if (window.vs2VideoLoaded && !hasTrackedPlay) {
           hasTrackedPlay = true;
           trackVideoPlay();
-          console.log('🎬 VS2 Video play tracked via global flag');
+          console.log('🎬 VS2: Video play tracked via global flag');
           clearInterval(trackingInterval);
           return;
         }
@@ -613,14 +614,14 @@ function VS2Page() {
         if (window.smartplayer && window.smartplayer.instances) {
           const playerInstance = window.smartplayer.instances['VS2_MAIN_VIDEO'];
           if (playerInstance) {
-            console.log('✅ VS2 VTurb player instance found');
+            console.log('✅ VS2: VTurb player instance found');
             
             // Track video play
             playerInstance.on('play', () => {
               if (!hasTrackedPlay) {
                 hasTrackedPlay = true;
                 trackVideoPlay();
-                console.log('🎬 VS2 Video play tracked via smartplayer');
+                console.log('🎬 VS2: Video play tracked via smartplayer');
               }
             });
 
@@ -635,7 +636,7 @@ function VS2Page() {
             });
 
             clearInterval(trackingInterval);
-            console.log('🎯 VS2 Tracking configured via smartplayer');
+            console.log('🎯 VS2: Tracking configured via smartplayer');
             return;
           }
         }
@@ -646,7 +647,7 @@ function VS2Page() {
           const iframes = playerContainer.querySelectorAll('iframe');
           
           if (videos.length > 0 || iframes.length > 0) {
-            console.log(`✅ VS2 Found ${videos.length} videos and ${iframes.length} iframes in container`);
+            console.log(`✅ VS2: Found ${videos.length} videos and ${iframes.length} iframes in container`);
             
             videos.forEach(video => {
               // Remove existing listeners to avoid duplicates
@@ -657,13 +658,13 @@ function VS2Page() {
               video.addEventListener('play', handleVideoPlay);
               video.addEventListener('timeupdate', handleTimeUpdate);
               
-              console.log('🎯 VS2 Event listeners added to video element');
+              console.log('🎯 VS2: Event listeners added to video element');
             });
             
             // Also handle iframes
             iframes.forEach(iframe => {
               iframe.addEventListener('load', () => {
-                console.log('🎬 VS2 Iframe loaded, tracking video play');
+                console.log('🎬 VS2: Iframe loaded, tracking video play');
                 if (!hasTrackedPlay) {
                   hasTrackedPlay = true;
                   trackVideoPlay();
@@ -672,7 +673,7 @@ function VS2Page() {
             });
 
             clearInterval(trackingInterval);
-            console.log('🎯 VS2 Tracking configured via video elements');
+            console.log('🎯 VS2: Tracking configured via video elements');
             return;
           }
 
@@ -680,14 +681,14 @@ function VS2Page() {
           if (!hasTrackedPlay) {
             playerContainer.removeEventListener('click', handleContainerClick);
             playerContainer.addEventListener('click', handleContainerClick);
-            console.log('🎯 VS2 Click listener added to container as fallback');
+            console.log('🎯 VS2: Click listener added to container as fallback');
           }
         }
 
         // Method 4: Check for iframe (some VTurb implementations use iframe)
         const iframe = document.querySelector('iframe[src*="converteai.net"]');
         if (iframe) {
-          console.log('✅ VS2 VTurb iframe encontrado');
+          console.log('✅ VS2: VTurb iframe encontrado');
           iframe.removeEventListener('load', handleIframeLoad);
           iframe.addEventListener('load', handleIframeLoad);
         }
@@ -695,13 +696,13 @@ function VS2Page() {
         // ✅ NEW: Method 5 - Force tracking on any video interaction
         const allVideos = document.querySelectorAll('video');
         if (allVideos.length > 0) {
-          console.log(`🎬 VS2 Encontrados ${allVideos.length} vídeos na página - configurando tracking global`);
+          console.log(`🎬 VS2: Encontrados ${allVideos.length} vídeos na página - configurando tracking global`);
           allVideos.forEach((video, index) => {
             video.addEventListener('play', () => {
               if (!hasTrackedPlay) {
                 hasTrackedPlay = true;
                 trackVideoPlay();
-                console.log(`🎬 VS2 Video play tracked via vídeo global ${index + 1}`);
+                console.log(`🎬 VS2: Video play tracked via vídeo global ${index + 1}`);
               }
             });
             
@@ -720,22 +721,22 @@ function VS2Page() {
             if (!hasTrackedPlay) {
               hasTrackedPlay = true;
               trackVideoPlay();
-              console.log('🎬 VS2 Video play tracked via user interaction');
+              console.log('🎬 VS2: Video play tracked via user interaction');
             }
           };
           
           playerContainer.addEventListener('click', trackInteraction);
           playerContainer.addEventListener('touchstart', trackInteraction);
-          console.log('🎯 VS2 Interaction listeners adicionados');
+          console.log('🎯 VS2: Interaction listeners adicionados');
         }
 
       } catch (error) {
-        console.error('Error in VS2 checkForPlayer:', error);
+        console.error('VS2: Error in checkForPlayer:', error);
       }
       
       // ✅ Stop after max attempts
       if (trackingAttempts >= maxAttempts) {
-        console.log(`⏰ VS2 Maximum attempts reached (${maxAttempts}). Stopping search for VS2 player.`);
+        console.log(`⏰ VS2: Maximum attempts reached (${maxAttempts}). Stopping search for VS2 MAIN player.`);
         clearInterval(trackingInterval);
       }
     };
@@ -744,7 +745,7 @@ function VS2Page() {
       if (!hasTrackedPlay) {
         hasTrackedPlay = true;
         trackVideoPlay();
-        console.log('🎬 VS2 Video play tracked via video element event');
+        console.log('🎬 VS2: Video play tracked via video element event');
       }
     };
 
@@ -759,12 +760,12 @@ function VS2Page() {
       if (!hasTrackedPlay) {
         hasTrackedPlay = true;
         trackVideoPlay();
-        console.log('🎬 VS2 Video play tracked via container click fallback');
+        console.log('🎬 VS2: Video play tracked via container click fallback');
       }
     };
 
     const handleIframeLoad = () => {
-      console.log('✅ VS2 VTurb iframe carregado');
+      console.log('✅ VS2: VTurb iframe carregado');
       // Try to access iframe content if same-origin
       try {
         const iframe = document.querySelector('iframe[src*="converteai.net"]') as HTMLIFrameElement;
@@ -775,7 +776,7 @@ function VS2Page() {
               if (event.data.type === 'video_play' && !hasTrackedPlay) {
                 hasTrackedPlay = true;
                 trackVideoPlay();
-                console.log('🎬 VS2 Video play tracked via iframe message');
+                console.log('🎬 VS2: Video play tracked via iframe message');
               }
               if (event.data.type === 'video_progress') {
                 trackVideoProgress(event.data.currentTime, event.data.duration);
@@ -784,12 +785,12 @@ function VS2Page() {
           });
         }
       } catch (error) {
-        console.log('⚠️ VS2 Cross-origin iframe, usando fallback tracking');
+        console.log('⚠️ VS2: Cross-origin iframe, usando fallback tracking');
       }
     };
 
     // Start checking for player immediately and then periodically
-    console.log('🚀 Starting VS2 video tracking setup...');
+    console.log('🚀 VS2: Starting VS2 MAIN video tracking setup...');
     checkForPlayer();
     
     // ✅ FIXED: Use safer setInterval with try/catch
@@ -798,11 +799,11 @@ function VS2Page() {
         try {
           checkForPlayer();
         } catch (error) {
-          console.error('Error in VS2 tracking interval:', error);
+          console.error('VS2: Error in tracking interval:', error);
         }
       }, 2000);
     } catch (error) {
-      console.error('Error setting up VS2 tracking interval:', error);
+      console.error('VS2: Error setting up tracking interval:', error);
     }
     
     // Stop checking after max attempts to avoid infinite loops
@@ -810,10 +811,10 @@ function VS2Page() {
       try {
         if (trackingInterval) {
           clearInterval(trackingInterval);
-          console.log('⏰ VS2 tracking timeout reached - stopping checks');
+          console.log('⏰ VS2: MAIN tracking timeout reached - stopping checks');
         }
       } catch (error) {
-        console.error('Error clearing VS2 tracking interval:', error);
+        console.error('VS2: Error clearing tracking interval:', error);
       }
     }, maxAttempts * 2000);
   };

@@ -207,16 +207,20 @@ export const DoctorsSection: React.FC = () => {
   // Inject current doctor video when doctor changes
   useEffect(() => {
     const currentDoctorData = doctors[currentDoctor];
-    if (currentDoctorData.videoId && window.vslVideoLoaded) {
+    // ✅ FIXED: Check for both main page and VS2 page video loading
+    const isMainVideoLoaded = window.location.pathname === '/vs2' ? window.vs2VideoLoaded : window.vslVideoLoaded;
+    
+    if (currentDoctorData.videoId && isMainVideoLoaded) {
       setTimeout(() => {
         injectDoctorVideo(currentDoctorData.videoId);
       }, 500);
     } else if (currentDoctorData.videoId) {
-      console.log('⏳ Main video not ready, delaying doctor video injection');
+      console.log(`⏳ ${window.location.pathname === '/vs2' ? 'VS2' : 'Main'} video not ready, delaying doctor video injection`);
       
       // ✅ FIXED: Set up a retry mechanism
       const checkInterval = setInterval(() => {
-        if (window.vslVideoLoaded) {
+        const isVideoLoaded = window.location.pathname === '/vs2' ? window.vs2VideoLoaded : window.vslVideoLoaded;
+        if (isVideoLoaded) {
           clearInterval(checkInterval);
           injectDoctorVideo(currentDoctorData.videoId);
         }

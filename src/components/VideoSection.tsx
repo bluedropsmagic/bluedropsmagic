@@ -143,9 +143,9 @@ export const VideoSection: React.FC = () => {
       
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
-          {/* ✅ CRITICAL: Main video container with maximum isolation */}
+          {/* ✅ CRITICAL: Main video container with maximum isolation - Dynamic ID based on page */}
           <div
-            id="vid_689e7c030f018d362b0e239d"
+            id={window.location.pathname === '/vs2' ? 'vid_VS2_MAIN_VIDEO' : 'vid_689e7c030f018d362b0e239d'}
             className="absolute inset-0 w-full h-full z-30 cursor-pointer main-video-container"
             style={{
               position: 'absolute',
@@ -162,12 +162,15 @@ export const VideoSection: React.FC = () => {
               backgroundColor: 'transparent'
             }}
             data-main-video="true"
-            data-video-id="689e7c030f018d362b0e239d"
+            data-video-id={window.location.pathname === '/vs2' ? 'VS2_MAIN_VIDEO' : '689e7c030f018d362b0e239d'}
           >
-            {/* ✅ CRITICAL: Thumbnail and backdrop structure for VTurb */}
+            {/* ✅ CRITICAL: Thumbnail and backdrop structure for VTurb - Dynamic based on page */}
             <img
-              id="thumb_689e7c030f018d362b0e239d"
-              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/thumbnail.jpg"
+              id={window.location.pathname === '/vs2' ? 'thumb_VS2_MAIN_VIDEO' : 'thumb_689e7c030f018d362b0e239d'}
+              src={window.location.pathname === '/vs2' 
+                ? 'https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/VS2_MAIN_VIDEO/thumbnail.jpg'
+                : 'https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/thumbnail.jpg'
+              }
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
               loading="eager"
@@ -177,7 +180,7 @@ export const VideoSection: React.FC = () => {
               }}
             />
             <div
-              id="backdrop_689e7c030f018d362b0e239d"
+              id={window.location.pathname === '/vs2' ? 'backdrop_VS2_MAIN_VIDEO' : 'backdrop_689e7c030f018d362b0e239d'}
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
@@ -187,11 +190,13 @@ export const VideoSection: React.FC = () => {
               }}
             />
 
-            {(isLoading || !window.vslVideoLoaded) && !hasError && (
+            {(isLoading || !(window.location.pathname === '/vs2' ? window.vs2VideoLoaded : window.vslVideoLoaded)) && !hasError && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>
                 <div className="text-center text-white p-4">
                   <RefreshCw className="w-12 h-12 text-white/80 animate-spin mb-3 mx-auto" />
-                  <p className="text-sm font-medium mb-1">Carregando vídeo principal...</p>
+                  <p className="text-sm font-medium mb-1">
+                    {window.location.pathname === '/vs2' ? 'Carregando VS2 vídeo...' : 'Carregando vídeo principal...'}
+                  </p>
                   <p className="text-xs text-white/70">Aguarde um momento</p>
                   {isLoading && (
                     <button
@@ -233,7 +238,7 @@ export const VideoSection: React.FC = () => {
               </div>
             )}
 
-            {!window.vslVideoLoaded && !hasError && (
+            {!(window.location.pathname === '/vs2' ? window.vs2VideoLoaded : window.vslVideoLoaded) && !hasError && (
               <div
                 className="absolute inset-0 flex items-center justify-center cursor-pointer"
                 style={{
