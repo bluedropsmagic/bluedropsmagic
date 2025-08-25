@@ -38,6 +38,7 @@ export const BoltNavigation: React.FC = () => {
       items: [
         { label: '🏠 Home Page', path: '/', color: 'bg-gray-500 hover:bg-gray-600' },
         { label: '🎯 FTR Page', path: '/ftr', color: 'bg-gray-500 hover:bg-gray-600' },
+        { label: '🎬 VS2 Page', path: '/vs2', color: 'bg-purple-500 hover:bg-purple-600' },
         { label: '🎉 Thank You Page', path: '/thankyou?order_id=BD123456&email=test@example.com&amount=294&product=6-bottle', color: 'bg-green-500 hover:bg-green-600' }
       ]
     },

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import App from './App.tsx';
 import FTRPage from './pages/FTRPage.tsx';
+import VS2Page from './pages/VS2Page.tsx';
 import { AdminDashboard } from './components/AdminDashboard.tsx';
 import { UpsellPage } from './pages/UpsellPage.tsx';
 import { DownsellPage } from './pages/DownsellPage.tsx';
@@ -21,6 +22,7 @@ createRoot(document.getElementById('root')!).render(
         
         {/* Core pages */}
         <Route path="/ftr" element={<FTRPage />} />
+        <Route path="/vs2" element={<VS2Page />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/lpw" element={<LandingPage />} />
         <Route path="/thankyou" element={<ThankYouPage />} />
