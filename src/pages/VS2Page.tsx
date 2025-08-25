@@ -305,17 +305,17 @@ function VS2Page() {
     
     // ✅ CRITICAL: Inject VTurb script with DIFFERENT video ID for VS2
     const injectVTurbScript = () => {
-      // ✅ DIFFERENT: Use different video container ID for VS2
-      const mainContainer = document.getElementById('vid_VS2_MAIN_VIDEO');
+      // Check if container exists first  
+      const mainContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
       if (!mainContainer) {
-        console.error('❌ VS2 video container not found! Cannot inject VTurb script.');
+        console.error('❌ Main video container not found! Cannot inject VTurb script.');
         console.log('🔍 Available containers:', document.querySelectorAll('[id*="vid"]'));
         return;
       }
       
-      console.log('✅ VS2 video container found:', mainContainer);
+      console.log('✅ Main video container found:', mainContainer);
 
-      // ✅ CRITICAL: Setup container isolation BEFORE script injection
+      // CRITICAL: Setup container isolation BEFORE script injection
       mainContainer.style.position = 'absolute';
       mainContainer.style.top = '0';
       mainContainer.style.left = '0';
@@ -327,25 +327,25 @@ function VS2Page() {
       mainContainer.style.isolation = 'isolate';
       mainContainer.style.contain = 'layout style paint size';
       mainContainer.setAttribute('data-main-video', 'true');
-      mainContainer.setAttribute('data-video-id', 'VS2_MAIN_VIDEO');
+      mainContainer.setAttribute('data-video-id', '689e7c030f018d362b0e239d');
       
-      // ✅ CRITICAL: Clear any existing content to prevent conflicts
+      // CRITICAL: Clear any existing content to prevent conflicts
       const existingContent = mainContainer.innerHTML;
-      if (existingContent && !existingContent.includes('thumb_VS2_MAIN_VIDEO')) {
-        console.log('🧹 Clearing existing content from VS2 video container');
+      if (existingContent && !existingContent.includes('thumb_689e7c030f018d362b0e239d')) {
+        console.log('🧹 Clearing existing content from main video container');
         mainContainer.innerHTML = '';
       }
 
       // Remove any existing script first
-      const existingScript = document.getElementById('scr_VS2_MAIN_VIDEO');
+      const existingScript = document.getElementById('scr_689e7c030f018d362b0e239d');
       if (existingScript) {
         existingScript.remove();
-        console.log('🗑️ Removed existing VS2 VTurb script');
+        console.log('🗑️ Removed existing VTurb script');
       }
 
       const script = document.createElement('script');
       script.type = 'text/javascript';
-      script.id = 'scr_VS2_MAIN_VIDEO';
+      script.id = 'scr_689e7c030f018d362b0e239d';
       script.async = true;
       script.defer = true;
       
@@ -353,21 +353,21 @@ function VS2Page() {
       script.innerHTML = `
         (function() {
           try {
-            // ✅ CRITICAL: Ensure VS2 video container isolation
-            console.log('🎬 VS2 VIDEO: Initializing container isolation for VS2_MAIN_VIDEO');
+            // CRITICAL: Ensure main video container isolation
+            console.log('🎬 MAIN VIDEO: Initializing container isolation for 689e7c030f018d362b0e239d');
             
-            // ✅ CRITICAL: Mark this as the VS2 video to prevent conflicts
-            window.vs2VideoId = 'VS2_MAIN_VIDEO';
+            // CRITICAL: Mark this as the MAIN video to prevent conflicts
+            window.mainVideoId = '689e7c030f018d362b0e239d';
             window.smartplayer = window.smartplayer || { instances: {} };
             
-            // ✅ CRITICAL: Ensure target container exists and is isolated
-            var targetContainer = document.getElementById('vid_VS2_MAIN_VIDEO');
+            // CRITICAL: Ensure target container exists and is isolated
+            var targetContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
             if (!targetContainer) {
-              console.error('❌ CRITICAL: VS2 video container not found during script injection');
+              console.error('❌ CRITICAL: Main video container not found during script injection');
               return;
             }
             
-            // ✅ CRITICAL: Force container isolation
+            // CRITICAL: Force container isolation
             targetContainer.style.position = 'absolute';
             targetContainer.style.top = '0';
             targetContainer.style.left = '0';
@@ -378,33 +378,33 @@ function VS2Page() {
             targetContainer.style.isolation = 'isolate';
             targetContainer.style.contain = 'layout style paint size';
             targetContainer.setAttribute('data-main-video', 'true');
-            targetContainer.setAttribute('data-video-id', 'VS2_MAIN_VIDEO');
+            targetContainer.setAttribute('data-video-id', '689e7c030f018d362b0e239d');
             
-            console.log('✅ VS2 VIDEO: Container isolation enforced');
+            console.log('✅ MAIN VIDEO: Container isolation enforced');
 
-            // ✅ FIXED: Check for existing scripts
-            if (document.querySelector('script[src*="VS2_MAIN_VIDEO/player.js"]')) {
-              console.log('🛡️ VS2 VTurb script already in DOM, skipping duplicate injection');
-              window.vs2VideoLoaded = true;
+            // FIXED: Check for existing scripts
+            if (document.querySelector('script[src*="689e7c030f018d362b0e239d/player.js"]')) {
+              console.log('🛡️ VTurb script already in DOM, skipping duplicate injection');
+              window.vslVideoLoaded = true;
               return;
             }
             
             var s = document.createElement("script");
             // ✅ PLACEHOLDER: Replace with actual VS2 video ID
-            s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/VS2_MAIN_VIDEO/player.js";
+            s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/player.js";
             s.async = true;
             s.onload = function() {
-              console.log('✅ VS2 VIDEO: VTurb player script loaded successfully');
-              window.vs2VideoLoaded = true;
+              console.log('✅ MAIN VIDEO: VTurb player script loaded successfully');
+              window.vslVideoLoaded = true;
               
-              // ✅ CRITICAL: Verify container still exists and is isolated after load
-              var container = document.getElementById('vid_VS2_MAIN_VIDEO');
+              // CRITICAL: Verify container still exists and is isolated after load
+              var container = document.getElementById('vid_689e7c030f018d362b0e239d');
               if (!container) {
-                console.error('❌ CRITICAL: VS2 video container disappeared after VTurb load!');
+                console.error('❌ CRITICAL: Main video container disappeared after VTurb load!');
                 return;
               }
               
-              // ✅ CRITICAL: Re-enforce isolation after VTurb loads
+              // CRITICAL: Re-enforce isolation after VTurb loads
               container.style.position = 'absolute';
               container.style.top = '0';
               container.style.left = '0';
@@ -415,52 +415,52 @@ function VS2Page() {
               container.style.isolation = 'isolate';
               container.style.contain = 'layout style paint size';
               container.setAttribute('data-main-video', 'true');
-              container.setAttribute('data-video-id', 'VS2_MAIN_VIDEO');
+              container.setAttribute('data-video-id', '689e7c030f018d362b0e239d');
               
-              console.log('✅ VS2 VIDEO: Container isolation re-enforced after VTurb load');
+              console.log('✅ MAIN VIDEO: Container isolation re-enforced after VTurb load');
               
-              // ✅ AUTO-PLAY: Tentar dar play automaticamente no vídeo VS2
+              // AUTO-PLAY: Tentar dar play automaticamente no vídeo principal
               setTimeout(function() {
                 try {
                   // Método 1: Via smartplayer instance
-                  if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances['VS2_MAIN_VIDEO']) {
-                    var player = window.smartplayer.instances['VS2_MAIN_VIDEO'];
+                  if (window.smartplayer && window.smartplayer.instances && window.smartplayer.instances['689e7c030f018d362b0e239d']) {
+                    var player = window.smartplayer.instances['689e7c030f018d362b0e239d'];
                     if (player.play) {
                       player.play();
-                      console.log('✅ VS2 VIDEO: Auto-play via smartplayer instance');
+                      console.log('✅ MAIN VIDEO: Auto-play via smartplayer instance');
                     }
                   }
                   
                   // Método 2: Via elemento de vídeo direto
-                  var videoElements = document.querySelectorAll('#vid_VS2_MAIN_VIDEO video');
+                  var videoElements = document.querySelectorAll('#vid_689e7c030f018d362b0e239d video');
                   videoElements.forEach(function(video) {
                     if (video.play) {
                       video.play().then(function() {
-                        console.log('✅ VS2 VIDEO: Auto-play via video element');
+                        console.log('✅ MAIN VIDEO: Auto-play via video element');
                       }).catch(function(error) {
-                        console.log('⚠️ VS2 VIDEO: Auto-play blocked by browser:', error);
+                        console.log('⚠️ MAIN VIDEO: Auto-play blocked by browser:', error);
                       });
                     }
                   });
                   
                   // Método 3: Simular clique no container (fallback)
-                  var container = document.getElementById('vid_VS2_MAIN_VIDEO');
+                  var container = document.getElementById('vid_689e7c030f018d362b0e239d');
                   if (container) {
                     container.click();
-                    console.log('✅ VS2 VIDEO: Auto-play via container click');
+                    console.log('✅ MAIN VIDEO: Auto-play via container click');
                   }
                 } catch (error) {
-                  console.log('⚠️ VS2 VIDEO: Auto-play failed:', error);
+                  console.log('⚠️ MAIN VIDEO: Auto-play failed:', error);
                 }
               }, 3000); // Aguardar 3 segundos para o vídeo carregar
               
-              // ✅ CRITICAL: Final container security check
+              // CRITICAL: Final container security check
               setTimeout(function() {
-                var vs2Container = document.getElementById('vid_VS2_MAIN_VIDEO');
+                var mainContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
                 if (vs2Container) {
-                  console.log('✅ VS2 VIDEO: Container secured and protected');
+                  console.log('✅ MAIN VIDEO: Container secured and protected');
                   
-                  // ✅ CRITICAL: Final isolation enforcement
+                  // CRITICAL: Final isolation enforcement
                   vs2Container.style.position = 'absolute';
                   vs2Container.style.top = '0';
                   vs2Container.style.left = '0';
@@ -471,17 +471,17 @@ function VS2Page() {
                   vs2Container.style.isolation = 'isolate';
                   vs2Container.style.contain = 'layout style paint size';
                   vs2Container.setAttribute('data-main-video', 'true');
-                  vs2Container.setAttribute('data-video-id', 'VS2_MAIN_VIDEO');
+                  mainContainer.setAttribute('data-video-id', '689e7c030f018d362b0e239d');
                   
-                  // ✅ CRITICAL: Prevent any video elements from escaping
+                  // CRITICAL: Prevent any video elements from escaping
                   var videoElements = document.querySelectorAll('video, iframe');
                   videoElements.forEach(function(element) {
                     var elementContainer = element.closest('[id*="vid"]');
-                    if (elementContainer && elementContainer.id !== 'vid_VS2_MAIN_VIDEO') {
+                    if (elementContainer && elementContainer.id !== 'vid_689e7c030f018d362b0e239d') {
                       // This video belongs to another container, ensure it stays there
                       if (element.parentNode !== elementContainer) {
                         elementContainer.appendChild(element);
-                        console.log('🔄 VS2 VIDEO: Moved video element back to correct container:', elementContainer.id);
+                        console.log('🔄 MAIN VIDEO: Moved video element back to correct container:', elementContainer.id);
                       }
                     }
                   });
@@ -489,27 +489,27 @@ function VS2Page() {
               }, 2000);
             };
             s.onerror = function() {
-              console.error('❌ VS2 VIDEO: Failed to load VTurb player script');
+              console.error('❌ MAIN VIDEO: Failed to load VTurb player script');
             };
             document.head.appendChild(s);
           } catch (error) {
-            console.error('❌ VS2 VIDEO: Error injecting VTurb script:', error);
+            console.error('❌ MAIN VIDEO: Error injecting VTurb script:', error);
           }
         })();
       `;
       
       document.head.appendChild(script);
-      console.log('✅ VS2 VIDEO: VTurb script injected successfully');
+      console.log('✅ MAIN VIDEO: VTurb script injected successfully');
     };
 
     // Delay script injection to improve initial page load
     const scriptTimeout = setTimeout(() => {
       injectVTurbScript();
       
-      // ✅ FIXED: Check if video actually loaded
+      // FIXED: Check if video actually loaded
       const checkVideoLoaded = () => {
-        const videoContainer = document.getElementById('vid_VS2_MAIN_VIDEO');
-        if (videoContainer && (videoContainer.querySelector('video') || videoContainer.querySelector('iframe') || window.vs2VideoLoaded)) {
+        const videoContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
+        if (videoContainer && (videoContainer.querySelector('video') || videoContainer.querySelector('iframe') || window.vslVideoLoaded)) {
           setIsVideoLoaded(true);
           console.log('✅ VS2 Video container has video element, marking as loaded');
         } else {
@@ -535,11 +535,11 @@ function VS2Page() {
       return () => {
         clearInterval(videoCheckInterval);
       };
-    }, 500); // ✅ Faster injection for immediate video load
+    }, 500); // Faster injection for immediate video load
 
     return () => {
       clearTimeout(scriptTimeout);
-      const scriptToRemove = document.getElementById('scr_VS2_MAIN_VIDEO');
+      const scriptToRemove = document.getElementById('scr_689e7c030f018d362b0e239d');
       if (scriptToRemove) {
         scriptToRemove.remove();
       }

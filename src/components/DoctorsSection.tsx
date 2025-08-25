@@ -207,20 +207,18 @@ export const DoctorsSection: React.FC = () => {
   // Inject current doctor video when doctor changes
   useEffect(() => {
     const currentDoctorData = doctors[currentDoctor];
-    // ✅ FIXED: Check for both main page and VS2 page video loading
-    const isMainVideoLoaded = window.location.pathname === '/vs2' ? window.vs2VideoLoaded : window.vslVideoLoaded;
+    const isMainVideoLoaded = window.vslVideoLoaded;
     
-    if (currentDoctorData.videoId && isMainVideoLoaded) {
+    if (currentDoctorData.videoId && window.vslVideoLoaded) {
       setTimeout(() => {
         injectDoctorVideo(currentDoctorData.videoId);
       }, 500);
     } else if (currentDoctorData.videoId) {
-      console.log(`⏳ ${window.location.pathname === '/vs2' ? 'VS2' : 'Main'} video not ready, delaying doctor video injection`);
+      console.log('⏳ Main video not ready, delaying doctor video injection');
       
-      // ✅ FIXED: Set up a retry mechanism
+      // Set up a retry mechanism
       const checkInterval = setInterval(() => {
-        const isVideoLoaded = window.location.pathname === '/vs2' ? window.vs2VideoLoaded : window.vslVideoLoaded;
-        if (isVideoLoaded) {
+        if (window.vslVideoLoaded) {
           clearInterval(checkInterval);
           injectDoctorVideo(currentDoctorData.videoId);
         }
@@ -239,7 +237,7 @@ export const DoctorsSection: React.FC = () => {
     // Cleanup function
     return () => {
       doctors.forEach((doctor) => {
-        // ✅ FIXED: Proper cleanup
+        // Proper cleanup
         const scriptToRemove = document.getElementById(`scr_${doctor.videoId}`);
         if (scriptToRemove) {
           try {
