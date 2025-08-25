@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Shield, Award, CheckCircle, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface FactorySlide {
   id: number;
@@ -18,29 +19,85 @@ export const FactorySection: React.FC = () => {
   const [lastMoveTime, setLastMoveTime] = useState(0);
   const [lastMoveX, setLastMoveX] = useState(0);
   const [videoLoaded, setVideoLoaded] = useState<{[key: string]: boolean}>({});
+  const [factorySlides, setFactorySlides] = useState<FactorySlide[]>([]);
+  const [loading, setLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>();
 
-  const factorySlides: FactorySlide[] = [
-    {
-      id: 1,
-      title: "State-of-the-Art Manufacturing",
-      description: "Our FDA-registered facility uses cutting-edge technology to ensure every bottle meets pharmaceutical-grade standards.",
-      videoId: "factory_video_1" // Replace with actual VTurb video ID
-    },
-    {
-      id: 2,
-      title: "Rigorous Quality Control",
-      description: "Every batch undergoes extensive testing for purity, potency, and safety before reaching your doorstep.",
-      videoId: "factory_video_2" // Replace with actual VTurb video ID
-    },
-    {
-      id: 3,
-      title: "Premium Ingredient Sourcing",
-      description: "We source only the highest-grade natural ingredients from trusted suppliers worldwide.",
-      videoId: "factory_video_3" // Replace with actual VTurb video ID
+  // Load factory videos from database
+  const loadFactoryVideos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('factory_videos')
+        .select('*')
+        .eq('active', true)
+        .order('order_index', { ascending: true });
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        const slides = data.map(video => ({
+          id: parseInt(video.id),
+          title: video.title,
+          description: video.description,
+          videoId: video.video_id
+        }));
+        setFactorySlides(slides);
+        console.log('✅ Factory videos loaded from database:', slides.length);
+      } else {
+        // Fallback to default videos if none in database
+        const defaultSlides: FactorySlide[] = [
+          {
+            id: 1,
+            title: "State-of-the-Art Manufacturing",
+            description: "Our FDA-registered facility uses cutting-edge technology to ensure every bottle meets pharmaceutical-grade standards.",
+            videoId: "factory_video_1"
+          },
+          {
+            id: 2,
+            title: "Rigorous Quality Control", 
+            description: "Every batch undergoes extensive testing for purity, potency, and safety before reaching your doorstep.",
+            videoId: "factory_video_2"
+          },
+          {
+            id: 3,
+            title: "Premium Ingredient Sourcing",
+            description: "We source only the highest-grade natural ingredients from trusted suppliers worldwide.",
+            videoId: "factory_video_3"
+          }
+        ];
+        setFactorySlides(defaultSlides);
+        console.log('⚠️ Using default factory videos (no database data)');
+      }
+    } catch (error) {
+      console.error('Error loading factory videos:', error);
+      // Use default videos on error
+      setFactorySlides([
+        {
+          id: 1,
+          title: "State-of-the-Art Manufacturing",
+          description: "Our FDA-registered facility uses cutting-edge technology to ensure every bottle meets pharmaceutical-grade standards.",
+          videoId: "factory_video_1"
+        }
+      ]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Load videos on component mount
+  useEffect(() => {
+    loadFactoryVideos();
+  }, []);
+
+  // Auto-refresh every 30 seconds to get updates from admin
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadFactoryVideos();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Function to inject VTurb factory videos
   const injectFactoryVideo = (videoId: string) => {
@@ -412,6 +469,19 @@ export const FactorySection: React.FC = () => {
         </p>
       </div>
 
+      {loading ? (
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading factory videos...</p>
+          </div>
+        </div>
+      ) : factorySlides.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600">No factory videos available</p>
+        </div>
+      ) : (
+      <>
       {/* Slideshow Container */}
       <div 
         ref={containerRef}
@@ -461,6 +531,8 @@ export const FactorySection: React.FC = () => {
           ))}
         </div>
       </div>
+      </>
+      )}
     </section>
   );
 };
