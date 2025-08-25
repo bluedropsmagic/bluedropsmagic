@@ -24,19 +24,19 @@ export const FactorySection: React.FC = () => {
       id: 1,
       title: "State-of-the-Art Manufacturing",
       description: "Our FDA-registered facility uses cutting-edge technology to ensure every bottle meets pharmaceutical-grade standards.",
-      imageUrl: "https://i.imgur.com/ABC123.jpg" // Replace with actual Imgur URL
+      imageUrl: "https://i.imgur.com/Auze3KS.png"
     },
     {
       id: 2,
       title: "Rigorous Quality Control",
       description: "Every batch undergoes extensive testing for purity, potency, and safety before reaching your doorstep.",
-      imageUrl: "https://i.imgur.com/DEF456.jpg" // Replace with actual Imgur URL
+      imageUrl: "https://i.imgur.com/KhTvVuA.png"
     },
     {
       id: 3,
       title: "Premium Ingredient Sourcing",
       description: "We source only the highest-grade natural ingredients from trusted suppliers worldwide.",
-      imageUrl: "https://i.imgur.com/GHI789.jpg" // Replace with actual Imgur URL
+      imageUrl: "https://i.imgur.com/V3TyhNj.jpeg"
     }
   ];
 
