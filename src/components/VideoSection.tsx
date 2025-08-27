@@ -171,16 +171,129 @@ export const VideoSection: React.FC = () => {
 
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
-          {/* 🔑 Container principal com ID padronizado: vid-<PLAYER_ID> */}
-          <div
-            id={DOM_IDS.containerId}
-            className="absolute inset-0 w-full h-full z-30 cursor-pointer main-video-container"
             style={{
               position: 'absolute',
-              top: 0, left: 0, width: '100%', height: '100%',
-              touc
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              touchAction: 'manipulation',
+              isolation: 'isolate',
+              contain: 'layout style paint size' as any,
+              zIndex: 30,
+              overflow: 'hidden',
+              borderRadius: '1rem',
+              backgroundColor: 'transparent',
+            }}
+            data-main-video="true"
+            data-video-id={PLAYER_ID}
+          >
+            {/* Thumbnail padrão */}
+            <img
+              id={DOM_IDS.thumbId}
+              src={DOM_IDS.thumbSrc}
+              className="absolute inset-0 w-full h-full object-cover cursor-pointer"
+              alt="VSL Thumbnail"
+              loading="eager"
+              style={{
+                touchAction: 'manipulation',
+                zIndex: 1
+              }}
+            />
+            <div
+              id={DOM_IDS.backdropId}
+              className="absolute inset-0 w-full h-full cursor-pointer"
+              style={{
+                WebkitBackdropFilter: 'blur(5px)',
+                backdropFilter: 'blur(5px)',
+                zIndex: 2,
+                touchAction: 'manipulation'
+              }}
+            />
 
-            }
-            }
-  )
-}
+            {(isLoading || !window.vslVideoLoaded) && !hasError && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 15 }}>
+                <div className="text-center text-white p-4">
+                  <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mb-2"></div>
+                  <p className="text-sm font-medium mb-1">Loading video...</p>
+                  <p className="text-xs text-white/70">Please wait</p>
+                  {isLoading && (
+                    <button
+                      onClick={handleRetryLoad}
+                      className="mt-3 bg-blue-600/80 hover:bg-blue-700/80 text-white px-3 py-1.5 rounded text-xs transition-colors"
+                    >
+                      Retry
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {hasError && (
+              <div className="absolute inset-0 bg-black/70 flex items-center justify-center" style={{ zIndex: 15 }}>
+                <div className="text-center text-white p-6">
+                  <div className="w-12 h-12 bg-red-500/30 rounded-full flex items-center justify-center mb-3 mx-auto">
+                    <span className="text-red-400">⚠️</span>
+                  </div>
+                  <p className="text-sm font-medium mb-3">Error loading video</p>
+                  <p className="text-xs text-white/70 mb-4">Attempt {retryCount + 1} of 4</p>
+                  <button
+                    onClick={handleRetryLoad}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm transition-colors min-h-[44px]"
+                    style={{ touchAction: 'manipulation' }}
+                  >
+                    Retry
+                  </button>
+                  {retryCount >= 2 && (
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="mt-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm transition-colors min-h-[44px] w-full"
+                      style={{ touchAction: 'manipulation' }}
+                    >
+                      Reload page
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {!window.vslVideoLoaded && !hasError && (
+              <div
+                className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                style={{
+                  touchAction: 'manipulation',
+                  zIndex: 20
+                }}
+              >
+                <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/30 hover:bg-white/30 transition-colors">
+                  <span className="text-white text-4xl">▶</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-4 space-y-3 max-w-sm mx-auto">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Volume2 className="w-4 h-4 text-blue-600" />
+                <span className="text-blue-800 font-semibold text-sm">
+                  Please make sure your sound is on
+                </span>
+              </div>
+              <p className="text-blue-600 text-xs">This video contains important audio information</p>
+            </div>
+
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-center">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <AlertTriangle className="w-4 h-4 text-red-600" />
+                <span className="text-red-800 font-semibold text-sm">
+                  This video may be taken down at any time
+                </span>
+              </div>
+              <p className="text-red-600 text-xs">Watch now before it's removed from the internet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
