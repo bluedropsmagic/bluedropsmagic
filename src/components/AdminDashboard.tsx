@@ -23,6 +23,7 @@ import { ManelChart } from './ManelChart';
 import { TrackingTestPanel } from './TrackingTestPanel';
 import { RedTrackTestPanel } from './RedTrackTestPanel';
 import { AdminTestingEnvironment } from './AdminTestingEnvironment';
+import { LiveUsersPanel } from './LiveUsersPanel';
 
 export const AdminDashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,6 +33,7 @@ export const AdminDashboard: React.FC = () => {
   const [loginError, setLoginError] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   const [supabaseStatus, setSupabaseStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+  const [liveUsersCount, setLiveUsersCount] = useState(0);
   const navigate = useNavigate();
 
   // Check Supabase connection status
@@ -121,6 +123,7 @@ export const AdminDashboard: React.FC = () => {
 
   const tabs = [
     { id: 'overview', label: '📊 Overview', icon: TrendingUp },
+    { id: 'live-users', label: '👥 Live Users', icon: Users },
     { id: 'funnel', label: '🔄 Conversion Funnel', icon: Activity },
     { id: 'sales', label: '💰 Sales Chart', icon: TrendingUp },
     { id: 'heatmap', label: '🔥 Conversion Heatmap', icon: Activity },
@@ -131,6 +134,43 @@ export const AdminDashboard: React.FC = () => {
     { id: 'testing', label: '🧪 Testing Environment', icon: Settings }
   ];
 
+  // Fetch live users count
+  const fetchLiveUsersCount = async () => {
+    if (!isSupabaseConfigured() || !supabase) return;
+    
+    try {
+      const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+      
+      const { data, error } = await supabase
+        .from('vsl_analytics')
+        .select('session_id')
+        .neq('country_code', 'BR')
+        .neq('country_name', 'Brazil')
+        .gte('last_ping', twoMinutesAgo);
+      
+      if (error) throw error;
+      
+      // Count unique sessions
+      const uniqueSessions = new Set(data?.map(item => item.session_id) || []);
+      setLiveUsersCount(uniqueSessions.size);
+    } catch (error) {
+      console.error('Error fetching live users count:', error);
+      setLiveUsersCount(0);
+    }
+  };
+
+  // Auto-refresh live users count every 30 seconds
+  useEffect(() => {
+    if (isAuthenticated && supabaseStatus === 'connected') {
+      fetchLiveUsersCount();
+      
+      const interval = setInterval(() => {
+        fetchLiveUsersCount();
+      }, 30000);
+      
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, supabaseStatus]);
   // Supabase Status Component
   const SupabaseStatusBanner = () => {
     const getStatusConfig = () => {
@@ -342,14 +382,14 @@ export const AdminDashboard: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                       <div className="flex items-center gap-3 mb-2">
-                        <Users className="w-5 h-5 text-blue-600" />
-                        <span className="text-sm font-medium text-blue-700">Analytics Status</span>
+                        <Activity className="w-5 h-5 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-700">Live Users</span>
                       </div>
                       <p className="text-2xl font-bold text-blue-800">
-                        {supabaseStatus === 'connected' ? 'Active' : 'Inactive'}
+                        {liveUsersCount}
                       </p>
                       <p className="text-xs text-blue-600">
-                        {supabaseStatus === 'connected' ? 'Tracking funcionando' : 'Configuração necessária'}
+                        usuários ativos agora
                       </p>
                     </div>
                     
@@ -416,13 +456,16 @@ export const AdminDashboard: React.FC = () => {
 
                 {supabaseStatus === 'connected' && (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <LiveUsersPanel className="h-fit" />
                     <ConversionFunnel className="h-fit" />
-                    <SalesChart className="h-fit" />
                   </div>
                 )}
               </div>
             )}
 
+            {activeTab === 'live-users' && supabaseStatus === 'connected' && (
+              <LiveUsersPanel />
+            )}
             {activeTab === 'funnel' && supabaseStatus === 'connected' && (
               <ConversionFunnel />
             )}
@@ -456,7 +499,7 @@ export const AdminDashboard: React.FC = () => {
             )}
 
             {/* Show configuration message for analytics tabs when Supabase is not connected */}
-            {['funnel', 'sales', 'heatmap', 'sessions', 'manel'].includes(activeTab) && supabaseStatus !== 'connected' && (
+            {['live-users', 'funnel', 'sales', 'heatmap', 'sessions', 'manel'].includes(activeTab) && supabaseStatus !== 'connected' && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-8 text-center">
                 <Database className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-yellow-900 mb-2">
