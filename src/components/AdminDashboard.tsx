@@ -1317,6 +1317,164 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
             </>
+              {/* ✅ NEW: Longest Sessions Panel */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div className="p-4 sm:p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-purple-600" />
+                      🏆 Top 10 - Mais Tempo na Página
+                    </h3>
+                    <div className="text-sm text-gray-500">
+                      Usuários com maior engajamento
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-4 sm:p-6">
+                  {/* Top Sessions Grid */}
+                  <div className="space-y-3">
+                    {analytics.recentSessions
+                      .filter(session => session.totalTimeOnPage > 0)
+                      .sort((a, b) => b.totalTimeOnPage - a.totalTimeOnPage)
+                      .slice(0, 10)
+                      .map((session, index) => {
+                        const isTopThree = index < 3;
+                        const medals = ['🥇', '🥈', '🥉'];
+                        const medal = isTopThree ? medals[index] : `${index + 1}.`;
+                        
+                        return (
+                          <div
+                            key={session.sessionId}
+                            className={`p-4 rounded-lg border transition-all duration-300 ${
+                              isTopThree 
+                                ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 shadow-md' 
+                                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              {/* Left side - Ranking and User Info */}
+                              <div className="flex items-center gap-3">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                                  isTopThree 
+                                    ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
+                                    : 'bg-gray-200 text-gray-700'
+                                }`}>
+                                  {isTopThree ? medal : index + 1}
+                                </div>
+                                
+                                <div className="flex items-center gap-2">
+                                  <span className="text-lg">{getCountryFlag(session.countryCode, session.country)}</span>
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-gray-900">
+                                        {session.country}
+                                      </span>
+                                      {session.isLive && (
+                                        <div className="flex items-center gap-1">
+                                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                          <span className="text-xs font-bold text-green-600">LIVE</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                                      <span>{session.city}</span>
+                                      <span>•</span>
+                                      <span className="font-mono">{maskIP(session.ip)}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Right side - Time and Progress */}
+                              <div className="text-right">
+                                <div className={`text-lg font-bold ${
+                                  isTopThree ? 'text-orange-600' : 'text-purple-600'
+                                }`}>
+                                  {formatPageTime(session.totalTimeOnPage)}
+                                </div>
+                                <div className="text-xs text-gray-500 mb-1">
+                                  {getPageProgress(session.totalTimeOnPage)}
+                                </div>
+                                
+                                {/* Progress indicators */}
+                                <div className="flex items-center gap-1 justify-end">
+                                  <div className={`w-2 h-2 rounded-full ${
+                                    session.playedVideo ? 'bg-green-500' : 'bg-gray-300'
+                                  }`} title="VTurb carregou"></div>
+                                  <div className={`w-2 h-2 rounded-full ${
+                                    session.reachedLead ? 'bg-yellow-500' : 'bg-gray-300'
+                                  }`} title="Lead (7:45)"></div>
+                                  <div className={`w-2 h-2 rounded-full ${
+                                    session.reachedPitch ? 'bg-blue-500' : 'bg-gray-300'
+                                  }`} title="Pitch (35:55)"></div>
+                                  <div className={`w-2 h-2 rounded-full ${
+                                    session.clickedOffer ? 'bg-red-500' : 'bg-gray-300'
+                                  }`} title="Clicou oferta"></div>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Session ID for debugging */}
+                            <div className="mt-2 pt-2 border-t border-gray-200">
+                              <div className="flex items-center justify-between text-xs text-gray-400">
+                                <span className="font-mono">ID: {session.sessionId.substring(0, 8)}...</span>
+                                {session.clickedOffer && (
+                                  <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-medium">
+                                    {session.clickedOffer}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    
+                    {/* No data message */}
+                    {analytics.recentSessions.filter(s => s.totalTimeOnPage > 0).length === 0 && (
+                      <div className="text-center py-8">
+                        <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-600 font-medium">
+                          📊 Nenhuma sessão com tempo registrado ainda
+                        </p>
+                        <p className="text-gray-500 text-sm mt-1">
+                          Aguarde usuários navegarem no site para ver os dados
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Legend */}
+                  <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-semibold text-gray-700 mb-3">📊 Legenda dos Indicadores:</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-gray-600">VTurb carregou</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span className="text-gray-600">Lead (7:45)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span className="text-gray-600">Pitch (35:55)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span className="text-gray-600">Clicou oferta</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <span>🏆 Top 3 usuários destacados em dourado</span>
+                        <span>🟢 LIVE = Ativo nos últimos 2 minutos</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
           ) : activeTab === 'analytics' && supabaseStatus !== 'connected' ? (
             <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-8 text-center">
               <AlertTriangle className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
