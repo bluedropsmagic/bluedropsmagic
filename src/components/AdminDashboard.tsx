@@ -1289,6 +1289,154 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
 
+              {/* Active Sessions with Most Page Time */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div className="p-4 sm:p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <Activity className="w-5 h-5 text-green-600" />
+                        🔴 Sessões Ativas com Mais Tempo
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Usuários online ordenados por tempo na página (últimos 2 minutos)
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium text-green-600">
+                          {analytics.liveUsers} online agora
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Atualização automática a cada 10s
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="overflow-x-auto">
+                  {liveSessions.length > 0 ? (
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                          </th>
+                          <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            País/Cidade
+                          </th>
+                          <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Tempo Online
+                          </th>
+                          <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Progresso
+                          </th>
+                          <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Última Atividade
+                          </th>
+                          <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Sessão
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {liveSessions
+                          .sort((a, b) => {
+                            // Calculate time online for each session
+                            const timeA = Date.now() - a.lastActivity.getTime();
+                            const timeB = Date.now() - b.lastActivity.getTime();
+                            return timeA - timeB; // Sort by longest time online (oldest activity first)
+                          })
+                          .map((session, index) => {
+                            // Calculate how long they've been online
+                            const timeOnline = Math.floor((Date.now() - session.lastActivity.getTime()) / 1000);
+                            const minutesOnline = Math.floor(timeOnline / 60);
+                            const secondsOnline = timeOnline % 60;
+                            
+                            // Get progress based on session data from analytics
+                            const sessionData = analytics.recentSessions.find(s => s.sessionId === session.sessionId);
+                            
+                            return (
+                              <tr key={session.sessionId} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ring-2 ring-green-200 bg-green-50/30`}>
+                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span className="text-xs font-bold text-green-600">
+                                      ONLINE
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-2">
+                                      <span>{getCountryFlag(session.countryCode, session.country)}</span>
+                                      <span className="text-sm font-medium text-gray-900 truncate max-w-20 sm:max-w-32">
+                                        {session.country}
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-gray-500 truncate max-w-20 sm:max-w-32">
+                                      {session.city}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-bold text-green-700">
+                                      {minutesOnline}:{secondsOnline.toString().padStart(2, '0')}
+                                    </span>
+                                    <span className="text-xs text-green-600">
+                                      online agora
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                  {sessionData ? (
+                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                      sessionData.totalTimeOnPage >= 2155 ? 'bg-purple-100 text-purple-800' :
+                                      sessionData.totalTimeOnPage >= 465 ? 'bg-yellow-100 text-yellow-800' :
+                                      sessionData.totalTimeOnPage >= 300 ? 'bg-blue-100 text-blue-800' :
+                                      sessionData.totalTimeOnPage >= 60 ? 'bg-green-100 text-green-800' :
+                                      'bg-gray-100 text-gray-800'
+                                    }`}>
+                                      {getPageProgress(sessionData.totalTimeOnPage)}
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                      🔴 Ativo
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                  <div className="text-xs text-gray-500">
+                                    {session.lastActivity.toLocaleTimeString('pt-BR')}
+                                  </div>
+                                </td>
+                                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                                  <div className="text-xs text-gray-500 font-mono">
+                                    {session.sessionId.substring(0, 8)}...
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="text-center py-12">
+                      <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600 font-medium text-lg mb-2">
+                        📊 Nenhum usuário ativo no momento
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        Aguarde visitantes acessarem o site
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Recent Sessions Table with new column */}
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-4 sm:p-6 border-b border-gray-200">
