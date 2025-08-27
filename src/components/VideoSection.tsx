@@ -3,7 +3,7 @@ import { Play, Volume2, AlertTriangle, RefreshCw } from 'lucide-react';
 
 /** 🔧 Ajuste apenas estas duas constantes */
 const ACCOUNT_ID = 'b792ccfe-b151-4538-84c6-42bb48a19ba4';
-const PLAYER_ID  = '689e7c030f018d362b0e239d'; // o ID "limpo" sem 'vid-'
+const PLAYER_ID  = '68ad36221f16ad3567243834'; // ✅ NOVO ID do vídeo
 
 /** 🧠 Tipos para variáveis globais usadas no fluxo */
 declare global {
