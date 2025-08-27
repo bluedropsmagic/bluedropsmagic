@@ -23,7 +23,6 @@ import { ManelChart } from './ManelChart';
 import { TrackingTestPanel } from './TrackingTestPanel';
 import { RedTrackTestPanel } from './RedTrackTestPanel';
 import { AdminTestingEnvironment } from './AdminTestingEnvironment';
-import { LiveUsersPanel } from './LiveUsersPanel';
 
 export const AdminDashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -456,15 +455,93 @@ export const AdminDashboard: React.FC = () => {
 
                 {supabaseStatus === 'connected' && (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <LiveUsersPanel className="h-fit" />
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                        <Users className="w-5 h-5" />
+                        Live Users
+                      </h3>
+                      <div className="text-center py-8">
+                        <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                        <p className="text-gray-500">Live users functionality temporarily disabled</p>
+                        <p className="text-gray-400 text-sm">Use the Live Users tab for full functionality</p>
+                      </div>
+                    </div>
                     <ConversionFunnel className="h-fit" />
                   </div>
                 )}
               </div>
             )}
 
-            {activeTab === 'live-users' && supabaseStatus === 'connected' && (
-              <LiveUsersPanel />
+            {activeTab === 'live-users' && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <Users className="w-6 h-6" />
+                  Live Users
+                </h2>
+                
+                {supabaseStatus === 'connected' ? (
+                  <div className="space-y-6">
+                    {/* Live Users Count */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="bg-blue-50 rounded-lg p-4">
+                        <div className="flex items-center">
+                          <Users className="w-5 h-5 text-blue-600 mr-2" />
+                          <div>
+                            <p className="text-sm font-medium text-blue-600">Live Users</p>
+                            <p className="text-2xl font-bold text-blue-900">{liveUsersCount}</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-green-50 rounded-lg p-4">
+                        <div className="flex items-center">
+                          <Globe className="w-5 h-5 text-green-600 mr-2" />
+                          <div>
+                            <p className="text-sm font-medium text-green-600">Active Now</p>
+                            <p className="text-2xl font-bold text-green-900">{liveUsersCount}</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-purple-50 rounded-lg p-4">
+                        <div className="flex items-center">
+                          <Activity className="w-5 h-5 text-purple-600 mr-2" />
+                          <div>
+                            <p className="text-sm font-medium text-purple-600">Status</p>
+                            <p className="text-lg font-bold text-purple-900">Live</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-orange-50 rounded-lg p-4">
+                        <div className="flex items-center">
+                          <Clock className="w-5 h-5 text-orange-600 mr-2" />
+                          <div>
+                            <p className="text-sm font-medium text-orange-600">Updated</p>
+                            <p className="text-sm font-bold text-orange-900">Now</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="text-center py-8 bg-blue-50 rounded-lg">
+                      <Activity className="w-12 h-12 text-blue-400 mx-auto mb-4" />
+                      <p className="text-blue-700 font-medium">
+                        {liveUsersCount} usuários ativos nos últimos 2 minutos
+                      </p>
+                      <p className="text-blue-600 text-sm mt-2">
+                        Auto-refresh a cada 30 segundos
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 font-medium">Supabase connection required</p>
+                    <p className="text-gray-500 text-sm">Connect to Supabase to view live users</p>
+                  </div>
+                )}
+              </div>
             )}
             {activeTab === 'funnel' && supabaseStatus === 'connected' && (
               <ConversionFunnel />
