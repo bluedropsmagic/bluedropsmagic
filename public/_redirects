@@ -6,7 +6,6 @@ https://www.thebluedrops.com/* https://thebluedrops.com/:splat 301!
 
 # Clean URL redirects (remove trailing slashes)
 /home/    /    301
-/ftr/     /ftr  301
 /admin/   /admin 301
 /thankyou/ /thankyou 301
 /lpw/     /lpw  301
