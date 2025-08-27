@@ -374,12 +374,10 @@ export const LiveUsersPanel: React.FC<LiveUsersPanelProps> = ({ className = '' }
   );
 };
 
-@@ .. @@
             {activeTab === 'live-users' && supabaseStatus === 'connected' && (
               <LiveUsersPanel />
             )}
 
-@@ .. @@
             {/* Show configuration message for analytics tabs when Supabase is not connected */}
             {['live-users', 'funnel', 'sales', 'heatmap', 'sessions', 'manel'].includes(activeTab) && supabaseStatus !== 'connected' && (
               <div>Configuration message</div>
