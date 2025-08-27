@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAnalytics } from './hooks/useAnalytics';
+import { useAnalytics } from '../hooks/useAnalytics';
 import { initializeRedTrack } from './utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
 import { buildUrlWithParams, initializeTracking } from './utils/urlUtils';
