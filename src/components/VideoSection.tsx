@@ -145,7 +145,7 @@ export const VideoSection: React.FC = () => {
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ CRITICAL: Main video container with maximum isolation - Dynamic ID based on page */}
           <div
-            id="vid_689e7c030f018d362b0e239d"
+            id="vid_68ad36221f16ad3567243834"
             className="absolute inset-0 w-full h-full z-30 cursor-pointer main-video-container"
             style={{
               position: 'absolute',
@@ -162,12 +162,12 @@ export const VideoSection: React.FC = () => {
               backgroundColor: 'transparent'
             }}
             data-main-video="true"
-            data-video-id="689e7c030f018d362b0e239d"
+            data-video-id="68ad36221f16ad3567243834"
           >
             {/* CRITICAL: Thumbnail and backdrop structure for VTurb */}
             <img
-              id="thumb_689e7c030f018d362b0e239d"
-              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/thumbnail.jpg"
+              id="thumb_68ad36221f16ad3567243834"
+              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/thumbnail.jpg"
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
               loading="eager"
@@ -177,7 +177,7 @@ export const VideoSection: React.FC = () => {
               }}
             />
             <div
-              id="backdrop_689e7c030f018d362b0e239d"
+              id="backdrop_68ad36221f16ad3567243834"
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
