@@ -29,6 +29,23 @@ export const useAnalytics = () => {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
+  function getCountryNameFromCode(code: string): string {
+    const countryMap: { [key: string]: string } = {
+      'US': 'United States',
+      'BR': 'Brazil',
+      'CA': 'Canada',
+      'GB': 'United Kingdom',
+      'DE': 'Germany',
+      'FR': 'France',
+      'IT': 'Italy',
+      'ES': 'Spain',
+      'MX': 'Mexico',
+      'AR': 'Argentina',
+      'XX': 'Unknown'
+    };
+    return countryMap[code] || 'Unknown';
+  }
+
   // Function to get geolocation data with multiple stable APIs and fallbacks
   const getGeolocationData = async (): Promise<GeolocationData> => {
     return withCircuitBreaker(
@@ -202,6 +219,23 @@ export const useAnalytics = () => {
       async () => {
         // Fallback: return cached data or default
         const cachedData = sessionStorage.getItem('geolocation_data');
+        if (cachedData) {
+          try {
+            return JSON.parse(cachedData);
+          } catch (error) {
+            console.error('Error parsing cached data in fallback:', error);
+          }
+        }
+        return {
+          ip: 'Unknown',
+          country_code: 'XX',
+          country_name: 'Unknown',
+          city: 'Unknown',
+          region: 'Unknown'
+        };
+      }
+    );
+  };
 
   // Stop ping interval
   const stopPingInterval = () => {
@@ -347,44 +381,6 @@ export const useAnalytics = () => {
     pingInterval.current = setInterval(updatePing, 30000);
     
     console.log('Started ping interval for live user tracking');
-  };
-        supabaseCircuitBreaker,
-        () => supabase.from('vsl_analytics').insert({
-        session_id: sessionId.current,
-        event_type: eventType,
-        event_data: enrichedEventData,
-        timestamp: new Date().toISOString(),
-        ip: geolocationData.current?.ip || null,
-        country_code: geolocationData.current?.country_code || null,
-        country_name: geolocationData.current?.country_name || null,
-        city: geolocationData.current?.city || null,
-        region: geolocationData.current?.region || null,
-        last_ping: new Date().toISOString(),
-        }).select('id')
-      );
-
-      // Store the record ID for the first event (page_enter) to use for ping updates
-      if (eventType === 'page_enter' && data && data[0]) {
-        sessionRecordId.current = data[0].id;
-        console.log('Stored session record ID:', sessionRecordId.current);
-        
-        // Start ping interval after successful page_enter tracking
-        startPingInterval();
-      }
-
-      if (error) throw error;
-      
-      console.log(`✅ SUCESSO - Event tracked: ${eventType}`, enrichedEventData);
-    } catch (error) {
-      console.error(`❌ ERRO ao tracking event ${eventType}:`, error);
-      // Don't throw error - analytics should never break the app
-    }
-      },
-      async () => {
-        // Fallback: log to console only
-        console.log(`📊 Analytics circuit breaker open, logging event: ${eventType}`, eventData);
-      }
-    );
   };
 
   // Track page enter on mount - FIXED: Remove recursive call
