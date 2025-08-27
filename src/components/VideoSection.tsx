@@ -11,7 +11,7 @@ export const VideoSection: React.FC = () => {
     let checkInterval: number;
 
     const checkVideoLoad = () => {
-      const videoContainer = document.getElementById('vid_689e7c030f018d362b0e239d');
+      const videoContainer = document.getElementById('vid_68ad36221f16ad3567243834');
       if (videoContainer) {
         const hasVideo =
           videoContainer.querySelector('video') ||
@@ -59,7 +59,7 @@ export const VideoSection: React.FC = () => {
     setIsLoading(true);
     setHasError(false);
 
-    const existingScript = document.getElementById('scr_683ba3d1b87ae17c6e07e7db');
+    const existingScript = document.getElementById('scr_68ad36221f16ad3567243834');
     if (existingScript) {
       existingScript.remove();
       console.log('🔄 Removed existing VTurb script');
@@ -74,7 +74,7 @@ export const VideoSection: React.FC = () => {
 
     const script = document.createElement('script');
     script.type = 'text/javascript';
-    script.id = 'scr_683ba3d1b87ae17c6e07e7db';
+    script.id = 'scr_68ad36221f16ad3567243834';
     script.async = true;
     script.innerHTML = `
       console.log('🔄 Retry #${retryCount + 1}: Executing VTurb script reload...');
@@ -85,12 +85,12 @@ export const VideoSection: React.FC = () => {
           }
           
           var s = document.createElement("script");
-          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/683ba3d1b87ae17c6e07e7db/player.js";
+          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/v4/player.js";
           s.async = true; 
           s.defer = true;
           
           console.log('🔄 Retry #${retryCount + 1}: Created new script element for VTurb');
-          s.onerror = function(error) {
+            console.error('Error loading VS2 VTurb script (68ad36221f16ad3567243834):', error);
             console.error('Error reloading VTurb script:', error);
             if (error && error.toString().includes('vturb-bezel')) {
               console.log('🔄 Custom element error on reload, video may still work');
@@ -99,13 +99,13 @@ export const VideoSection: React.FC = () => {
           };
           
           s.onload = function() {
-            console.log('✅ Retry #${retryCount + 1}: VTurb player script loaded successfully');
+            console.log('✅ VS2 VTurb player script loaded successfully (68ad36221f16ad3567243834)');
             if (window.trackVideoPlay) window.trackVideoPlay();
             window.vslVideoLoaded = true;
           };
           document.head.appendChild(s);
         } catch (error) {
-          console.error('Error reloading VTurb script:', error);
+          console.error('Error injecting VS2 VTurb script (68ad36221f16ad3567243834):', error);
         }
       })();
     `;
@@ -144,7 +144,7 @@ export const VideoSection: React.FC = () => {
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ CRITICAL: Main video container with maximum isolation - Dynamic ID based on page */}
-          <div
+            id="vid_68ad36221f16ad3567243834"
             id="vid_689e7c030f018d362b0e239d"
             className="absolute inset-0 w-full h-full z-30 cursor-pointer main-video-container"
             style={{
@@ -162,11 +162,11 @@ export const VideoSection: React.FC = () => {
               backgroundColor: 'transparent'
             }}
             data-main-video="true"
-            data-video-id="689e7c030f018d362b0e239d"
+            data-video-id="68ad36221f16ad3567243834"
           >
             {/* CRITICAL: Thumbnail and backdrop structure for VTurb */}
-            <img
-              id="thumb_689e7c030f018d362b0e239d"
+              id="thumb_68ad36221f16ad3567243834"
+              src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/thumbnail.jpg"
               src="https://images.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/689e7c030f018d362b0e239d/thumbnail.jpg"
               className="absolute inset-0 w-full h-full object-cover cursor-pointer"
               alt="VSL Thumbnail"
@@ -177,7 +177,7 @@ export const VideoSection: React.FC = () => {
               }}
             />
             <div
-              id="backdrop_689e7c030f018d362b0e239d"
+              id="backdrop_68ad36221f16ad3567243834"
               className="absolute inset-0 w-full h-full cursor-pointer"
               style={{
                 WebkitBackdropFilter: 'blur(5px)',
