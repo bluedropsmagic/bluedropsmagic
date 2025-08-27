@@ -15,6 +15,24 @@ export const isSupabaseConfigured = (): boolean => {
   return !!(supabaseUrl && supabaseAnonKey);
 };
 
+// Helper function to safely execute Supabase operations
+export const safeSupabaseOperation = async <T>(
+  operation: () => Promise<T>,
+  fallback?: T
+): Promise<T | null> => {
+  if (!isSupabaseConfigured()) {
+    console.warn('Supabase not configured, skipping operation');
+    return fallback || null;
+  }
+
+  try {
+    return await operation();
+  } catch (error) {
+    console.error('Supabase operation failed:', error);
+    return fallback || null;
+  }
+};
+
 export type Database = {
   public: {
     Tables: {
