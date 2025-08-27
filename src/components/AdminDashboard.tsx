@@ -59,6 +59,18 @@ interface AnalyticsData {
   topCountries: Array<{ country: string; count: number; flag: string }>;
   topCities: Array<{ city: string; country: string; count: number }>;
   liveCountryBreakdown: Array<{ country: string; countryCode: string; count: number; flag: string }>;
+  longestSessions: Array<{
+    sessionId: string;
+    country: string;
+    countryCode: string;
+    city: string;
+    ip: string;
+    totalTimeOnPage: number;
+    isLive: boolean;
+    lastActivity: Date;
+    progress: string;
+    events: number;
+  }>;
 }
 
 interface LiveSession {
@@ -105,6 +117,7 @@ export const AdminDashboard: React.FC = () => {
     topCountries: [],
     topCities: [],
     liveCountryBreakdown: [],
+    longestSessions: [],
   });
   
   const [loading, setLoading] = useState(true);
@@ -400,6 +413,55 @@ export const AdminDashboard: React.FC = () => {
       const liveCountryBreakdown = Array.from(liveCountryMap.values())
         .sort((a, b) => b.count - a.count);
 
+      // ✅ NEW: Calculate longest sessions (users who stayed the longest)
+      const longestSessionsData = sessions
+        .map(session => {
+          const pageEnter = session.find(e => e.event_type === 'page_enter');
+          const pageExit = session.find(e => e.event_type === 'page_exit');
+          const sessionEvent = session[0];
+          
+          // Calculate total time on page
+          let totalTimeOnPage = 0;
+          if (pageExit?.event_data?.total_time_on_page_ms) {
+            totalTimeOnPage = Math.round(pageExit.event_data.total_time_on_page_ms / 1000);
+          } else if (pageExit?.event_data?.time_on_page_ms) {
+            totalTimeOnPage = Math.round(pageExit.event_data.time_on_page_ms / 1000);
+          } else if (pageEnter) {
+            // For active sessions, calculate from page enter to last ping
+            const enterTime = new Date(pageEnter.created_at).getTime();
+            const lastPing = sessionEvent.last_ping ? new Date(sessionEvent.last_ping).getTime() : Date.now();
+            totalTimeOnPage = Math.round((lastPing - enterTime) / 1000);
+          }
+          
+          // Determine progress based on time on page
+          let progress = '👀 Início';
+          if (totalTimeOnPage >= 2155) progress = '🎯 Pitch Reached (35:55)';
+          else if (totalTimeOnPage >= 465) progress = '📈 Lead Reached (7:45)';
+          else if (totalTimeOnPage >= 300) progress = '⏰ Engajado (5min+)';
+          else if (totalTimeOnPage >= 60) progress = '▶️ Navegando';
+          
+          // Check if session is still live
+          const isLive = liveSessionsData.some(liveSession => 
+            liveSession.sessionId === sessionEvent.session_id
+          );
+          
+          return {
+            sessionId: sessionEvent.session_id,
+            country: sessionEvent.country_name || 'Unknown',
+            countryCode: sessionEvent.country_code || 'XX',
+            city: sessionEvent.city || 'Unknown',
+            ip: sessionEvent.ip || 'Unknown',
+            totalTimeOnPage,
+            isLive,
+            lastActivity: new Date(sessionEvent.last_ping || sessionEvent.created_at),
+            progress,
+            events: session.length
+          };
+        })
+        .filter(session => session.totalTimeOnPage > 30) // Only sessions longer than 30 seconds
+        .sort((a, b) => b.totalTimeOnPage - a.totalTimeOnPage) // Sort by longest time first
+        .slice(0, 20); // Top 20 longest sessions
+
       // Calculate enhanced country statistics
       const countryStats = liveSessionsData.reduce((acc, session) => {
         const key = session.country;
@@ -605,6 +667,7 @@ export const AdminDashboard: React.FC = () => {
         topCountries,
         topCities,
         liveCountryBreakdown,
+        longestSessions: longestSessionsData,
       });
 
       setLastUpdated(new Date());
@@ -1230,9 +1293,121 @@ export const AdminDashboard: React.FC = () => {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200">
                 <div className="p-4 sm:p-6 border-b border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <Eye className="w-5 h-5" />
-                    Sessões Recentes
+                    <Clock className="w-5 h-5" />
+                    Sessões Mais Duradouras (Top 20)
                   </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Usuários que ficaram mais tempo no site (mínimo 30 segundos)
+                  </p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Ranking
+                        </th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status
+                        </th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          País/Cidade
+                        </th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Tempo Total
+                        </th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Progresso
+                        </th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Eventos
+                        </th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Última Atividade
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {analytics.longestSessions.map((session, index) => (
+                        <tr key={session.sessionId} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} ${session.isLive ? 'ring-2 ring-green-200' : ''}`}>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              {index === 0 && (
+                                <span className="text-lg">🏆</span>
+                              )}
+                              {index === 1 && (
+                                <span className="text-lg">🥈</span>
+                              )}
+                              {index === 2 && (
+                                <span className="text-lg">🥉</span>
+                              )}
+                              <span className="text-sm font-bold text-gray-900">
+                                #{index + 1}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${session.isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`}></div>
+                              <span className={`text-xs font-medium ${session.isLive ? 'text-green-600' : 'text-gray-500'}`}>
+                                {session.isLive ? 'LIVE' : 'OFF'}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <div className="flex flex-col">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span>{getCountryFlag(session.countryCode, session.country)}</span>
+                                <span className="font-medium">{session.country}</span>
+                              </div>
+                              <span className="text-xs text-gray-500">{session.city}</span>
+                            </div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                            <div className="flex flex-col">
+                              <span className="text-lg font-bold text-blue-600">
+                                {formatPageTime(session.totalTimeOnPage)}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {Math.floor(session.totalTimeOnPage / 60)}min {session.totalTimeOnPage % 60}s
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              session.progress.includes('Pitch') ? 'bg-purple-100 text-purple-800' :
+                              session.progress.includes('Lead') ? 'bg-yellow-100 text-yellow-800' :
+                              session.progress.includes('Engajado') ? 'bg-blue-100 text-blue-800' :
+                              session.progress.includes('Navegando') ? 'bg-green-100 text-green-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {session.progress}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <span className="font-medium">{session.events}</span>
+                            <span className="text-xs text-gray-500 ml-1">eventos</span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-xs text-gray-500">
+                            {session.lastActivity.toLocaleTimeString('pt-BR')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Recent Sessions Table */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-8">
+                <div className="p-4 sm:p-6 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <Eye className="w-5 h-5" />
+                    Últimas 10 Sessões
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Atividade mais recente no site
+                  </p>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full">
