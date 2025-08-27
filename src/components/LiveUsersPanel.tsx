@@ -188,17 +188,6 @@ export const LiveUsersPanel: React.FC<LiveUsersPanelProps> = ({ className = '' }
     return flags[countryCode] || '🌍';
   };
 
-  const formatLastSeen = (lastPing: string): string => {
-    const now = new Date();
-    const pingTime = new Date(lastPing);
-    const diffSeconds = Math.floor((now.getTime() - pingTime.getTime()) / 1000);
-    
-    if (diffSeconds < 30) return 'Agora mesmo';
-    if (diffSeconds < 60) return `${diffSeconds}s atrás`;
-    if (diffSeconds < 120) return `${Math.floor(diffSeconds / 60)}m atrás`;
-    return pingTime.toLocaleTimeString('pt-BR');
-  };
-
   // Auto-refresh every 30 seconds
   useEffect(() => {
     fetchLiveUsers();
@@ -213,234 +202,185 @@ export const LiveUsersPanel: React.FC<LiveUsersPanelProps> = ({ className = '' }
   }, [autoRefresh]);
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 ${className}`}>
-      {/* Header */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-              <Users className="w-6 h-6 text-green-600" />
+    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}>
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <Activity className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900">
-                👥 Usuários Ativos Agora
-              </h3>
-              <p className="text-sm text-gray-600">
-                Usuários ativos nos últimos 2 minutos
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900">Live Users</h3>
+              <p className="text-sm text-gray-500">Users active in the last 2 minutes</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 text-sm">
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
+                id="auto-refresh"
                 checked={autoRefresh}
                 onChange={(e) => setAutoRefresh(e.target.checked)}
-                className="rounded"
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
-              <span className="text-gray-700">Auto-refresh</span>
-            </label>
+              <label htmlFor="auto-refresh" className="text-sm text-gray-600">
+                Auto-refresh
+              </label>
+            </div>
             
             <button
               onClick={fetchLiveUsers}
               disabled={loading}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm"
+              className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Atualizar
+              <span>Refresh</span>
             </button>
           </div>
         </div>
 
-        {/* Live Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-            <div className="flex items-center gap-2 mb-2">
-              <Activity className="w-4 h-4 text-green-600" />
-              <span className="text-sm font-medium text-green-700">Total Ativo</span>
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-blue-50 rounded-lg p-4">
+            <div className="flex items-center">
+              <Users className="w-5 h-5 text-blue-600 mr-2" />
+              <div>
+                <p className="text-sm font-medium text-blue-600">Total Users</p>
+                <p className="text-2xl font-bold text-blue-900">{stats.total}</p>
+              </div>
             </div>
-            <p className="text-3xl font-bold text-green-800">{stats.total}</p>
-            <p className="text-xs text-green-600">usuários online</p>
           </div>
           
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <div className="flex items-center gap-2 mb-2">
-              <Globe className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium text-blue-700">Países</span>
+          <div className="bg-green-50 rounded-lg p-4">
+            <div className="flex items-center">
+              <Globe className="w-5 h-5 text-green-600 mr-2" />
+              <div>
+                <p className="text-sm font-medium text-green-600">Countries</p>
+                <p className="text-2xl font-bold text-green-900">{Object.keys(stats.byCountry).length}</p>
+              </div>
             </div>
-            <p className="text-2xl font-bold text-blue-800">{Object.keys(stats.byCountry).length}</p>
-            <p className="text-xs text-blue-600">países diferentes</p>
           </div>
           
-          <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-            <div className="flex items-center gap-2 mb-2">
-              <Eye className="w-4 h-4 text-purple-600" />
-              <span className="text-sm font-medium text-purple-700">Páginas</span>
+          <div className="bg-purple-50 rounded-lg p-4">
+            <div className="flex items-center">
+              <Eye className="w-5 h-5 text-purple-600 mr-2" />
+              <div>
+                <p className="text-sm font-medium text-purple-600">Active Pages</p>
+                <p className="text-2xl font-bold text-purple-900">{Object.keys(stats.byPage).length}</p>
+              </div>
             </div>
-            <p className="text-2xl font-bold text-purple-800">{Object.keys(stats.byPage).length}</p>
-            <p className="text-xs text-purple-600">páginas ativas</p>
           </div>
           
-          <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-4 h-4 text-orange-600" />
-              <span className="text-sm font-medium text-orange-700">Tempo Médio</span>
+          <div className="bg-orange-50 rounded-lg p-4">
+            <div className="flex items-center">
+              <Clock className="w-5 h-5 text-orange-600 mr-2" />
+              <div>
+                <p className="text-sm font-medium text-orange-600">Avg. Time</p>
+                <p className="text-2xl font-bold text-orange-900">{formatTimeOnSite(Math.floor(stats.averageTimeOnSite))}</p>
+              </div>
             </div>
-            <p className="text-xl font-bold text-orange-800">{formatTimeOnSite(stats.averageTimeOnSite)}</p>
-            <p className="text-xs text-orange-600">no site</p>
           </div>
         </div>
-        
-        <div className="mt-4 text-center text-sm text-gray-500">
-          🔄 Última atualização: {lastUpdated.toLocaleTimeString('pt-BR')} 
-          {autoRefresh && <span className="ml-2">• Auto-refresh ativo (30s)</span>}
-        </div>
-      </div>
 
-      {/* Live Users Content */}
-      <div className="p-6">
-        {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 text-green-600" />
-              <p className="text-gray-600">Carregando usuários ativos...</p>
-            </div>
+        {/* Live Users List */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-md font-medium text-gray-900">Active Users</h4>
+            <p className="text-sm text-gray-500">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </p>
           </div>
-        ) : (
-          <>
-            {stats.total > 0 ? (
-              <div className="space-y-6">
-                {/* Country Breakdown */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Globe className="w-4 h-4" />
-                    Breakdown por País
-                  </h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {Object.entries(stats.byCountry)
-                      .sort(([,a], [,b]) => b - a)
-                      .map(([country, count]) => {
-                        const countryCode = liveUsers.find(u => u.country_name === country)?.country_code || 'XX';
-                        return (
-                          <div key={country} className="bg-white p-3 rounded border border-gray-200">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-lg">{getCountryFlag(countryCode)}</span>
-                              <span className="text-sm font-medium text-gray-900 truncate">{country}</span>
-                            </div>
-                            <p className="text-lg font-bold text-green-600">{count}</p>
-                            <p className="text-xs text-gray-500">usuário{count !== 1 ? 's' : ''}</p>
-                          </div>
-                        );
-                      })}
-                  </div>
-                </div>
-
-                {/* Page Breakdown */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Eye className="w-4 h-4" />
-                    Breakdown por Página
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {Object.entries(stats.byPage)
-                      .sort(([,a], [,b]) => b - a)
-                      .map(([page, count]) => (
-                        <div key={page} className="bg-white p-3 rounded border border-gray-200">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-medium text-gray-900">{page}</span>
-                          </div>
-                          <p className="text-lg font-bold text-blue-600">{count}</p>
-                          <p className="text-xs text-gray-500">usuário{count !== 1 ? 's' : ''}</p>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-
-                {/* Individual Users */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    Usuários Individuais ({stats.total})
-                  </h4>
-                  
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {liveUsers.map((user, index) => (
-                      <div key={user.session_id} className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                              <span className="text-green-600 font-bold text-sm">{index + 1}</span>
-                            </div>
-                            
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="text-lg">{getCountryFlag(user.country_code)}</span>
-                                <span className="font-medium text-gray-900">{user.country_name}</span>
-                                {user.city !== 'Unknown' && (
-                                  <span className="text-gray-500 text-sm">• {user.city}</span>
-                                )}
-                              </div>
-                              
-                              <div className="flex items-center gap-4 text-sm text-gray-600">
-                                <div className="flex items-center gap-1">
-                                  <MapPin className="w-3 h-3" />
-                                  <span>{getPageName(user.current_page)}</span>
-                                </div>
-                                
-                                <div className="flex items-center gap-1">
-                                  <Clock className="w-3 h-3" />
-                                  <span>{formatTimeOnSite(user.time_on_site)}</span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="text-right">
-                            <div className="flex items-center gap-1 mb-1">
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                              <span className="text-xs text-green-600 font-medium">ONLINE</span>
-                            </div>
-                            <p className="text-xs text-gray-500">
-                              {formatLastSeen(user.last_ping)}
-                            </p>
-                          </div>
-                        </div>
+          
+          {loading && stats.total === 0 ? (
+            <div className="flex items-center justify-center py-8">
+              <RefreshCw className="w-6 h-6 animate-spin text-gray-400 mr-2" />
+              <span className="text-gray-500">Loading live users...</span>
+            </div>
+          ) : stats.total === 0 ? (
+            <div className="text-center py-8">
+              <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500">No users currently active</p>
+            </div>
+          ) : (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {liveUsers.map((user) => (
+                <div key={user.session_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg">{getCountryFlag(user.country_code)}</span>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {user.city}, {user.country_name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {getPageName(user.current_page)}
+                        </p>
                       </div>
-                    ))}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="flex items-center space-x-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{formatTimeOnSite(user.time_on_site)}</span>
+                    </div>
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                   </div>
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Country and Page Breakdown */}
+        {stats.total > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Top Countries */}
+            <div>
+              <h5 className="text-sm font-medium text-gray-900 mb-3">Top Countries</h5>
+              <div className="space-y-2">
+                {Object.entries(stats.byCountry)
+                  .sort(([,a], [,b]) => b - a)
+                  .slice(0, 5)
+                  .map(([country, count]) => (
+                    <div key={country} className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">{country}</span>
+                      <span className="text-sm font-medium text-gray-900">{count}</span>
+                    </div>
+                  ))}
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                  Nenhum usuário ativo no momento
-                </h3>
-                <p className="text-gray-500 mb-4">
-                  Usuários aparecerão aqui quando estiverem navegando no site
-                </p>
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
-                  <p className="text-blue-700 text-sm">
-                    <strong>Como funciona:</strong> Usuários são considerados ativos se fizeram ping nos últimos 2 minutos
-                  </p>
-                </div>
+            </div>
+            
+            {/* Top Pages */}
+            <div>
+              <h5 className="text-sm font-medium text-gray-900 mb-3">Active Pages</h5>
+              <div className="space-y-2">
+                {Object.entries(stats.byPage)
+                  .sort(([,a], [,b]) => b - a)
+                  .slice(0, 5)
+                  .map(([page, count]) => (
+                    <div key={page} className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600 truncate">{page}</span>
+                      <span className="text-sm font-medium text-gray-900">{count}</span>
+                    </div>
+                  ))}
               </div>
-            )}
-          </>
+            </div>
+          </div>
         )}
       </div>
     </div>
   );
 };
 
-const formatLastSeen = (lastPing: string): string => {
-  const now = new Date();
-  const pingTime = new Date(lastPing);
-  const diffSeconds = Math.floor((now.getTime() - pingTime.getTime()) / 1000);
-  
-  if (diffSeconds < 30) return 'Agora mesmo';
-  if (diffSeconds < 60) return `${diffSeconds}s atrás`;
-  if (diffSeconds < 120) return `${Math.floor(diffSeconds / 60)}m atrás`;
-  return pingTime.toLocaleTimeString('pt-BR');
-};
+@@ .. @@
+            {activeTab === 'live-users' && supabaseStatus === 'connected' && (
+              <LiveUsersPanel />
+            )}
+
+@@ .. @@
+            {/* Show configuration message for analytics tabs when Supabase is not connected */}
+            {['live-users', 'funnel', 'sales', 'heatmap', 'sessions', 'manel'].includes(activeTab) && supabaseStatus !== 'connected' && (
+              <div>Configuration message</div>
+            )}
