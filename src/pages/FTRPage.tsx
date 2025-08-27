@@ -136,7 +136,7 @@ function FTRPage() {
       
       // Auto-remove after 5 seconds
       setTimeout(() => {
-        if (document.body.contains(errorDiv)) {
+        if (errorDiv.parentNode === document.body) {
           document.body.removeChild(errorDiv);
         }
       }, 5000);
