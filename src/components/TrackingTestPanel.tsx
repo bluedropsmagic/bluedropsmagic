@@ -282,8 +282,14 @@ export const TrackingTestPanel: React.FC = () => {
     updateStatus(index, { status: 'loading', message: 'Testando Supabase...' });
     
     try {
-      // Import supabase dynamically to test connection
-      const { supabase } = await import('../lib/supabase');
+      if (!isSupabaseConfigured()) {
+        updateStatus(index, { 
+          status: 'error', 
+          message: 'Supabase não configurado',
+          details: 'Clique em "Connect to Supabase" no Bolt para configurar'
+        });
+        return;
+      }
       
       // Test a simple query
       const { data, error } = await supabase

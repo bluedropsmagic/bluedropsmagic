@@ -3,46 +3,18 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// More detailed error handling for production
-if (!supabaseUrl) {
-  console.warn('VITE_SUPABASE_URL is not defined. Using fallback configuration.');
-}
-
-if (!supabaseAnonKey) {
-  console.warn('VITE_SUPABASE_ANON_KEY is not defined. Using fallback configuration.');
-}
-
-// Create Supabase client with fallback for development
-export const supabase = supabaseUrl && supabaseAnonKey 
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: false // Disable auth persistence for analytics-only usage
-      }
-    })
-  : null;
+// Create Supabase client
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false // Disable auth persistence for analytics-only usage
+  }
+});
 
 // Helper function to check if Supabase is configured
 export const isSupabaseConfigured = (): boolean => {
-  return !!(supabaseUrl && supabaseAnonKey && supabase);
+  return !!(supabaseUrl && supabaseAnonKey);
 };
 
-// Safe Supabase operations wrapper
-export const safeSupabaseOperation = async <T>(
-  operation: () => Promise<T>,
-  fallback?: T
-): Promise<T | null> => {
-  if (!isSupabaseConfigured()) {
-    console.warn('⚠️ Supabase not configured, skipping operation');
-    return fallback || null;
-  }
-  
-  try {
-    return await operation();
-  } catch (error) {
-    console.error('❌ Supabase operation failed:', error);
-    return fallback || null;
-  }
-};
 export type Database = {
   public: {
     Tables: {
