@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, safeSupabaseOperation } from '../lib/supabase';
 import { RefreshCw, Calendar, TrendingUp } from 'lucide-react';
 
 interface SalesData {
@@ -31,18 +31,36 @@ export const SalesChart: React.FC<SalesChartProps> = ({ className = '' }) => {
   const fetchSalesData = async (date: string) => {
     setLoading(true);
     try {
+      if (!isSupabaseConfigured()) {
+        console.warn('⚠️ Supabase not configured, using empty sales data');
+        setSalesData([]);
+        setTotalSales({
+          '6-bottle': 0,
+          '3-bottle': 0,
+          '1-bottle': 0,
+          total: 0
+        });
+        setLoading(false);
+        return;
+      }
+      
       // ✅ FIXED: Only count real offer clicks (not upsells) and exclude Brazilian IPs
-      const { data: offerClicks, error } = await supabase
-        .from('vsl_analytics')
-        .select('event_data, created_at')
-        .eq('event_type', 'offer_click')
-        .neq('country_code', 'BR')
-        .neq('country_name', 'Brazil')
-        .gte('created_at', `${date}T00:00:00.000Z`)
-        .lt('created_at', `${date}T23:59:59.999Z`)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
+      const offerClicks = await safeSupabaseOperation(async () => {
+        if (!supabase) throw new Error('Supabase client not available');
+        
+        const { data, error } = await supabase
+          .from('vsl_analytics')
+          .select('event_data, created_at')
+          .eq('event_type', 'offer_click')
+          .neq('country_code', 'BR')
+          .neq('country_name', 'Brazil')
+          .gte('created_at', `${date}T00:00:00.000Z`)
+          .lt('created_at', `${date}T23:59:59.999Z`)
+          .order('created_at', { ascending: true });
+        
+        if (error) throw error;
+        return data;
+      });
 
       // Initialize data structure for all 24 hours
       const hourlyData: { [hour: number]: SalesData } = {};

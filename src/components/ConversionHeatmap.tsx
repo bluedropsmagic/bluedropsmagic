@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, safeSupabaseOperation } from '../lib/supabase';
 import { RefreshCw, Calendar, TrendingUp, Clock, MapPin } from 'lucide-react';
 
 interface HeatmapData {
@@ -73,19 +73,38 @@ export const ConversionHeatmap: React.FC<ConversionHeatmapProps> = ({ className 
   const fetchHeatmapData = async (start: string, end: string) => {
     setLoading(true);
     try {
+      if (!isSupabaseConfigured()) {
+        console.warn('⚠️ Supabase not configured, using empty heatmap data');
+        setHeatmapData({});
+        setChartData([]);
+        setWeekStats({
+          totalPurchases: 0,
+          bestSlot: null,
+          averagePerHour: 0,
+          peakDay: null,
+        });
+        setLoading(false);
+        return;
+      }
+      
       // Query offer_click events (using as proxy for purchases) within date range
       // ✅ FIXED: Exclude Brazilian IPs
-      const { data: offerClicks, error } = await supabase
-        .from('vsl_analytics')
-        .select('created_at, event_data, country_code, country_name')
-        .eq('event_type', 'offer_click')
-        .neq('country_code', 'BR')
-        .neq('country_name', 'Brazil')
-        .gte('created_at', `${start}T00:00:00.000Z`)
-        .lte('created_at', `${end}T23:59:59.999Z`)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
+      const offerClicks = await safeSupabaseOperation(async () => {
+        if (!supabase) throw new Error('Supabase client not available');
+        
+        const { data, error } = await supabase
+          .from('vsl_analytics')
+          .select('created_at, event_data, country_code, country_name')
+          .eq('event_type', 'offer_click')
+          .neq('country_code', 'BR')
+          .neq('country_name', 'Brazil')
+          .gte('created_at', `${start}T00:00:00.000Z`)
+          .lte('created_at', `${end}T23:59:59.999Z`)
+          .order('created_at', { ascending: true });
+        
+        if (error) throw error;
+        return data;
+      });
 
       // Initialize heatmap data structure
       const heatmap: HeatmapData = {};

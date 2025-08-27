@@ -8,20 +8,70 @@
 3. Crie um novo projeto ou selecione um existente
 4. As variáveis de ambiente serão configuradas automaticamente
 
-### 2. Executar Migração
-Após conectar ao Supabase, execute a migração para criar a estrutura do banco:
+### 2. Verificar Migração
+Após conectar ao Supabase, as migrações serão aplicadas automaticamente:
 
-```sql
--- Execute este SQL no SQL Editor do Supabase
--- Ou a migração será aplicada automaticamente
-```
+- ✅ Tabela `vsl_analytics` será criada automaticamente
+- ✅ Políticas RLS serão configuradas
+- ✅ Índices serão criados para performance
+- ✅ Todas as tabelas auxiliares serão criadas
 
 ### 3. Verificar Configuração
 - ✅ Tabela `vsl_analytics` criada
 - ✅ Políticas RLS configuradas
 - ✅ Índices criados para performance
 - ✅ Constraints de validação aplicadas
+- ✅ Tabelas auxiliares (`refund_forms`, `webhooks`, etc.) criadas
+- ✅ Permissões públicas configuradas corretamente
 
+## 🔧 Resolução de Problemas
+
+### Se o dashboard mostrar "Supabase Configuration Required":
+1. ✅ Verifique se clicou em "Connect to Supabase" no Bolt
+2. ✅ Confirme que o projeto Supabase foi criado/selecionado
+3. ✅ Aguarde as variáveis de ambiente serem configuradas
+4. ✅ Recarregue a página do dashboard
+
+### Se aparecer erro de conexão:
+1. ✅ Verifique se as variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` estão definidas
+2. ✅ Confirme que o projeto Supabase está ativo
+3. ✅ Teste a conexão na aba "Overview" do dashboard
+
+### Se os dados não aparecerem:
+1. ✅ Confirme que as migrações foram aplicadas
+2. ✅ Verifique se as políticas RLS estão ativas
+3. ✅ Teste inserção manual via SQL Editor do Supabase
+4. ✅ Verifique se não há filtros bloqueando os dados
+
+## 🛡️ Segurança e Permissões
+
+### Row Level Security (RLS):
+- ✅ **Habilitado** em todas as tabelas
+- ✅ **Políticas públicas** para analytics (INSERT, SELECT, UPDATE)
+- ✅ **Sem autenticação** necessária para tracking
+- ✅ **Filtros automáticos** para IPs brasileiros
+
+### Estrutura de Permissões:
+```sql
+-- Exemplo de política para vsl_analytics
+CREATE POLICY "Allow public insert for analytics"
+  ON vsl_analytics
+  FOR INSERT
+  TO public
+  WITH CHECK (true);
+```
+
+## 📊 Monitoramento
+
+### Status da Conexão:
+- 🟢 **Connected**: Todas as funcionalidades disponíveis
+- 🔴 **Error**: Configuração necessária
+- 🟡 **Checking**: Verificando conectividade
+
+### Logs de Debug:
+- Console do navegador mostra status detalhado
+- Erros de conexão são logados automaticamente
+- Circuit breakers protegem contra falhas em cascata
 ## 🔐 Credenciais de Admin
 
 ### Login do Dashboard Admin

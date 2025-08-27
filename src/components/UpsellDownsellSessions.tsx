@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, safeSupabaseOperation } from '../lib/supabase';
 import { RefreshCw, TrendingUp, Users, ArrowUp, ArrowDown, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface SessionData {
@@ -30,18 +30,30 @@ export const UpsellDownsellSessions: React.FC<UpsellDownsellSessionsProps> = ({ 
   const fetchSessionData = async (date: string) => {
     setLoading(true);
     try {
+      if (!isSupabaseConfigured()) {
+        console.warn('⚠️ Supabase not configured, using empty session data');
+        setSessionData([]);
+        setLoading(false);
+        return;
+      }
+      
       // Get all page_enter events for upsell and downsell pages, excluding Brazilian IPs
-      const { data: pageEnters, error } = await supabase
-        .from('vsl_analytics')
-        .select('session_id, event_data, created_at, country_code, country_name')
-        .eq('event_type', 'page_enter')
-        .neq('country_code', 'BR')
-        .neq('country_name', 'Brazil')
-        .gte('created_at', `${date}T00:00:00.000Z`)
-        .lt('created_at', `${date}T23:59:59.999Z`)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const pageEnters = await safeSupabaseOperation(async () => {
+        if (!supabase) throw new Error('Supabase client not available');
+        
+        const { data, error } = await supabase
+          .from('vsl_analytics')
+          .select('session_id, event_data, created_at, country_code, country_name')
+          .eq('event_type', 'page_enter')
+          .neq('country_code', 'BR')
+          .neq('country_name', 'Brazil')
+          .gte('created_at', `${date}T00:00:00.000Z`)
+          .lt('created_at', `${date}T23:59:59.999Z`)
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        return data;
+      });
 
       // Filter for upsell and downsell pages only
       const relevantPages = (pageEnters || []).filter(event => {

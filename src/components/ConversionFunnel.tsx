@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, safeSupabaseOperation } from '../lib/supabase';
 import { RefreshCw, Calendar, TrendingDown, Users, Target, ShoppingCart, CreditCard, ChevronDown } from 'lucide-react';
 
 interface FunnelData {
@@ -35,17 +35,36 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
   const fetchFunnelData = async (date: string) => {
     setLoading(true);
     try {
+      if (!isSupabaseConfigured()) {
+        console.warn('⚠️ Supabase not configured, using mock data');
+        setFunnelData({
+          totalSessions: 0,
+          videoPlayed: 0,
+          leadReached: 0,
+          pitchReached: 0,
+          offerClicked: 0,
+          purchased: 0,
+        });
+        setLoading(false);
+        return;
+      }
+      
       // ✅ FIXED: Filter out Brazilian IPs from the start
-      const { data: allEvents, error } = await supabase
-        .from('vsl_analytics')
-        .select('*')
-        .neq('country_code', 'BR')
-        .neq('country_name', 'Brazil')
-        .gte('created_at', `${date}T00:00:00.000Z`)
-        .lt('created_at', `${date}T23:59:59.999Z`)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const allEvents = await safeSupabaseOperation(async () => {
+        if (!supabase) throw new Error('Supabase client not available');
+        
+        const { data, error } = await supabase
+          .from('vsl_analytics')
+          .select('*')
+          .neq('country_code', 'BR')
+          .neq('country_name', 'Brazil')
+          .gte('created_at', `${date}T00:00:00.000Z`)
+          .lt('created_at', `${date}T23:59:59.999Z`)
+          .order('created_at', { ascending: false });
+        
+        if (error) throw error;
+        return data;
+      });
 
       if (!allEvents) {
         setFunnelData({

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, safeSupabaseOperation } from '../lib/supabase';
 import { RefreshCw, TrendingUp, Trophy, Target } from 'lucide-react';
 
 interface ManelData {
@@ -24,20 +24,34 @@ export const ManelChart: React.FC<ManelChartProps> = ({ className = '' }) => {
   const fetchManelData = async () => {
     setLoading(true);
     try {
+      if (!isSupabaseConfigured()) {
+        console.warn('⚠️ Supabase not configured, hiding Manel chart');
+        setManelData([]);
+        setTotalSales(0);
+        setCurrentPercentage(0);
+        setLoading(false);
+        return;
+      }
+      
       const today = new Date().toISOString().split('T')[0];
       
       // ✅ Buscar todas as vendas reais (upsell accepts) de hoje, excluindo Brasil
-      const { data: sales, error } = await supabase
-        .from('vsl_analytics')
-        .select('created_at, event_data')
-        .eq('event_type', 'offer_click')
-        .neq('country_code', 'BR')
-        .neq('country_name', 'Brazil')
-        .gte('created_at', `${today}T00:00:00.000Z`)
-        .lt('created_at', `${today}T23:59:59.999Z`)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
+      const sales = await safeSupabaseOperation(async () => {
+        if (!supabase) throw new Error('Supabase client not available');
+        
+        const { data, error } = await supabase
+          .from('vsl_analytics')
+          .select('created_at, event_data')
+          .eq('event_type', 'offer_click')
+          .neq('country_code', 'BR')
+          .neq('country_name', 'Brazil')
+          .gte('created_at', `${today}T00:00:00.000Z`)
+          .lt('created_at', `${today}T23:59:59.999Z`)
+          .order('created_at', { ascending: true });
+        
+        if (error) throw error;
+        return data;
+      });
 
       // ✅ Filtrar apenas vendas reais (upsell accepts)
       const realSales = (sales || []).filter(sale => 

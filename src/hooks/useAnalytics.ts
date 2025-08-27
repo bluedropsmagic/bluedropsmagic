@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, safeSupabaseOperation } from '../lib/supabase';
 import { supabaseCircuitBreaker, geolocationCircuitBreaker, analyticsCircuitBreaker, withCircuitBreaker } from '../utils/circuitBreaker';
 
 interface GeolocationData {
@@ -202,75 +202,6 @@ export const useAnalytics = () => {
       async () => {
         // Fallback: return cached data or default
         const cachedData = sessionStorage.getItem('geolocation_data');
-        if (cachedData) {
-          return JSON.parse(cachedData);
-        }
-        return {
-          ip: 'Circuit-Breaker-Fallback',
-          country_code: 'XX',
-          country_name: 'Unknown',
-          city: 'Unknown',
-          region: 'Unknown'
-        };
-      }
-    );
-  };
-
-  // Helper function to get country name from country code
-  const getCountryNameFromCode = (code: string): string => {
-    const countryMap: { [key: string]: string } = {
-      'BR': 'Brazil',
-      'US': 'United States',
-      'PT': 'Portugal',
-      'ES': 'Spain',
-      'AR': 'Argentina',
-      'MX': 'Mexico',
-      'CA': 'Canada',
-      'GB': 'United Kingdom',
-      'FR': 'France',
-      'DE': 'Germany',
-      'IT': 'Italy',
-      'JP': 'Japan',
-      'CN': 'China',
-      'IN': 'India',
-      'AU': 'Australia',
-      'RU': 'Russia',
-      'KR': 'South Korea',
-      'NL': 'Netherlands'
-    };
-    return countryMap[code.toUpperCase()] || 'Unknown';
-  };
-
-  // Function to update last_ping for live user tracking
-  const updatePing = async () => {
-    if (!sessionRecordId.current || isBrazilianIP.current) return; // ✅ SKIP if Brazilian
-
-    try {
-      await supabase
-        .from('vsl_analytics')
-        .update({ last_ping: new Date().toISOString() })
-        .eq('id', sessionRecordId.current);
-      
-      console.log('Updated ping for session:', sessionId.current);
-    } catch (error) {
-      console.error('Error updating ping:', error);
-    }
-  };
-
-  // Start ping interval for live user tracking
-  const startPingInterval = () => {
-    if (isBrazilianIP.current) return; // ✅ SKIP if Brazilian
-    
-    // Clear any existing interval
-    if (pingInterval.current) {
-      clearInterval(pingInterval.current);
-    }
-
-    // Update ping every 30 seconds
-    pingInterval.current = setInterval(updatePing, 30000);
-    
-    console.log('Started ping interval for live user tracking');
-  };
 
   // Stop ping interval
   const stopPingInterval = () => {
@@ -289,6 +220,12 @@ export const useAnalytics = () => {
     eventType: 'page_enter' | 'video_play' | 'video_progress' | 'pitch_reached' | 'offer_click' | 'page_exit',
     eventData?: any
   ) => {
+    // ✅ Check if Supabase is configured before attempting to track
+    if (!isSupabaseConfigured()) {
+      console.warn('⚠️ Supabase not configured, skipping analytics tracking');
+      return;
+    }
+    
     // Use circuit breaker for analytics tracking
     return withCircuitBreaker(
       analyticsCircuitBreaker,
@@ -333,7 +270,84 @@ export const useAnalytics = () => {
       });
 
       // Use circuit breaker for Supabase operations
-      const { data, error } = await withCircuitBreaker(
+      const result = await safeSupabaseOperation(async () => {
+        if (!supabase) throw new Error('Supabase client not available');
+        
+        const { data, error } = await supabase.from('vsl_analytics').insert({
+          session_id: sessionId.current,
+          event_type: eventType,
+          event_data: enrichedEventData,
+          timestamp: new Date().toISOString(),
+          ip: geolocationData.current?.ip || null,
+          country_code: geolocationData.current?.country_code || null,
+          country_name: geolocationData.current?.country_name || null,
+          city: geolocationData.current?.city || null,
+          region: geolocationData.current?.region || null,
+          last_ping: new Date().toISOString(),
+        }).select('id');
+        
+        if (error) throw error;
+        return data;
+      });
+      
+      const data = result;
+      
+      // Store the record ID for the first event (page_enter) to use for ping updates
+      if (eventType === 'page_enter' && data && data[0]) {
+        sessionRecordId.current = data[0].id;
+        console.log('Stored session record ID:', sessionRecordId.current);
+        
+        // Start ping interval after successful page_enter tracking
+        startPingInterval();
+      }
+      
+      console.log(`✅ SUCESSO - Event tracked: ${eventType}`, enrichedEventData);
+    } catch (error) {
+      console.error(`❌ ERRO ao tracking event ${eventType}:`, error);
+      // Don't throw error - analytics should never break the app
+    }
+      },
+      async () => {
+        // Fallback: log to console only
+        console.log(`📊 Analytics circuit breaker open, logging event: ${eventType}`, eventData);
+      }
+    );
+  };
+  
+  // Function to update last_ping for live user tracking
+  const updatePing = async () => {
+    if (!sessionRecordId.current || isBrazilianIP.current || !isSupabaseConfigured()) return;
+
+    try {
+      await safeSupabaseOperation(async () => {
+        if (!supabase) throw new Error('Supabase client not available');
+        
+        return await supabase
+          .from('vsl_analytics')
+          .update({ last_ping: new Date().toISOString() })
+          .eq('id', sessionRecordId.current);
+      });
+      
+      console.log('Updated ping for session:', sessionId.current);
+    } catch (error) {
+      console.error('Error updating ping:', error);
+    }
+  };
+  
+  // Start ping interval for live user tracking
+  const startPingInterval = () => {
+    if (isBrazilianIP.current || !isSupabaseConfigured()) return;
+    
+    // Clear any existing interval
+    if (pingInterval.current) {
+      clearInterval(pingInterval.current);
+    }
+
+    // Update ping every 30 seconds
+    pingInterval.current = setInterval(updatePing, 30000);
+    
+    console.log('Started ping interval for live user tracking');
+  };
         supabaseCircuitBreaker,
         () => supabase.from('vsl_analytics').insert({
         session_id: sessionId.current,
