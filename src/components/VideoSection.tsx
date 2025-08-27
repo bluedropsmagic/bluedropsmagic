@@ -13,128 +13,172 @@ export const VideoSection: React.FC = () => {
   const { trackVideoPlay, trackVideoProgress } = useAnalytics();
 
   useEffect(() => {
+    // Clean up any existing scripts first
+    const existingScripts = document.querySelectorAll('script[src*="68ad36221f16ad3567243834"]');
+    existingScripts.forEach(script => {
+      try {
+        script.remove();
+      } catch (error) {
+        console.log('Script already removed');
+      }
+    });
+
+    // Load VTurb script
+    const loadVTurbScript = () => {
+      try {
+        console.log('🎬 Loading VTurb script for main video');
+        
+        const script = document.createElement("script");
+        script.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/v4/player.js";
+        script.async = true;
+        script.id = "vturb-main-script";
+        
+        script.onload = () => {
+          console.log('✅ VTurb script loaded successfully');
+          window.vslVideoLoaded = true;
+          
+          // Setup tracking after script loads
+          setTimeout(() => {
+            setupVideoTracking();
+          }, 2000);
+        };
+        
+        script.onerror = () => {
+          console.error('❌ Failed to load VTurb script');
+        };
+        
+        document.head.appendChild(script);
+      } catch (error) {
+        console.error('Error loading VTurb script:', error);
+      }
+    };
+
     // Setup video tracking
     const setupVideoTracking = () => {
       let hasTrackedPlay = false;
-      let trackingInterval: NodeJS.Timeout;
       let trackingAttempts = 0;
-      const maxAttempts = 15;
+      const maxAttempts = 10;
 
       const checkForPlayer = () => {
         try {
           trackingAttempts++;
-          console.log(`🔍 Attempt ${trackingAttempts}/${maxAttempts} - Looking for video player...`);
-          
-          const playerContainer = document.getElementById('vid-68ad36221f16ad3567243834');
-          
-          if (!playerContainer) {
-            console.log('⏳ Video container not found yet');
-            return;
-          }
+          console.log(`🔍 Checking for player (attempt ${trackingAttempts}/${maxAttempts})`);
           
           // Method 1: Check for smartplayer instances
           if (window.smartplayer && window.smartplayer.instances) {
             const playerInstance = window.smartplayer.instances['68ad36221f16ad3567243834'];
             if (playerInstance) {
-              console.log('✅ VTurb player instance found');
+              console.log('✅ Smartplayer instance found');
               
               // Track video play
-              playerInstance.on('play', () => {
-                if (!hasTrackedPlay) {
-                  hasTrackedPlay = true;
-                  trackVideoPlay();
-                  console.log('🎬 Video play tracked via smartplayer');
-                }
-              });
+              if (playerInstance.on) {
+                playerInstance.on('play', () => {
+                  if (!hasTrackedPlay) {
+                    hasTrackedPlay = true;
+                    trackVideoPlay();
+                    console.log('🎬 Video play tracked via smartplayer');
+                  }
+                });
 
-              // Track video progress
-              playerInstance.on('timeupdate', (event: any) => {
-                const currentTime = event.detail?.currentTime || event.currentTime;
-                const duration = event.detail?.duration || event.duration;
-                
-                if (duration && currentTime) {
-                  trackVideoProgress(currentTime, duration);
-                }
-              });
-
-              clearInterval(trackingInterval);
-              console.log('🎯 Tracking configured via smartplayer');
-              return;
+                // Track video progress
+                playerInstance.on('timeupdate', (event: any) => {
+                  const currentTime = event.detail?.currentTime || event.currentTime || 0;
+                  const duration = event.detail?.duration || event.duration || 1;
+                  
+                  if (duration > 0 && currentTime > 0) {
+                    trackVideoProgress(currentTime, duration);
+                  }
+                });
+              }
+              
+              return true; // Success
             }
           }
 
-          // Method 2: Check for video elements in container
-          const videos = playerContainer.querySelectorAll('video');
-          const iframes = playerContainer.querySelectorAll('iframe');
-          
-          if (videos.length > 0 || iframes.length > 0) {
-            console.log(`✅ Found ${videos.length} videos and ${iframes.length} iframes in container`);
+          // Method 2: Check for video elements
+          const videoElement = document.querySelector('#vid-68ad36221f16ad3567243834 video');
+          if (videoElement) {
+            console.log('✅ Video element found');
             
-            videos.forEach(video => {
-              video.addEventListener('play', () => {
-                if (!hasTrackedPlay) {
-                  hasTrackedPlay = true;
-                  trackVideoPlay();
-                  console.log('🎬 Video play tracked via video element');
-                }
-              });
-              
-              video.addEventListener('timeupdate', () => {
-                if (video.duration && video.currentTime) {
-                  trackVideoProgress(video.currentTime, video.duration);
-                }
-              });
+            videoElement.addEventListener('play', () => {
+              if (!hasTrackedPlay) {
+                hasTrackedPlay = true;
+                trackVideoPlay();
+                console.log('🎬 Video play tracked via video element');
+              }
             });
-
-            clearInterval(trackingInterval);
-            console.log('🎯 Tracking configured via video elements');
-            return;
+            
+            videoElement.addEventListener('timeupdate', () => {
+              const video = videoElement as HTMLVideoElement;
+              if (video.duration && video.currentTime) {
+                trackVideoProgress(video.currentTime, video.duration);
+              }
+            });
+            
+            return true; // Success
           }
 
-          // Method 3: Track clicks on video container as fallback
-          if (!hasTrackedPlay) {
-            playerContainer.addEventListener('click', () => {
+          // Method 3: Check for player container and add click tracking
+          const playerContainer = document.getElementById('vid-68ad36221f16ad3567243834');
+          if (playerContainer) {
+            console.log('✅ Player container found, adding click tracking');
+            
+            const clickHandler = () => {
               if (!hasTrackedPlay) {
                 hasTrackedPlay = true;
                 trackVideoPlay();
                 console.log('🎬 Video play tracked via container click');
               }
+            };
+            
+            playerContainer.addEventListener('click', clickHandler);
+            
+            // Also try to find any clickable elements inside
+            const clickableElements = playerContainer.querySelectorAll('div, button, [role="button"]');
+            clickableElements.forEach(element => {
+              element.addEventListener('click', clickHandler);
             });
+            
+            return true; // Success
           }
 
+          return false; // Not found yet
         } catch (error) {
           console.error('Error in checkForPlayer:', error);
-        }
-        
-        // Stop after max attempts
-        if (trackingAttempts >= maxAttempts) {
-          console.log(`⏰ Maximum attempts reached (${maxAttempts}). Stopping search for player.`);
-          clearInterval(trackingInterval);
+          return false;
         }
       };
 
-      // Start checking for player
-      console.log('🚀 Starting video tracking setup...');
-      checkForPlayer();
-      
-      trackingInterval = setInterval(checkForPlayer, 2000);
-      
-      // Stop checking after max attempts
-      setTimeout(() => {
-        clearInterval(trackingInterval);
-        console.log('⏰ Tracking timeout reached - stopping checks');
-      }, maxAttempts * 2000);
+      // Try to find player immediately
+      if (checkForPlayer()) {
+        return;
+      }
+
+      // If not found, keep checking
+      const interval = setInterval(() => {
+        if (checkForPlayer() || trackingAttempts >= maxAttempts) {
+          clearInterval(interval);
+          if (trackingAttempts >= maxAttempts) {
+            console.log('⏰ Max attempts reached for video tracking setup');
+          }
+        }
+      }, 1000);
     };
 
-    // Setup tracking after a short delay to ensure DOM is ready
-    setTimeout(setupVideoTracking, 1000);
-
-    // Mark video as loaded for global tracking
-    window.vslVideoLoaded = true;
+    // Load script after component mounts
+    setTimeout(loadVTurbScript, 500);
 
     // Cleanup on unmount
     return () => {
-      window.vslVideoLoaded = false;
+      try {
+        const scriptToRemove = document.getElementById('vturb-main-script');
+        if (scriptToRemove && scriptToRemove.parentNode) {
+          scriptToRemove.parentNode.removeChild(scriptToRemove);
+        }
+        window.vslVideoLoaded = false;
+      } catch (error) {
+        console.log('Cleanup completed');
+      }
     };
   }, [trackVideoPlay, trackVideoProgress]);
 
@@ -147,7 +191,7 @@ export const VideoSection: React.FC = () => {
 
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
-          {/* VTurb Smart Player */}
+          {/* VTurb Smart Player - Exactly as requested */}
           <vturb-smartplayer 
             id="vid-68ad36221f16ad3567243834" 
             style={{
@@ -155,19 +199,6 @@ export const VideoSection: React.FC = () => {
               margin: '0 auto',
               width: '100%',
               maxWidth: '400px'
-            }}
-          />
-          
-          {/* VTurb Script */}
-          <script 
-            type="text/javascript"
-            dangerouslySetInnerHTML={{
-              __html: `
-                var s=document.createElement("script"); 
-                s.src="https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/v4/player.js";
-                s.async=true;
-                document.head.appendChild(s);
-              `
             }}
           />
         </div>
