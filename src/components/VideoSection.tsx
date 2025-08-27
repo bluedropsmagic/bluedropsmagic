@@ -23,38 +23,8 @@ export const VideoSection: React.FC = () => {
       }
     });
 
-    // Load VTurb script
-    const loadVTurbScript = () => {
-      try {
-        console.log('🎬 Loading VTurb script for main video');
-        
-        const script = document.createElement("script");
-        script.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/v4/player.js";
-        script.async = true;
-        script.id = "vturb-main-script";
-        
-        script.onload = () => {
-          console.log('✅ VTurb script loaded successfully');
-          window.vslVideoLoaded = true;
-          
-          // Setup tracking after script loads
-          setTimeout(() => {
-            setupVideoTracking();
-          }, 2000);
-        };
-        
-        script.onerror = () => {
-          console.error('❌ Failed to load VTurb script');
-        };
-        
-        document.head.appendChild(script);
-      } catch (error) {
-        console.error('Error loading VTurb script:', error);
-      }
-    };
-
-    // Setup video tracking
-    const setupVideoTracking = () => {
+    // Setup video tracking after a delay to ensure player is loaded
+    const setupTracking = () => {
       let hasTrackedPlay = false;
       let trackingAttempts = 0;
       const maxAttempts = 10;
@@ -133,12 +103,6 @@ export const VideoSection: React.FC = () => {
             
             playerContainer.addEventListener('click', clickHandler);
             
-            // Also try to find any clickable elements inside
-            const clickableElements = playerContainer.querySelectorAll('div, button, [role="button"]');
-            clickableElements.forEach(element => {
-              element.addEventListener('click', clickHandler);
-            });
-            
             return true; // Success
           }
 
@@ -165,13 +129,16 @@ export const VideoSection: React.FC = () => {
       }, 1000);
     };
 
-    // Load script after component mounts
-    setTimeout(loadVTurbScript, 500);
+    // Setup tracking after a delay to ensure the script has loaded
+    setTimeout(setupTracking, 3000);
+
+    // Mark video as loaded
+    window.vslVideoLoaded = true;
 
     // Cleanup on unmount
     return () => {
       try {
-        const scriptToRemove = document.getElementById('vturb-main-script');
+        const scriptToRemove = document.querySelector('script[src*="68ad36221f16ad3567243834"]');
         if (scriptToRemove && scriptToRemove.parentNode) {
           scriptToRemove.parentNode.removeChild(scriptToRemove);
         }
@@ -191,7 +158,7 @@ export const VideoSection: React.FC = () => {
 
       <div className="relative w-full max-w-sm mx-auto">
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
-          {/* VTurb Smart Player - Exactly as requested */}
+          {/* Exact VTurb code as requested */}
           <vturb-smartplayer 
             id="vid-68ad36221f16ad3567243834" 
             style={{
@@ -199,6 +166,17 @@ export const VideoSection: React.FC = () => {
               margin: '0 auto',
               width: '100%',
               maxWidth: '400px'
+            }}
+          />
+          <script 
+            type="text/javascript"
+            dangerouslySetInnerHTML={{
+              __html: `
+                var s=document.createElement("script"); 
+                s.src="https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/v4/player.js"; 
+                s.async=true;
+                document.head.appendChild(s);
+              `
             }}
           />
         </div>
