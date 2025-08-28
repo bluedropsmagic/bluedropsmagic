@@ -337,13 +337,13 @@ export const AdminDashboard: React.FC = () => {
       const sessions = Object.values(sessionGroups);
       const totalSessions = sessions.length;
 
-      // Calculate live users using last_ping (users active in last 2 minutes)
-      const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+      // Calculate live users using last_ping (users active in last 1 minute)
+      const oneMinuteAgo = new Date(Date.now() - 1 * 60 * 1000);
       
-      // Get unique sessions with recent last_ping (excluding Brazil)
+      // Get unique sessions with recent last_ping in last minute (excluding Brazil)
       const liveSessionsMap = new Map();
       filteredEvents.forEach(event => {
-        if (event.last_ping && new Date(event.last_ping) > twoMinutesAgo) {
+        if (event.last_ping && new Date(event.last_ping) > oneMinuteAgo) {
           const sessionId = event.session_id;
           if (!liveSessionsMap.has(sessionId) || 
               new Date(event.last_ping) > new Date(liveSessionsMap.get(sessionId).last_ping)) {
@@ -926,7 +926,7 @@ export const AdminDashboard: React.FC = () => {
                   Dashboard VSL Analytics
                 </h1>
                 <p className="text-sm sm:text-base text-gray-600">
-                  Monitoramento em tempo real (excluindo Brasil)
+                  Monitoramento em tempo real - último minuto (excluindo Brasil)
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
@@ -1056,7 +1056,7 @@ export const AdminDashboard: React.FC = () => {
                     <div className="mb-2 sm:mb-0">
                       <p className="text-xs sm:text-sm font-medium text-gray-600">Online</p>
                       <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600">{analytics.liveUsers}</p>
-                      <p className="text-xs text-gray-500">2 min</p>
+                      <p className="text-xs text-gray-500">1 min</p>
                     </div>
                     <div className="bg-green-100 p-2 sm:p-3 rounded-lg self-end sm:self-auto">
                       <Activity className="w-4 sm:w-6 h-4 sm:h-6 text-green-600" />
@@ -1588,7 +1588,7 @@ export const AdminDashboard: React.FC = () => {
                             <div className="flex items-center gap-2">
                               <div className={`w-2 h-2 rounded-full ${session.isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`}></div>
                               <span className={`text-xs font-medium ${session.isLive ? 'text-green-600' : 'text-gray-500'}`}>
-                                {session.isLive ? 'ON' : 'OFF'}
+                                {session.isLive ? 'LIVE' : 'OFF'}
                               </span>
                             </div>
                           </td>
