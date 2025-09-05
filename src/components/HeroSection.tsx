@@ -9,7 +9,7 @@ export const HeroSection: React.FC = () => {
           VIAGRA? <span className="text-red-600">NOPE!</span>
         </span>
         <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
-          BAKING SODA!
+          JUST SALT!
         </span>
       </h1>
       
