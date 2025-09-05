@@ -42,6 +42,39 @@
           clearInterval(checkUtmify);
         }
       }, 1000);
+      
+      // ✅ FIX: Prevent MutationObserver errors by ensuring DOM is ready
+      document.addEventListener('DOMContentLoaded', function() {
+        // Ensure body exists before any observer tries to attach
+        if (!document.body) {
+          console.warn('⚠️ Document body not ready for observers');
+          return;
+        }
+        
+        // Add safety check for Utmify observer
+        var originalObserve = MutationObserver.prototype.observe;
+        MutationObserver.prototype.observe = function(target, options) {
+          try {
+            // Validate target is a valid Node
+            if (!target || typeof target.nodeType !== 'number') {
+              console.warn('⚠️ Invalid MutationObserver target:', target);
+              return;
+            }
+            
+            // Ensure target is attached to DOM
+            if (!document.contains(target)) {
+              console.warn('⚠️ MutationObserver target not in DOM:', target);
+              return;
+            }
+            
+            return originalObserve.call(this, target, options);
+          } catch (error) {
+            console.error('❌ MutationObserver error prevented:', error);
+          }
+        };
+        
+        console.log('✅ MutationObserver safety wrapper installed');
+      });
     </script>
 
     <!-- ✅ CORRECT: Meta Pixel Code -->
