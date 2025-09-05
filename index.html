@@ -11,11 +11,6 @@
     <!-- ✅ CORRECT: Utmify Tracking Code -->
     <script>
       window.pixelId = "681eb087803be4de5c3bd68b";
-      var a = document.createElement("script");
-      a.setAttribute("async", "");
-      a.setAttribute("defer", "");
-      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-      document.head.appendChild(a);
       
       // ✅ Enhanced Utmify integration with fallback
       window.addEventListener('utmify-track', function(event) {
@@ -45,35 +40,22 @@
       
       // ✅ FIX: Prevent MutationObserver errors by ensuring DOM is ready
       document.addEventListener('DOMContentLoaded', function() {
-        // Ensure body exists before any observer tries to attach
-        if (!document.body) {
-          console.warn('⚠️ Document body not ready for observers');
-          return;
-        }
-        
-        // Add safety check for Utmify observer
-        var originalObserve = MutationObserver.prototype.observe;
-        MutationObserver.prototype.observe = function(target, options) {
+        // ✅ CRITICAL: Load Utmify ONLY after DOM is completely ready
+        setTimeout(function() {
           try {
-            // Validate target is a valid Node
-            if (!target || typeof target.nodeType !== 'number') {
-              console.warn('⚠️ Invalid MutationObserver target:', target);
-              return;
-            }
-            
-            // Ensure target is attached to DOM
-            if (!document.contains(target)) {
-              console.warn('⚠️ MutationObserver target not in DOM:', target);
-              return;
-            }
-            
-            return originalObserve.call(this, target, options);
+            console.log('🚀 Loading Utmify after DOM ready...');
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+            a.onerror = function() {
+              console.warn('⚠️ Utmify script failed to load - continuing without it');
+            };
+            document.head.appendChild(a);
           } catch (error) {
-            console.error('❌ MutationObserver error prevented:', error);
+            console.error('❌ Error loading Utmify:', error);
           }
-        };
-        
-        console.log('✅ MutationObserver safety wrapper installed');
+        }, 2000); // Wait 2 seconds after DOM ready
       });
     </script>
 
