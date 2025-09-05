@@ -99,6 +99,44 @@
     <!-- ✅ RedTrack Universal Script -->
     <script src="https://rdt.obluemagicdrops.com/uniclick.js?attribution=lastpaid&cookiedomain=.thebluedrops.com&cookieduration=90&defaultcampaignid=68685bcb51f1690d1f917171&regviewonce=false"></script>
     
+    <!-- ✅ Native Fingerprinting - Replaces ClickHidden -->
+    <script>
+      // Initialize fingerprinting after DOM is ready
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('🔍 Native fingerprinting system ready');
+        
+        // Expose fingerprint functions globally for debugging
+        window.fingerprintDebug = function() {
+          const stored = localStorage.getItem('user_fingerprint');
+          if (stored) {
+            const fp = JSON.parse(stored);
+            console.log('🔍 Current Fingerprint:', {
+              id: fp.id,
+              hash: fp.hash,
+              created: new Date(fp.timestamp).toLocaleString(),
+              browser: fp.browser.userAgent.substring(0, 50) + '...',
+              screen: fp.screen.width + 'x' + fp.screen.height,
+              features: Object.keys(fp.features).filter(k => fp.features[k]),
+              fonts: fp.fonts.length + ' fonts'
+            });
+          } else {
+            console.log('🔍 No fingerprint stored yet');
+          }
+        };
+        
+        // Auto-show debug in development
+        if (window.location.hostname.includes('localhost') || 
+            window.location.hostname.includes('stackblitz') ||
+            window.location.hostname.includes('bolt.new')) {
+          setTimeout(function() {
+            if (window.fingerprintDebug) {
+              window.fingerprintDebug();
+            }
+          }, 3000);
+        }
+      });
+    </script>
+    
   </head>
   <body>
     <!-- ✅ CORRECT: Meta Pixel noscript -->

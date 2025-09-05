@@ -4,6 +4,7 @@ import { useAnalytics } from './hooks/useAnalytics';
 import { initializeRedTrack } from './utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
 import { buildUrlWithParams, initializeTracking } from './utils/urlUtils';
+import { initializeFingerprinting, showFingerprintDebug } from './utils/fingerprinting';
 
 // Import BoltNavigation
 import { BoltNavigation } from './components/BoltNavigation';
@@ -239,6 +240,14 @@ function App() {
     
     // ✅ NEW: Initialize Facebook Pixel CartPanda tracking
     initializeFacebookPixelTracking();
+    
+    // ✅ NEW: Initialize native fingerprinting
+    initializeFingerprinting().then(() => {
+      console.log('🔍 Native fingerprinting initialized');
+      showFingerprintDebug();
+    }).catch(error => {
+      console.error('Error initializing fingerprinting:', error);
+    });
   }, []);
 
   // ✅ NEW: Expose tracking functions globally for testing

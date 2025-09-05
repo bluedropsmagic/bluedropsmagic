@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { supabase, isSupabaseConfigured, safeSupabaseOperation } from '../lib/supabase';
 import { supabaseCircuitBreaker, geolocationCircuitBreaker, analyticsCircuitBreaker, withCircuitBreaker } from '../utils/circuitBreaker';
+import { initializeFingerprinting, getFingerprintForAnalytics } from '../utils/fingerprinting';
 
 interface GeolocationData {
   ip: string;
@@ -24,6 +25,7 @@ export const useAnalytics = () => {
   const pageExitTracked = useRef<boolean>(false);
   const isBrazilianIP = useRef<boolean>(false); // ✅ NEW: Track if IP is Brazilian
   const pageStartTime = useRef<number>(Date.now()); // ✅ NEW: Track when user entered page
+  const fingerprintData = useRef<any>(null); // ✅ NEW: Store fingerprint data
 
   function generateSessionId(): string {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -293,7 +295,8 @@ export const useAnalytics = () => {
       // Include geolocation data in event
       const enrichedEventData = {
         ...eventData,
-        country: geolocationData.current?.country_name || 'Unknown'
+        country: geolocationData.current?.country_name || 'Unknown',
+        fingerprint_id: fingerprintData.current?.id || 'unknown'
       };
 
       console.log(`📤 Enviando para Supabase:`, {
@@ -395,6 +398,10 @@ export const useAnalytics = () => {
 
     const initializeAnalytics = async () => {
       try {
+        // ✅ NEW: Initialize fingerprinting
+        fingerprintData.current = await initializeFingerprinting();
+        console.log('🔍 Fingerprint initialized:', fingerprintData.current.id);
+        
         // Load geolocation data first
         geolocationData.current = await getGeolocationData();
         isGeolocationLoaded.current = true;
@@ -402,11 +409,14 @@ export const useAnalytics = () => {
         // ✅ NEW: Only track if not Brazilian IP
         if (!isBrazilianIP.current) {
           // Track page enter with geolocation data
+          const fingerprintInfo = getFingerprintForAnalytics();
           await trackEvent('page_enter', { 
             page_start_time: pageStartTime.current,
             country: geolocationData.current?.country_name || 'Unknown',
             city: geolocationData.current?.city || 'Unknown',
-            region: geolocationData.current?.region || 'Unknown'
+            region: geolocationData.current?.region || 'Unknown',
+            fingerprint_id: fingerprintInfo.fingerprint_id,
+            is_returning_user: fingerprintInfo.is_returning_user
           });
         } else {
           console.log('🇧🇷 Brazilian IP detected - skipping page_enter tracking');
