@@ -186,7 +186,7 @@ export const Modals: React.FC<ModalsProps> = ({
                 </div>
                 
                 <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">
-                  Wait! You're Leaving ${upsellSavings} Behind...
+                  Salt Cures Impotence
                 </h2>
                 
                 <div className="text-white/90 text-sm sm:text-base mb-6 leading-relaxed">
