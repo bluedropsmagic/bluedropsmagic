@@ -218,7 +218,7 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
     },
     {
       id: 'pitch',
-      label: 'Chegaram no Pitch (35:55)',
+      label: 'Chegaram no Pitch (32:05)',
       value: funnelData.pitchReached,
       icon: Target,
       color: 'bg-purple-500',
