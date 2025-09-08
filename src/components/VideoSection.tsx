@@ -7,7 +7,7 @@ export const VideoSection: React.FC = () => {
 
   useEffect(() => {
     // Clean up any existing VTurb scripts first
-    const existingScripts = document.querySelectorAll('script[src*="68ad36221f16ad3567243834"]');
+    const existingScripts = document.querySelectorAll('script[src*="68be600d60f3aa03c96f9070"]');
     existingScripts.forEach(script => {
       try {
         script.remove();
@@ -17,11 +17,11 @@ export const VideoSection: React.FC = () => {
       }
     });
 
-    // Inject the exact VTurb script as you specified
+    // Inject the new VTurb script
     const script = document.createElement("script");
     script.type = "text/javascript";
     script.async = true;
-    script.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/v4/player.js";
+    script.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68be600d60f3aa03c96f9070/v4/player.js";
     
     script.onload = () => {
       console.log('✅ VTurb script loaded successfully');
@@ -43,7 +43,7 @@ export const VideoSection: React.FC = () => {
     // Cleanup on unmount
     return () => {
       try {
-        const scriptToRemove = document.querySelector('script[src*="68ad36221f16ad3567243834"]');
+        const scriptToRemove = document.querySelector('script[src*="68be600d60f3aa03c96f9070"]');
         if (scriptToRemove && scriptToRemove.parentNode) {
           scriptToRemove.parentNode.removeChild(scriptToRemove);
         }
@@ -62,11 +62,11 @@ export const VideoSection: React.FC = () => {
     const checkForPlayer = () => {
       try {
         trackingAttempts++;
-        console.log(`🔍 Checking for player (attempt ${trackingAttempts}/${maxAttempts})`);
+        console.log(`🔍 Checking for new player (attempt ${trackingAttempts}/${maxAttempts})`);
         
         // Method 1: Check for smartplayer instances
         if (window.smartplayer && window.smartplayer.instances) {
-          const playerInstance = window.smartplayer.instances['68ad36221f16ad3567243834'];
+          const playerInstance = window.smartplayer.instances['68be600d60f3aa03c96f9070'];
           if (playerInstance) {
             console.log('✅ Smartplayer instance found');
             
@@ -96,7 +96,7 @@ export const VideoSection: React.FC = () => {
         }
 
         // Method 2: Check for video elements
-        const videoElement = document.querySelector('#vid-68ad36221f16ad3567243834 video');
+        const videoElement = document.querySelector('#vid-68be600d60f3aa03c96f9070 video');
         if (videoElement) {
           console.log('✅ Video element found');
           
@@ -119,7 +119,7 @@ export const VideoSection: React.FC = () => {
         }
 
         // Method 3: Check for player container and add click tracking
-        const playerContainer = document.getElementById('vid-68ad36221f16ad3567243834');
+        const playerContainer = document.getElementById('vid-68be600d60f3aa03c96f9070');
         if (playerContainer) {
           console.log('✅ Player container found, adding click tracking');
           
@@ -170,7 +170,7 @@ export const VideoSection: React.FC = () => {
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* Exact VTurb code as you specified */}
           <vturb-smartplayer 
-            id="vid-68ad36221f16ad3567243834" 
+            id="vid-68be600d60f3aa03c96f9070" 
             style={{
               display: 'block',
               margin: '0 auto',
