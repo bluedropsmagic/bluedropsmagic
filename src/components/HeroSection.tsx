@@ -11,7 +11,7 @@ export const HeroSection: React.FC = () => {
       </h1>
       
       <p className="text-base sm:text-lg md:text-xl text-blue-800 mb-2 font-medium px-2 leading-relaxed">
-        Discover how this simple white powder that you definitely have in your kitchen can naturally restore your performance in just{' '}
+        Discover how this simple white powder in your kitchen can restore your performance in{' '}
         <span className="text-yellow-600 font-bold">7 days</span>.
       </p>
     </div>
