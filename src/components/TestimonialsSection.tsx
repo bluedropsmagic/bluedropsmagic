@@ -527,7 +527,7 @@ const TestimonialCard: React.FC<{
                   
                   if (mainVideoContainer && testimonialContainer) {
                     // ✅ CRITICAL: Move any testimonial video elements that ended up in main container
-                    var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${testimonial.videoId}"], [data-video-id="${testimonial.videoId}"], video, iframe');
+                    var orphanedElements = mainVideoContainer.querySelectorAll('[src*="${testimonial.videoId}"], [data-video-id="${testimonial.videoId}"]');
                     orphanedElements.forEach(function(element) {
                       // Check if this element belongs to the testimonial video
                       var elementSrc = element.src || element.getAttribute('src') || '';
@@ -542,7 +542,7 @@ const TestimonialCard: React.FC<{
                     });
                     
                     // ✅ CRITICAL: Ensure main video elements stay in main container
-                    var mainVideoElements = testimonialContainer.querySelectorAll('[src*="683ba3d1b87ae17c6e07e7db"], [data-video-id="683ba3d1b87ae17c6e07e7db"]');
+                    var mainVideoElements = testimonialContainer.querySelectorAll('[src*="68ad36221f16ad3567243834"], [data-video-id="68ad36221f16ad3567243834"]');
                     mainVideoElements.forEach(function(element) {
                       if (element.parentNode === testimonialContainer) {
                         mainVideoContainer.appendChild(element);
