@@ -93,7 +93,7 @@ function App() {
 
   // ✅ NEW: Function to show rest of content after 35:55
   const showRestOfContentAfterDelay = () => {
-    console.log('🕐 32:05 reached - showing rest of content');
+    console.log('🕐 35:55 reached - showing rest of content');
     setShowRestOfContent(true);
     setShowPurchaseButton(true);
     
@@ -165,12 +165,12 @@ function App() {
     console.log('🕐 Setting up 32:05 timer for content reveal');
     
     const timer = setTimeout(() => {
-      console.log('🎯 32:05 elapsed - triggering content reveal');
+      console.log('🎯 35:55 elapsed - triggering content reveal');
       showRestOfContentAfterDelay();
-    }, 1925000); // 32:05 = 1925 seconds = 1,925,000 milliseconds
+    }, 2155000); // 35:55 = 2155 seconds = 2,155,000 milliseconds
     
     return () => {
-      console.log('🧹 Cleaning up 32:05 timer');
+      console.log('🧹 Cleaning up 35:55 timer');
       clearTimeout(timer);
     };
   }, [isBoltEnvironment]); // Run when Bolt environment changes
