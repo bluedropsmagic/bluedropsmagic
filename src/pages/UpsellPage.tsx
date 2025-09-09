@@ -348,7 +348,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const content = getUpsellContent(variant);
 
   const handleAccept = () => {
-    trackInitiateCheckout(content.acceptUrl);
     trackOfferClick(`upsell-${variant}-accept`);
     
     // ✅ NEW: Track Upsell 2 Purchase event for 6-bottle upsell
@@ -368,7 +367,6 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   };
 
   const handleReject = () => {
-    trackInitiateCheckout(content.rejectUrl);
     trackOfferClick(`upsell-${variant}-reject`);
     
     // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved

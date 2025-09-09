@@ -363,7 +363,6 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
   const content = getSecondUpsellContent(variant);
 
   const handleAccept = () => {
-    trackInitiateCheckout(content.acceptUrl);
     trackOfferClick(`second-upsell-${variant}-accept`);
     
     // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
@@ -377,7 +376,6 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
   };
 
   const handleReject = () => {
-    trackInitiateCheckout(content.rejectUrl);
     trackOfferClick(`second-upsell-${variant}-reject`);
     
     // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved

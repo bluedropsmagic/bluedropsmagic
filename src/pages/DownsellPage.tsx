@@ -368,7 +368,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   const content = getDownsellContent(variant);
 
   const handleAccept = () => {
-    trackInitiateCheckout(content.acceptUrl);
     trackOfferClick(`downsell-${variant}-accept`);
     
     // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
@@ -382,7 +381,6 @@ export const DownsellPage: React.FC<DownsellPageProps> = ({ variant }) => {
   };
 
   const handleReject = () => {
-    trackInitiateCheckout(content.rejectUrl);
     trackOfferClick(`downsell-${variant}-reject`);
     
     // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved

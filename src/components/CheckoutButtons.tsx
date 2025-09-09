@@ -140,14 +140,6 @@ export const CheckoutButtons: React.FC<CheckoutButtonsProps> = ({
 
   // Handler para clique nos botões
   const handleButtonClick = (buttonConfig: ButtonConfig) => {
-    // ✅ CRITICAL: Only track InitiateCheckout for accept buttons, not reject buttons
-    if (buttonConfig.action.includes('accept') || buttonConfig.action.includes('main')) {
-      console.log('🎯 Checkout button clicked (accept/main):', buttonConfig.action);
-    trackInitiateCheckout(buttonConfig.url);
-    } else {
-      console.log('🚫 Checkout button clicked (reject) - NOT tracking InitiateCheckout:', buttonConfig.action);
-    }
-    
     const urlWithCid = addCidToUrl(buttonConfig.url);
     
     // Log para debug

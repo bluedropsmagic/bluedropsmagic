@@ -30,10 +30,6 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   const handlePurchaseClick = (packageType: '1-bottle' | '3-bottle' | '6-bottle') => {
     const targetUrl = purchaseUrls[packageType];
     
-    // ✅ CRITICAL: Only track InitiateCheckout once per URL
-    console.log('🎯 Purchase button clicked:', packageType, 'URL:', targetUrl);
-    trackInitiateCheckout(targetUrl);
-    
     // Call the original onPurchase handler
     onPurchase(packageType);
   };
@@ -41,8 +37,7 @@ export const ProductOffers: React.FC<ProductOffersProps> = ({
   const handleSecondaryClick = (packageType: '1-bottle' | '3-bottle') => {
     const targetUrl = purchaseUrls[packageType];
     
-    // ✅ REMOVED: Don't track InitiateCheckout for popup - only for final purchase
-    console.log('🎯 Secondary package clicked (popup):', packageType, '- NOT tracking InitiateCheckout');
+    console.log('🎯 Secondary package clicked (popup):', packageType);
     
     // Track offer click for analytics (popup opened)
     if (typeof window !== 'undefined' && (window as any).trackOfferClick) {

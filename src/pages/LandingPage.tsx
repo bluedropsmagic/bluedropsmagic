@@ -39,7 +39,6 @@ export const LandingPage: React.FC = () => {
     
     // Track the offer click
     trackOfferClick(`landing-${packageType}`);
-    trackInitiateCheckout(url);
     
     // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
     const finalUrl = buildUrlWithParams(url);
