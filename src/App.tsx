@@ -220,7 +220,8 @@ function App() {
       console.log('🧹 Cleaning up 33:37 timer');
       clearTimeout(timer);
     };
-  }, [isBoltEnvironment, hasSeenContent]); // Run when Bolt environment or content seen status changes
+  }, [hasSeenContent, isBoltEnvironment]);
+
   // ✅ NEW: Function to scroll to 6-bottle purchase button
   const scrollToSixBottleButton = () => {
     try {
