@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { AlertTriangle, CheckCircle, Shield, Truck, Clock } from 'lucide-react';
-import { trackInitiateCheckout } from '../utils/facebookPixelTracking';
+import { trackInitiateCheckout, trackCustomEvent } from '../utils/facebookPixelTracking';
 import { TestimonialsSection } from '../components/TestimonialsSection';
 import { BoltNavigation } from '../components/BoltNavigation';
 import { buildUrlWithParams } from '../utils/urlUtils';
@@ -58,6 +58,65 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
 
   // ✅ NEW: Inject Hotjar for upsell pages
   useEffect(() => {
+    // ✅ NEW: Inject specific pixels for 6-bottle upsell pages
+    if (variant === '6-bottle') {
+      console.log('🎯 6-bottle upsell page detected - injecting specific Meta Pixels');
+      
+      // Remove any existing Meta Pixel scripts to prevent conflicts
+      const existingPixels = document.querySelectorAll('script[src*="fbevents.js"]');
+      existingPixels.forEach(script => {
+        const scriptContent = script.innerHTML || '';
+        if (scriptContent.includes('767752622822411') || scriptContent.includes('1833386017267070')) {
+          script.remove();
+        }
+      });
+      
+      // Inject first pixel: 767752622822411
+      const pixel1Script = document.createElement('script');
+      pixel1Script.innerHTML = `
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '767752622822411');
+        fbq('track', 'PageView');
+        console.log('✅ Meta Pixel 767752622822411 loaded for 6-bottle upsell');
+      `;
+      document.head.appendChild(pixel1Script);
+      
+      // Inject second pixel: 1833386017267070
+      const pixel2Script = document.createElement('script');
+      pixel2Script.innerHTML = `
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1833386017267070');
+        fbq('track', 'PageView');
+        console.log('✅ Meta Pixel 1833386017267070 loaded for 6-bottle upsell');
+      `;
+      document.head.appendChild(pixel2Script);
+      
+      // Add noscript tags for both pixels
+      const noscript1 = document.createElement('noscript');
+      noscript1.innerHTML = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=767752622822411&ev=PageView&noscript=1" />';
+      document.body.appendChild(noscript1);
+      
+      const noscript2 = document.createElement('noscript');
+      noscript2.innerHTML = '<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1833386017267070&ev=PageView&noscript=1" />';
+      document.body.appendChild(noscript2);
+      
+      console.log('🎯 6-bottle upsell pixels injected successfully');
+    }
+    
     // Remove ALL existing Hotjar scripts to prevent conflicts
     const existingHotjar = document.querySelectorAll('script[src*="hotjar"]');
     existingHotjar.forEach(script => script.remove());
@@ -293,6 +352,12 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
   const handleAccept = () => {
     trackInitiateCheckout(content.acceptUrl);
     trackOfferClick(`upsell-${variant}-accept`);
+    
+    // ✅ NEW: Track Upsell 2 Purchase event for 6-bottle upsell
+    if (variant === '6-bottle') {
+      console.log('🎯 6-bottle upsell accepted - tracking Upsell 2 Purchase event');
+      trackCustomEvent('Upsell 2 Purchase', ['767752622822411', '1833386017267070']);
+    }
     
     // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
     const url = buildUrlWithParams(content.acceptUrl);

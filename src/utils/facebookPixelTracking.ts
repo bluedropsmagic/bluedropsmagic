@@ -198,6 +198,34 @@ export const trackInitiateCheckout = (url?: string): void => {
 };
 
 /**
+ * Track custom event for specific pixels
+ */
+export const trackCustomEvent = (eventName: string, pixelIds: string[], eventData?: any): void => {
+  if (!FACEBOOK_PIXEL_CONFIG.enabled) {
+    console.log('📊 Facebook Pixel tracking disabled');
+    return;
+  }
+  
+  if (!isFacebookPixelReady()) {
+    console.warn('⚠️ Facebook Pixel not ready for custom event tracking');
+    return;
+  }
+  
+  try {
+    const fbq = (window as any).fbq;
+    
+    // Track event for each specified pixel
+    pixelIds.forEach(pixelId => {
+      fbq('trackSingle', pixelId, eventName, eventData || {});
+      console.log(`✅ Meta Pixel: ${eventName} tracked for pixel ${pixelId}`, eventData);
+    });
+    
+  } catch (error) {
+    console.error(`❌ Error tracking custom event ${eventName}:`, error);
+  }
+};
+
+/**
  * Track Purchase event with Facebook Pixel 
  * ✅ CRITICAL: ONLY for actual completed purchases on thank you pages
  */
