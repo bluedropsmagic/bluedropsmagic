@@ -165,12 +165,12 @@ function App() {
     console.log('🕐 Setting up 32:05 timer for content reveal');
     
     const timer = setTimeout(() => {
-      console.log('🎯 35:55 elapsed - triggering content reveal');
+      console.log('🎯 33:37 elapsed - triggering content reveal');
       showRestOfContentAfterDelay();
-    }, 2155000); // 35:55 = 2155 seconds = 2,155,000 milliseconds
+    }, 2017000); // 33:37 = 2017 seconds = 2,017,000 milliseconds
     
     return () => {
-      console.log('🧹 Cleaning up 35:55 timer');
+      console.log('🧹 Cleaning up 33:37 timer');
       clearTimeout(timer);
     };
   }, [isBoltEnvironment]); // Run when Bolt environment changes

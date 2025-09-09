@@ -113,7 +113,7 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
         // Check if pitch was reached (35:55 = 2155 seconds)
         const hasPitchReached = session.some(event => 
           event.event_type === 'video_progress' && 
-          (event.event_data?.current_time >= 2155 || event.event_data?.milestone === 'pitch_reached')
+          (event.event_data?.current_time >= 2017 || event.event_data?.milestone === 'pitch_reached')
         );
         if (hasPitchReached) pitchReached++;
 
@@ -218,7 +218,7 @@ export const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ className = 
     },
     {
       id: 'pitch',
-      label: 'Chegaram no Pitch (35:55)',
+      label: 'Chegaram no Pitch (33:37)',
       value: funnelData.pitchReached,
       icon: Target,
       color: 'bg-purple-500',
