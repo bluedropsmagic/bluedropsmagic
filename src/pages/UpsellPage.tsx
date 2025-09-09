@@ -83,8 +83,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
         fbq('init', '767752622822411');
-        fbq('track', 'PageView');
-        console.log('✅ Meta Pixel 767752622822411 loaded for 6-bottle upsell');
+        console.log('✅ Meta Pixel 767752622822411 initialized for 6-bottle upsell (no PageView)');
       `;
       document.head.appendChild(pixel1Script);
       
@@ -100,8 +99,7 @@ export const UpsellPage: React.FC<UpsellPageProps> = ({ variant }) => {
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
         fbq('init', '1833386017267070');
-        fbq('track', 'PageView');
-        console.log('✅ Meta Pixel 1833386017267070 loaded for 6-bottle upsell');
+        console.log('✅ Meta Pixel 1833386017267070 initialized for 6-bottle upsell (no PageView)');
       `;
       document.head.appendChild(pixel2Script);
       
