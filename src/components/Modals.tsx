@@ -68,10 +68,6 @@ export const Modals: React.FC<ModalsProps> = ({
     if (targetUrl) {
       console.log('🔄 Redirecting to original product URL:', targetUrl);
       
-      // ✅ CRITICAL: Only track InitiateCheckout once for the final purchase decision
-      console.log('🎯 Modal auto-refuse: Tracking InitiateCheckout for original product');
-      trackInitiateCheckout(targetUrl);
-      
       // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
       const finalUrl = buildUrlWithParams(targetUrl);
       

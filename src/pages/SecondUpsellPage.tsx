@@ -671,7 +671,6 @@ export const SecondUpsellPage: React.FC<SecondUpsellPageProps> = ({ variant }) =
                 <button 
                   onClick={() => {
                     // Track high risk offer click
-                    trackInitiateCheckout('https://pagamento.paybluedrops.com/checkout/190510289:1');
                     trackOfferClick(`second-upsell-${variant}-high-risk`);
                     
                     // Build URL with all tracking parameters
