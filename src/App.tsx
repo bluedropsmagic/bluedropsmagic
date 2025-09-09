@@ -31,10 +31,17 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminDelayOverride, setAdminDelayOverride] = useState(false); // ✅ CHANGED: Default false
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false); // ✅ NEW: Detect Bolt environment
+  const [hasSeenContent, setHasSeenContent] = useState(false); // ✅ NEW: Track if user has seen content
 
   // ✅ NEW: Function to show content immediately (for news CTA)
   const showContentImmediately = () => {
     console.log('📰 News CTA clicked - showing content immediately');
+    
+    // ✅ NEW: Mark that user has seen content and persist it
+    setHasSeenContent(true);
+    localStorage.setItem('content_revealed', 'true');
+    localStorage.setItem('content_revealed_time', Date.now().toString());
+    
     setShowRestOfContent(true);
     setShowPurchaseButton(true);
     
@@ -94,6 +101,12 @@ function App() {
   // ✅ NEW: Function to show rest of content after 35:55
   const showRestOfContentAfterDelay = () => {
     console.log('🕐 35:55 reached - showing rest of content');
+    
+    // ✅ NEW: Mark that user has seen content and persist it
+    setHasSeenContent(true);
+    localStorage.setItem('content_revealed', 'true');
+    localStorage.setItem('content_revealed_time', Date.now().toString());
+    
     setShowRestOfContent(true);
     setShowPurchaseButton(true);
     
@@ -145,15 +158,49 @@ function App() {
 
   // ✅ NEW: Check for admin override or time-based content reveal
   useEffect(() => {
+    // ✅ NEW: Check if user has already seen content (persist after reload)
+    const contentRevealed = localStorage.getItem('content_revealed') === 'true';
+    const contentRevealedTime = localStorage.getItem('content_revealed_time');
+    
+    if (contentRevealed && contentRevealedTime) {
+      const revealTime = parseInt(contentRevealedTime);
+      const now = Date.now();
+      const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+      
+      // ✅ NEW: If content was revealed less than 1 hour ago, keep it visible
+      if (now - revealTime < oneHour) {
+        console.log('🔄 User has already seen content (within 1 hour) - keeping visible after reload');
+        setHasSeenContent(true);
+        setShowRestOfContent(true);
+        setShowPurchaseButton(true);
+        return; // Skip timer setup
+      } else {
+        // ✅ NEW: Content reveal expired, clear localStorage
+        console.log('⏰ Content reveal expired (>1 hour) - resetting');
+        localStorage.removeItem('content_revealed');
+        localStorage.removeItem('content_revealed_time');
+        setHasSeenContent(false);
+      }
+    }
+    
     if (isAdmin || isBoltEnvironment) {
       console.log('👨‍💼 Admin logged in OR Bolt environment - showing purchase buttons and content');
+      setHasSeenContent(true);
       setShowRestOfContent(true);
       setShowPurchaseButton(true);
+      // ✅ NEW: Don't persist admin/bolt override
+      return;
     }
   }, [isAdmin, isBoltEnvironment]);
 
   // ✅ NEW: Auto-trigger content reveal after 30 seconds
   useEffect(() => {
+    // ✅ NEW: Skip timer if user has already seen content
+    if (hasSeenContent) {
+      console.log('✅ User has already seen content - skipping timer');
+      return;
+    }
+    
     // Skip timer in Bolt environment - show content immediately
     if (isBoltEnvironment) {
       console.log('🔧 Bolt environment - showing content immediately');
@@ -173,7 +220,7 @@ function App() {
       console.log('🧹 Cleaning up 33:37 timer');
       clearTimeout(timer);
     };
-  }, [isBoltEnvironment]); // Run when Bolt environment changes
+  }, [isBoltEnvironment, hasSeenContent]); // Run when Bolt environment or content seen status changes
   // ✅ NEW: Function to scroll to 6-bottle purchase button
   const scrollToSixBottleButton = () => {
     try {
