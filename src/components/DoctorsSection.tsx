@@ -148,7 +148,7 @@ export const DoctorsSection: React.FC = () => {
             // ✅ FIXED: Ensure video elements stay in correct container
             setTimeout(function() {
               // ✅ CRITICAL: Prevent video from appearing in main video container
-              var mainVideoContainer = document.getElementById('vid_683ba3d1b87ae17c6e07e7db');
+              var mainVideoContainer = document.getElementById('vid_68bf9911b38480b5c834d7fa');
               var doctorContainer = document.getElementById('vid-${videoId}');
               
               if (mainVideoContainer && doctorContainer) {
@@ -168,7 +168,7 @@ export const DoctorsSection: React.FC = () => {
                 });
                 
                 // ✅ CRITICAL: Ensure main video elements stay in main container
-                var mainVideoElements = doctorContainer.querySelectorAll('[src*="68ad36221f16ad3567243834"], [data-video-id="68ad36221f16ad3567243834"]');
+                var mainVideoElements = doctorContainer.querySelectorAll('[src*="68bf9911b38480b5c834d7fa"], [data-video-id="68bf9911b38480b5c834d7fa"]');
                 mainVideoElements.forEach(function(element) {
                   if (element.parentNode === doctorContainer) {
                     mainVideoContainer.appendChild(element);
