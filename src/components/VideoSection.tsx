@@ -56,7 +56,6 @@ export const VideoSection: React.FC = () => {
       // ✅ OPTIMIZED TRACKING SETUP: Faster initialization
       setTimeout(() => {
         setupVideoTracking();
-        setupVideoCenteringOnClick();
       }, 250); // ✅ ULTRA-FAST: Reduced to 250ms
     };
     
@@ -95,49 +94,6 @@ export const VideoSection: React.FC = () => {
       }
     };
   }, []);
-
-  const setupVideoCenteringOnClick = () => {
-    let setupAttempts = 0;
-    const maxSetupAttempts = 20;
-
-    const setupClickHandler = () => {
-      setupAttempts++;
-      console.log(`🎯 Setting up video centering (attempt ${setupAttempts}/${maxSetupAttempts})`);
-
-      // Method 1: Try video container
-      const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
-      if (videoContainer) {
-        videoContainer.addEventListener('click', handleVideoClick);
-        console.log('✅ Video centering click handler added to container');
-        return true;
-      }
-
-      // Method 2: Try video element directly
-      const videoElement = document.querySelector('#vid-68c23f8dbfe9104c306c78ea video');
-      if (videoElement) {
-        videoElement.addEventListener('click', handleVideoClick);
-        console.log('✅ Video centering click handler added to video element');
-        return true;
-      }
-
-      return false;
-    };
-
-    // Try immediately
-    if (setupClickHandler()) {
-      return;
-    }
-
-    // Retry with polling
-    const interval = setInterval(() => {
-      if (setupClickHandler() || setupAttempts >= maxSetupAttempts) {
-        clearInterval(interval);
-        if (setupAttempts >= maxSetupAttempts) {
-          console.log('⏰ Max attempts reached for video centering setup');
-        }
-      }
-    }, 200);
-  };
 
   const handleVideoClick = () => {
     console.log('🎬 Video clicked - centering and blocking scroll');
@@ -228,6 +184,8 @@ export const VideoSection: React.FC = () => {
                 if (!hasTrackedPlay) {
                   hasTrackedPlay = true;
                   trackVideoPlay();
+                  // ✅ NEW: Center video on play
+                  handleVideoClick();
                   console.log('🎬 ULTRA-FAST TRACK: Video play tracked via smartplayer');
                 }
               });
@@ -256,6 +214,8 @@ export const VideoSection: React.FC = () => {
             if (!hasTrackedPlay) {
               hasTrackedPlay = true;
               trackVideoPlay();
+              // ✅ NEW: Center video on play
+              handleVideoClick();
               // Start timer from video play
               if (typeof window !== 'undefined' && (window as any).startTimerFromVideoPlay) {
                 (window as any).startTimerFromVideoPlay();
@@ -283,6 +243,8 @@ export const VideoSection: React.FC = () => {
             if (!hasTrackedPlay) {
               hasTrackedPlay = true;
               trackVideoPlay();
+              // ✅ NEW: Center video on play
+              handleVideoClick();
               // Start timer from video play
               if (typeof window !== 'undefined' && (window as any).startTimerFromVideoPlay) {
                 (window as any).startTimerFromVideoPlay();
@@ -346,10 +308,9 @@ export const VideoSection: React.FC = () => {
         {isVideoCentered && (
           <button
             onClick={handleCloseVideo}
-            className="fixed top-4 right-4 z-[10000] w-10 h-10 bg-white/90 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
-            style={{ backdropFilter: 'blur(10px)' }}
+            className="fixed top-4 right-4 z-[10000] w-12 h-12 bg-white/90 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110 border-2 border-gray-300"
           >
-            <span className="text-lg font-bold">×</span>
+            <span className="text-xl font-bold">×</span>
           </button>
         )}
       </div>
