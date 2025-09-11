@@ -113,11 +113,51 @@
     <!-- ✅ RedTrack Universal Script -->
     <script src="https://rdt.obluemagicdrops.com/uniclick.js?attribution=lastpaid&cookiedomain=.thebluedrops.com&cookieduration=90&defaultcampaignid=68685bcb51f1690d1f917171&regviewonce=false"></script>
     
+    <!-- ✅ INSTANT VIDEO LOADING: Preload VTurb script and resources -->
+    <link rel="preload" href="https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68bf9911b38480b5c834d7fa/v4/player.js" as="script">
+    <link rel="dns-prefetch" href="//scripts.converteai.net">
+    <link rel="dns-prefetch" href="//images.converteai.net">
+    <link rel="preconnect" href="https://scripts.converteai.net" crossorigin>
+    <link rel="preconnect" href="https://images.converteai.net" crossorigin>
+    
     <!-- ✅ Native Fingerprinting - Replaces ClickHidden -->
     <script>
       // Initialize fingerprinting after DOM is ready
       document.addEventListener('DOMContentLoaded', function() {
         console.log('🔍 Native fingerprinting system ready');
+        
+        // ✅ INSTANT VIDEO LOADING: Pre-initialize VTurb environment
+        console.log('🚀 Pre-initializing VTurb environment for instant loading...');
+        
+        // Create video container early if it doesn't exist
+        setTimeout(function() {
+          if (!document.getElementById('vid-68bf9911b38480b5c834d7fa')) {
+            console.log('🎬 Pre-creating VTurb container for instant loading');
+            
+            // Wait for React to mount, then create container
+            var checkForMount = setInterval(function() {
+              var targetContainer = document.querySelector('.aspect-\\[9\\/16\\]') || 
+                                  document.querySelector('[class*="aspect-"]') ||
+                                  document.querySelector('.video-container');
+              
+              if (targetContainer) {
+                clearInterval(checkForMount);
+                
+                var smartPlayer = document.createElement('vturb-smartplayer');
+                smartPlayer.id = 'vid-68bf9911b38480b5c834d7fa';
+                smartPlayer.style.cssText = 'display: block; margin: 0 auto; width: 100%; max-width: 400px;';
+                
+                targetContainer.appendChild(smartPlayer);
+                console.log('✅ VTurb container pre-created for instant loading');
+              }
+            }, 100);
+            
+            // Clear interval after 10 seconds to prevent infinite checking
+            setTimeout(function() {
+              clearInterval(checkForMount);
+            }, 10000);
+          }
+        }, 500);
         
         // Expose fingerprint functions globally for debugging
         window.fingerprintDebug = function() {
