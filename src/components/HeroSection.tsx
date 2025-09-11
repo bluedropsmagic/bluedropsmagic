@@ -4,6 +4,15 @@ import { Play } from 'lucide-react';
 export const HeroSection: React.FC = () => {
   return (
     <div className="mb-6 text-center w-full animate-fadeInUp animation-delay-400">
+      {/* Warning Header */}
+      <div className="mb-4 animate-fadeInDown animation-delay-200">
+        <div className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-full inline-block shadow-lg border border-red-400">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-black tracking-wide">⚠️ THEY DON'T WANT YOU TO KNOW THIS</span>
+          </div>
+        </div>
+      </div>
+      
       <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[0.8] mb-4 px-2">
         <span className="text-blue-900 block mb-1">Baking Soda</span>
         <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent block">
