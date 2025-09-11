@@ -23,35 +23,46 @@ import { Footer } from './components/Footer';
 import { Modals } from './components/Modals';
 
 function App() {
-  const [showPurchaseButton, setShowPurchaseButton] = useState(false); // ✅ CHANGED: Start hidden
-  const [showPopup, setShowPopup] = useState(false); // ✅ DISABLED: Popup removido
+  const [showPurchaseButton, setShowPurchaseButton] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [showUpsellPopup, setShowUpsellPopup] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState('');
-  const [showRestOfContent, setShowRestOfContent] = useState(false); // ✅ NEW: Control rest of content
+  const [showRestOfContent, setShowRestOfContent] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [adminDelayOverride, setAdminDelayOverride] = useState(false); // ✅ CHANGED: Default false
-  const [isBoltEnvironment, setIsBoltEnvironment] = useState(false); // ✅ NEW: Detect Bolt environment
-  const [hasSeenContent, setHasSeenContent] = useState(false); // ✅ NEW: Track if user has seen content
+  const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState<number>(1958); // 32:38 in seconds
+  const [timerActive, setTimerActive] = useState(false);
 
-  // ✅ NEW: Function to show content immediately (for news CTA)
-  const showContentImmediately = () => {
-    console.log('📰 News CTA clicked - showing content immediately');
-    
-    // ✅ NEW: Mark that user has seen content and persist it
-    setHasSeenContent(true);
-    localStorage.setItem('content_revealed', 'true');
-    localStorage.setItem('content_revealed_time', Date.now().toString());
-    
-    setShowRestOfContent(true);
-    setShowPurchaseButton(true);
-    
-    // Auto-scroll to purchase section after content loads with longer delay
-    setTimeout(() => {
-      scrollToSixBottleButton();
-    }, 1500); // Increased delay to ensure content is fully rendered
-  };
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { trackVideoPlay, trackVideoProgress, trackOfferClick } = useAnalytics();
 
-  // ✅ NEW: Detect Bolt environment
+  // Check if we're on the main page (show popup only on main page)
+  const isMainPage = location.pathname === '/' || location.pathname === '/home';
+
+  // Check if user has already seen content (only for non-admin users)
+  useEffect(() => {
+    if (!isAdmin && !isBoltEnvironment) {
+      const hasSeenContent = sessionStorage.getItem('has_seen_content') === 'true';
+      if (hasSeenContent) {
+        console.log('👤 Normal user has already seen content - showing immediately');
+        setShowRestOfContent(true);
+        setShowPurchaseButton(true);
+        setTimeRemaining(0);
+        setTimerActive(false);
+      }
+    }
+  }, [isAdmin, isBoltEnvironment]);
+
+  // Save state when content is shown (only for normal users)
+  useEffect(() => {
+    if (showRestOfContent && !isAdmin && !isBoltEnvironment) {
+      sessionStorage.setItem('has_seen_content', 'true');
+      console.log('💾 Saved content state for normal user');
+    }
+  }, [showRestOfContent, isAdmin, isBoltEnvironment]);
+
+  // Detect Bolt environment
   useEffect(() => {
     const hostname = window.location.hostname;
     const isBolt = hostname.includes('stackblitz') || 
@@ -66,6 +77,7 @@ function App() {
     
     if (isBolt) {
       console.log('🔧 Development environment detected - navigation buttons enabled');
+      sessionStorage.removeItem('has_seen_content'); // Clear any saved state in Bolt environment
     }
   }, []);
 
@@ -98,32 +110,7 @@ function App() {
     }
   }, []);
 
-  // ✅ NEW: Function to show rest of content after 35:55
-  const showRestOfContentAfterDelay = () => {
-    console.log('🕐 35:55 reached - showing rest of content');
-    
-    // ✅ NEW: Mark that user has seen content and persist it
-    setHasSeenContent(true);
-    localStorage.setItem('content_revealed', 'true');
-    localStorage.setItem('content_revealed_time', Date.now().toString());
-    
-    setShowRestOfContent(true);
-    setShowPurchaseButton(true);
-    
-    // ✅ NEW: Auto-scroll to 6-bottle purchase button after content loads
-    setTimeout(() => {
-      scrollToSixBottleButton();
-    }, 1000); // Wait 1 second for content to render
-  };
-
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { trackVideoPlay, trackVideoProgress, trackOfferClick } = useAnalytics();
-
-  // Check if we're on the main page (show popup only on main page)
-  const isMainPage = location.pathname === '/' || location.pathname === '/home';
-
-  // ✅ FIXED: Check admin authentication on mount
+  // Check admin authentication on mount
   useEffect(() => {
     const checkAdminAuth = () => {
       const isLoggedIn = sessionStorage.getItem('admin_authenticated') === 'true';
@@ -137,6 +124,7 @@ function App() {
         if (now - loginTimestamp < twentyFourHours) {
           setIsAdmin(true);
           console.log('Admin authenticated - DTC button will be shown');
+          sessionStorage.removeItem('has_seen_content'); // Clear saved state for fresh admin testing
         } else {
           // Session expired
           sessionStorage.removeItem('admin_authenticated');
@@ -156,140 +144,161 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ NEW: Check for admin override or time-based content reveal
+  // Control content visibility based on environment and admin status
   useEffect(() => {
-    // ✅ NEW: Check if user has already seen content (persist after reload)
-    const contentRevealed = localStorage.getItem('content_revealed') === 'true';
-    const contentRevealedTime = localStorage.getItem('content_revealed_time');
-    
-    if (contentRevealed && contentRevealedTime) {
-      const revealTime = parseInt(contentRevealedTime);
-      const now = Date.now();
-      const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
-      
-      // ✅ NEW: If content was revealed less than 1 hour ago, keep it visible
-      if (now - revealTime < oneHour) {
-        console.log('🔄 User has already seen content (within 1 hour) - keeping visible after reload');
-        setHasSeenContent(true);
-        setShowRestOfContent(true);
-        setShowPurchaseButton(true);
-        return; // Skip timer setup
-      } else {
-        // ✅ NEW: Content reveal expired, clear localStorage
-        console.log('⏰ Content reveal expired (>1 hour) - resetting');
-        localStorage.removeItem('content_revealed');
-        localStorage.removeItem('content_revealed_time');
-        setHasSeenContent(false);
-      }
-    }
-    
-    if (isAdmin || isBoltEnvironment) {
-      console.log('👨‍💼 Admin logged in OR Bolt environment - showing purchase buttons and content');
-      setHasSeenContent(true);
-      setShowRestOfContent(true);
-      setShowPurchaseButton(true);
-      // ✅ NEW: Don't persist admin/bolt override
-      return;
-    }
-  }, [isAdmin, isBoltEnvironment]);
-
-  // ✅ NEW: Auto-trigger content reveal after 30 seconds
-  useEffect(() => {
-    // ✅ NEW: Skip timer if user has already seen content
-    if (hasSeenContent) {
-      console.log('✅ User has already seen content - skipping timer');
-      return;
-    }
-    
-    // Skip timer in Bolt environment - show content immediately
     if (isBoltEnvironment) {
       console.log('🔧 Bolt environment - showing content immediately');
       setShowRestOfContent(true);
       setShowPurchaseButton(true);
+      setTimerActive(true); // Timer active for reference
+    } else if (isAdmin) {
+      console.log('👨‍💼 Admin logged in - content hidden until manual skip or timer ends');
+      setShowRestOfContent(false); // Keep content hidden
+      setShowPurchaseButton(false); // Keep purchase button hidden
+      setTimerActive(true); // Start timer
+    } else {
+      // Normal user logic (handled by initial useEffect for persistence)
+      // If not already shown by persistence, start timer
+      if (sessionStorage.getItem('has_seen_content') !== 'true') {
+        setTimerActive(true);
+      }
+    }
+  }, [isAdmin, isBoltEnvironment]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (!timerActive || showRestOfContent) return;
+    
+    const interval = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          setTimerActive(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [timerActive, showRestOfContent]);
+
+  // Format time remaining
+  const formatTimeRemaining = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  // Expose function globally for external triggers
+  useEffect(() => {
+    (window as any).showRestOfContentAfterDelay = () => {
+      console.log('🎯 External trigger: Showing content after delay');
+      setShowRestOfContent(true);
+      setShowPurchaseButton(true);
+      
+      // Auto-scroll to 6-bottle button
+      setTimeout(() => {
+        const sixBottleButton = document.getElementById('six-bottle-package') || 
+                              document.querySelector('[data-purchase-section="true"]') ||
+                              document.querySelector('.purchase-button-main');
+        
+        if (sixBottleButton) {
+          sixBottleButton.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
+          
+          // Add highlight effect
+          const element = sixBottleButton as HTMLElement;
+          element.style.transition = 'all 0.8s ease';
+          element.style.transform = 'scale(1.02)';
+          element.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+          
+          // Remove highlight after 4 seconds
+          setTimeout(() => {
+            element.style.transform = 'scale(1)';
+            element.style.boxShadow = '';
+          }, 4000);
+          
+          console.log('📍 Auto-scrolled to 6-bottle purchase button via external trigger');
+        }
+      }, 1000);
+    };
+    
+    // Cleanup on unmount
+    return () => {
+      if ((window as any).showRestOfContentAfterDelay) {
+        delete (window as any).showRestOfContentAfterDelay;
+      }
+    };
+  }, []);
+
+  // Auto-trigger content reveal after 32:38 for normal users
+  useEffect(() => {
+    // Skip timer if already shown by persistence or in Bolt environment
+    if (isBoltEnvironment || (!isAdmin && sessionStorage.getItem('has_seen_content') === 'true')) {
       return;
     }
     
-    console.log('🕐 Setting up 32:05 timer for content reveal');
+    console.log('🕐 Setting up 32:38 timer for content reveal');
     
     const timer = setTimeout(() => {
-      console.log('🎯 33:37 elapsed - triggering content reveal');
-      showRestOfContentAfterDelay();
-    }, 2017000); // 33:37 = 2017 seconds = 2,017,000 milliseconds
+      console.log('🎯 32:38 elapsed - triggering content reveal');
+      setShowRestOfContent(true);
+      setShowPurchaseButton(true);
+      
+      // Save state for normal users only
+      if (!isAdmin && !isBoltEnvironment) {
+        sessionStorage.setItem('has_seen_content', 'true');
+      }
+      
+      // Auto-scroll to 6-bottle button after content appears
+      setTimeout(() => {
+        const sixBottleButton = document.getElementById('six-bottle-package') || 
+                              document.querySelector('[data-purchase-section="true"]') ||
+                              document.querySelector('.purchase-button-main');
+        
+        if (sixBottleButton) {
+          sixBottleButton.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
+          
+          // Add highlight effect
+          const element = sixBottleButton as HTMLElement;
+          element.style.transition = 'all 0.8s ease';
+          element.style.transform = 'scale(1.02)';
+          element.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+          
+          // Remove highlight after 4 seconds
+          setTimeout(() => {
+            element.style.transform = 'scale(1)';
+            element.style.boxShadow = '';
+          }, 4000);
+          
+          console.log('📍 Auto-scrolled to 6-bottle purchase button after 32:38');
+        } else {
+          console.log('⚠️ 6-bottle button not found for auto-scroll');
+        }
+      }, 1000); // Wait 1 second for content to render
+      
+    }, 1958000); // 32:38 = 32*60 + 38 = 1958 seconds = 1,958,000 milliseconds
     
     return () => {
-      console.log('🧹 Cleaning up 33:37 timer');
+      console.log('🧹 Cleaning up timer');
       clearTimeout(timer);
     };
-  }, [hasSeenContent, isBoltEnvironment]);
-
-  // ✅ NEW: Function to scroll to 6-bottle purchase button
-  const scrollToSixBottleButton = () => {
-    try {
-      console.log('📍 Starting scroll to 6-bottle button...');
-      
-      // Multiple selectors to find the purchase section
-      const selectors = [
-        '#six-bottle-package',
-        '[data-purchase-section="true"]',
-        '.purchase-button-main',
-        'button[class*="yellow"]',
-        '.checkout-button',
-        '[id*="purchase"]'
-      ];
-      
-      let sixBottlePackage = null;
-      for (const selector of selectors) {
-        sixBottlePackage = document.querySelector(selector);
-        if (sixBottlePackage) {
-          console.log('📍 Found purchase element with selector:', selector);
-          break;
-        }
-      }
-      
-      if (sixBottlePackage) {
-        console.log('📍 Auto-scrolling to 6-bottle purchase button');
-        
-        // Smooth scroll to the 6-bottle package
-        sixBottlePackage.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center',
-          inline: 'nearest'
-        });
-        
-        // Add a subtle highlight effect to draw attention
-        const element = sixBottlePackage as HTMLElement;
-        element.style.transition = 'all 0.8s ease';
-        element.style.transform = 'scale(1.02)';
-        element.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
-        
-        // Remove highlight after 4 seconds
-        setTimeout(() => {
-          element.style.transform = 'scale(1)';
-          element.style.boxShadow = '';
-        }, 4000);
-        
-      } else {
-        console.log('⚠️ Purchase button not found for auto-scroll');
-        console.log('🔍 Available elements:', document.querySelectorAll('[id*="bottle"], [class*="purchase"], [class*="checkout"]'));
-      }
-    } catch (error) {
-      console.error('Error scrolling to 6-bottle purchase button:', error);
-    }
-  };
+  }, [isBoltEnvironment, isAdmin]);
 
   useEffect(() => {
     // Initialize URL tracking parameters
-
-    // ✅ FIXED: Use centralized tracking initialization
     initializeTracking();
-
-    // ✅ NEW: Initialize RedTrack integration
     initializeRedTrack();
-    
-    // ✅ NEW: Initialize Facebook Pixel CartPanda tracking
     initializeFacebookPixelTracking();
     
-    // ✅ NEW: Initialize native fingerprinting
+    // Initialize native fingerprinting
     initializeFingerprinting().then(() => {
       console.log('🔍 Native fingerprinting initialized');
       showFingerprintDebug();
@@ -298,34 +307,25 @@ function App() {
     });
   }, []);
 
-  // ✅ NEW: Expose tracking functions globally for testing
+  // Expose tracking functions globally for testing
   useEffect(() => {
-    // ✅ NEW: Expose function to show rest of content after 35:55
-    (window as any).showRestOfContentAfterDelay = showRestOfContentAfterDelay;
-    
-    // ✅ NEW: Expose function to show content immediately (for news CTA)
-    (window as any).showContentImmediately = showContentImmediately;
-    
     // Make tracking functions available globally for debugging
     (window as any).trackVideoPlay = trackVideoPlay;
     (window as any).trackVideoProgress = trackVideoProgress;
     (window as any).trackOfferClick = trackOfferClick;
     
     console.log('🧪 Funções de tracking expostas globalmente para debug:');
-    console.log('- window.showRestOfContentAfterDelay()');
     console.log('- window.trackVideoPlay()');
     console.log('- window.trackVideoProgress(currentTime, duration)');
     console.log('- window.trackOfferClick(offerType)');
     
     return () => {
       // Cleanup
-      delete (window as any).showRestOfContentAfterDelay;
-      delete (window as any).showContentImmediately;
       delete (window as any).trackVideoPlay;
       delete (window as any).trackVideoProgress;
       delete (window as any).trackOfferClick;
     };
-  }, [trackVideoPlay, trackVideoProgress, trackOfferClick, showRestOfContentAfterDelay]);
+  }, [trackVideoPlay, trackVideoProgress, trackOfferClick]);
 
   const closePopup = () => {
     setShowPopup(false);
@@ -362,7 +362,7 @@ function App() {
       '6-bottle': 'https://pagamento.paybluedrops.com/checkout/176849703:1'
     };
     
-    // ✅ FIXED: Use centralized URL building to ensure ALL parameters are preserved
+    // Use centralized URL building to ensure ALL parameters are preserved
     const finalUrl = buildUrlWithParams(links[packageType]);
     
     console.log('🎯 Main Purchase URL with ALL params preserved:', finalUrl);
@@ -374,7 +374,7 @@ function App() {
   const handleUpsellAccept = () => {
     console.log('✅ Upsell accepted - redirecting to 6-bottle package');
     
-    // ✅ Track the upsell acceptance
+    // Track the upsell acceptance
     if (typeof window !== 'undefined' && (window as any).trackOfferClick) {
       (window as any).trackOfferClick(`upsell-accept-to-6bottle`);
     }
@@ -386,7 +386,7 @@ function App() {
   const handleUpsellRefuse = () => {
     console.log('❌ Upsell refused - redirecting to original selection:', selectedPackage);
     
-    // ✅ Track the original package purchase (what user originally wanted)
+    // Track the original package purchase (what user originally wanted)
     if (selectedPackage && typeof window !== 'undefined' && (window as any).trackOfferClick) {
       (window as any).trackOfferClick(`${selectedPackage}-after-upsell-refuse`);
     }
@@ -402,12 +402,93 @@ function App() {
       {/* Bolt Navigation */}
       <BoltNavigation />
 
-      {/* ✅ NEW: Admin DTC Button - For content override */}
+      {/* Admin/Bolt Mode Indicators and Controls */}
       {(isAdmin || isBoltEnvironment) && (
         <div className="fixed top-4 right-4 z-40">
-          <div className={`${isAdmin ? 'bg-green-500' : 'bg-blue-500'} text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg`}>
-            {isAdmin ? '👨‍💼 ADMIN MODE' : '🔧 BOLT MODE'}: All Content Visible
+          <div className="space-y-2">
+            <div className={`${isAdmin ? 'bg-green-500' : 'bg-blue-500'} text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg`}>
+              {isAdmin ? '👨‍💼 ADMIN MODE' : '🔧 BOLT MODE'}
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* Timer, VTurb ID, and Skip Delay Button (Admin/Bolt only) */}
+      {(isAdmin || isBoltEnvironment) && (
+        <div className="fixed top-20 right-4 z-40">
+          {!showRestOfContent ? (
+            <div className="bg-red-500 text-white px-4 py-3 rounded-lg font-bold text-sm shadow-lg text-center min-w-[140px]">
+              <div className="text-xs mb-1">⏰ DELAY TIMER</div>
+              <div className="text-xl font-mono">
+                {formatTimeRemaining(timeRemaining)}
+              </div>
+              <div className="text-xs mt-1">até mostrar conteúdo</div>
+            </div>
+          ) : (
+            <div className="bg-green-500 text-white px-4 py-3 rounded-lg font-bold text-sm shadow-lg text-center min-w-[140px]">
+              <div className="text-xs">✅ DELAY COMPLETO</div>
+              <div className="text-sm">Conteúdo liberado</div>
+            </div>
+          )}
+          
+          {/* VTurb Video ID Display */}
+          <div className="mt-2 bg-gray-800 text-white px-3 py-2 rounded-lg text-xs shadow-lg text-center min-w-[140px]">
+            <div className="text-xs text-gray-300 mb-1">🎬 VTURB ID</div>
+            <div className="font-mono text-yellow-400 text-xs break-all">
+              68bf9911b38480b5c834d7fa
+            </div>
+            <div className="text-xs text-gray-400 mt-1">página principal</div>
+          </div>
+          
+          {/* Skip Delay Button - ONLY for admin */}
+          {isAdmin && (
+            <div className="mt-2">
+              <button
+                onClick={() => {
+                  console.log('⚡ Admin: Skipping delay timer manually');
+                  setTimeRemaining(0);
+                  setTimerActive(false);
+                  setShowRestOfContent(true);
+                  setShowPurchaseButton(true);
+                  
+                  // Auto-scroll to 6-bottle button after skipping
+                  setTimeout(() => {
+                    const sixBottleButton = document.getElementById('six-bottle-package') || 
+                                          document.querySelector('[data-purchase-section="true"]') ||
+                                          document.querySelector('.purchase-button-main');
+                    
+                    if (sixBottleButton) {
+                      sixBottleButton.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest'
+                      });
+                      
+                      // Add highlight effect
+                      const element = sixBottleButton as HTMLElement;
+                      element.style.transition = 'all 0.8s ease';
+                      element.style.transform = 'scale(1.02)';
+                      element.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+                      
+                      // Remove highlight after 4 seconds
+                      setTimeout(() => {
+                        element.style.transform = 'scale(1)';
+                        element.style.boxShadow = '';
+                      }, 4000);
+                      
+                      console.log('📍 Auto-scrolled to 6-bottle purchase button after manual skip');
+                    } else {
+                      console.log('⚠️ 6-bottle button not found for auto-scroll after manual skip');
+                    }
+                  }, 1000);
+                }}
+                className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-3 rounded-lg text-xs shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95"
+              >
+                ⚡ SKIP DELAY
+              </button>
+              <p className="text-xs text-gray-400 mt-1 text-center">força mostrar conteúdo</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -426,209 +507,200 @@ function App() {
           {/* Video Section */}
           <VideoSection />
 
-          {/* Product Offers - Only show after 35:55 or admin override */}
-          {(showRestOfContent || isAdmin || isBoltEnvironment) && (
-            <ProductOffers 
-              showPurchaseButton={showPurchaseButton}
-              onPurchase={handlePurchase}
-              onSecondaryPackageClick={handleSecondaryPackageClick}
-            />
-          )}
         </div>
 
-        {/* Doctors Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
-        <DoctorsSection />
-        )}
+        {/* Rest of Content - Only show after timer or admin override */}
+        {(showRestOfContent || isBoltEnvironment) && (
+          <>
+            {/* Product Offers */}
+            <div className="w-full max-w-md mx-auto">
+              <ProductOffers 
+                showPurchaseButton={showPurchaseButton}
+                onPurchase={handlePurchase}
+                onSecondaryPackageClick={handleSecondaryPackageClick}
+              />
+            </div>
 
-        {/* Factory Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
-        <FactorySection />
-        )}
+            {/* Doctors Section */}
+            <DoctorsSection />
 
-        {/* Doctors Trust Button - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
-          <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1500">
-            <div className="text-center">
-              {/* Pulsing wrapper */}
-              <div className="relative">
-                {/* Pulsing ring effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-xl sm:rounded-2xl blur-sm opacity-75 animate-pulse animation-delay-300"></div>
-                <div className="absolute -inset-2 bg-gradient-to-r from-blue-300 to-indigo-400 rounded-xl sm:rounded-2xl blur-md opacity-50 animate-pulse animation-delay-800"></div>
-                
-              <button
-                onClick={() => {
-                  const purchaseSection = document.getElementById('six-bottle-package') || 
-                                        document.querySelector('[data-purchase-section="true"]') ||
-                                        document.querySelector('.purchase-button-main');
+            {/* Factory Section */}
+            <FactorySection />
+
+            {/* Doctors Trust Button */}
+            <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1500">
+              <div className="text-center">
+                {/* Pulsing wrapper */}
+                <div className="relative">
+                  {/* Pulsing ring effect */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-xl sm:rounded-2xl blur-sm opacity-75 animate-pulse animation-delay-300"></div>
+                  <div className="absolute -inset-2 bg-gradient-to-r from-blue-300 to-indigo-400 rounded-xl sm:rounded-2xl blur-md opacity-50 animate-pulse animation-delay-800"></div>
                   
-                  if (purchaseSection) {
-                    purchaseSection.scrollIntoView({ 
-                      behavior: 'smooth', 
-                      block: 'center',
-                      inline: 'nearest'
-                    });
+                <button
+                  onClick={() => {
+                    const purchaseSection = document.getElementById('six-bottle-package') || 
+                                          document.querySelector('[data-purchase-section="true"]') ||
+                                          document.querySelector('.purchase-button-main');
                     
-                    // Add highlight effect
-                    purchaseSection.style.transition = 'all 0.8s ease';
-                    purchaseSection.style.transform = 'scale(1.02)';
-                    purchaseSection.style.boxShadow = '0 0 40px rgba(16, 185, 129, 0.4)';
+                    if (purchaseSection) {
+                      purchaseSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest'
+                      });
+                      
+                      // Add highlight effect
+                      purchaseSection.style.transition = 'all 0.8s ease';
+                      purchaseSection.style.transform = 'scale(1.02)';
+                      purchaseSection.style.boxShadow = '0 0 40px rgba(16, 185, 129, 0.4)';
+                      
+                      // Remove highlight after 3 seconds
+                      setTimeout(() => {
+                        purchaseSection.style.transform = 'scale(1)';
+                        purchaseSection.style.boxShadow = '';
+                      }, 3000);
+                    }
+                  }}
+                    className="relative w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm animate-pulse"
+                  style={{ touchAction: 'manipulation' }}
+                >
+                    {/* Inner glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl sm:rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                     
-                    // Remove highlight after 3 seconds
-                    setTimeout(() => {
-                      purchaseSection.style.transform = 'scale(1)';
-                      purchaseSection.style.boxShadow = '';
-                    }, 3000);
-                  }
-                }}
-                  className="relative w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm animate-pulse"
-                style={{ touchAction: 'manipulation' }}
-              >
-                  {/* Inner glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl sm:rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                <div className="flex items-center justify-center gap-2 sm:gap-3">
-                  <span className="text-xl sm:text-2xl">👨‍⚕️</span>
-                    <span className="leading-tight text-center relative z-10">If doctors trust it, I trust it too — start my treatment now</span>
+                  <div className="flex items-center justify-center gap-2 sm:gap-3">
+                    <span className="text-xl sm:text-2xl">👨‍⚕️</span>
+                      <span className="leading-tight text-center relative z-10">If doctors trust it, I trust it too — start my treatment now</span>
+                  </div>
+                </button>
                 </div>
-              </button>
-              </div>
-              
-              {/* Enhanced call-to-action text */}
-              <div className="mt-4 space-y-1">
-                <p className="text-blue-600 text-sm sm:text-base font-bold animate-pulse">
-                  👆 Tap to start your doctor-approved treatment
-                </p>
-                <p className="text-indigo-600 text-xs sm:text-sm font-medium">
-                  Clinically reviewed • MD verified • 180-day guarantee
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Testimonials Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
-        <TestimonialsSection />
-        )}
-
-        {/* Success Story Button - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
-          <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1300">
-            <div className="text-center">
-              {/* Pulsing wrapper */}
-              <div className="relative">
-                {/* Pulsing ring effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl blur-sm opacity-75 animate-pulse"></div>
-                <div className="absolute -inset-2 bg-gradient-to-r from-green-300 to-emerald-400 rounded-xl sm:rounded-2xl blur-md opacity-50 animate-pulse animation-delay-500"></div>
                 
-              <button
-                onClick={() => {
-                  const purchaseSection = document.getElementById('six-bottle-package') || 
-                                        document.querySelector('[data-purchase-section="true"]') ||
-                                        document.querySelector('.purchase-button-main');
-                  
-                  if (purchaseSection) {
-                    purchaseSection.scrollIntoView({ 
-                      behavior: 'smooth', 
-                      block: 'center',
-                      inline: 'nearest'
-                    });
-                    
-                    // Add highlight effect
-                    purchaseSection.style.transition = 'all 0.8s ease';
-                    purchaseSection.style.transform = 'scale(1.02)';
-                    purchaseSection.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
-                    
-                    // Remove highlight after 3 seconds
-                    setTimeout(() => {
-                      purchaseSection.style.transform = 'scale(1)';
-                      purchaseSection.style.boxShadow = '';
-                    }, 3000);
-                  }
-                }}
-                  className="relative w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm animate-pulse"
-                style={{ touchAction: 'manipulation' }}
-              >
-                  {/* Inner glow effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl sm:rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                <div className="flex items-center justify-center gap-2 sm:gap-3">
-                  <span className="text-xl sm:text-2xl">🚀</span>
-                    <span className="leading-tight relative z-10">I'm ready to be the next success story!</span>
+                {/* Enhanced call-to-action text */}
+                <div className="mt-4 space-y-1">
+                  <p className="text-blue-600 text-sm sm:text-base font-bold animate-pulse">
+                    👆 Tap to start your doctor-approved treatment
+                  </p>
+                  <p className="text-indigo-600 text-xs sm:text-sm font-medium">
+                    Clinically reviewed • MD verified • 180-day guarantee
+                  </p>
                 </div>
-              </button>
               </div>
-              
-              {/* Enhanced call-to-action text */}
-              <div className="mt-4 space-y-1">
-                <p className="text-green-600 text-sm sm:text-base font-bold animate-pulse">
-                  👆 Click here to secure your transformation
+            </div>
+
+            {/* Testimonials Section */}
+            <TestimonialsSection />
+
+            {/* Success Story Button */}
+            <div className="mt-12 sm:mt-16 w-full max-w-lg mx-auto px-4 animate-fadeInUp animation-delay-1300">
+              <div className="text-center">
+                {/* Pulsing wrapper */}
+                <div className="relative">
+                  {/* Pulsing ring effect */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl blur-sm opacity-75 animate-pulse"></div>
+                  <div className="absolute -inset-2 bg-gradient-to-r from-green-300 to-emerald-400 rounded-xl sm:rounded-2xl blur-md opacity-50 animate-pulse animation-delay-500"></div>
+                  
+                <button
+                  onClick={() => {
+                    const purchaseSection = document.getElementById('six-bottle-package') || 
+                                          document.querySelector('[data-purchase-section="true"]') ||
+                                          document.querySelector('.purchase-button-main');
+                    
+                    if (purchaseSection) {
+                      purchaseSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'nearest'
+                      });
+                      
+                      // Add highlight effect
+                      purchaseSection.style.transition = 'all 0.8s ease';
+                      purchaseSection.style.transform = 'scale(1.02)';
+                      purchaseSection.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+                      
+                      // Remove highlight after 3 seconds
+                      setTimeout(() => {
+                        purchaseSection.style.transform = 'scale(1)';
+                        purchaseSection.style.boxShadow = '';
+                      }, 3000);
+                    }
+                  }}
+                    className="relative w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-2xl text-base sm:text-lg border-2 border-white/40 backdrop-blur-sm animate-pulse"
+                  style={{ touchAction: 'manipulation' }}
+                >
+                    {/* Inner glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl sm:rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                  <div className="flex items-center justify-center gap-2 sm:gap-3">
+                    <span className="text-xl sm:text-2xl">🚀</span>
+                      <span className="leading-tight relative z-10">I'm ready to be the next success story!</span>
+                  </div>
+                </button>
+                </div>
+                
+                {/* Enhanced call-to-action text */}
+                <div className="mt-4 space-y-1">
+                  <p className="text-green-600 text-sm sm:text-base font-bold animate-pulse">
+                    👆 Click here to secure your transformation
+                  </p>
+                  <p className="text-blue-600 text-xs sm:text-sm font-medium">
+                    Join 50,000+ men who chose BlueDrops for lasting results
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* News Section */}
+            <NewsSection />
+
+            {/* Guarantee Section */}
+            <GuaranteeSection />
+
+            {/* Final purchase section */}
+            <section 
+              id="final-purchase-section"
+              data-purchase-section="true"
+              className="mt-16 sm:mt-20 w-full max-w-5xl mx-auto px-4 animate-fadeInUp animation-delay-2200"
+            >
+              {/* Section Header - Centered and well-spaced */}
+              <div className="text-center mb-8 sm:mb-12">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
+                  <span className="block">Ready to Transform</span>
+                  <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
+                    Your Life?
+                  </span>
+                </h2>
+                <p className="text-lg sm:text-xl text-blue-700 font-semibold mb-2">
+                  Choose your BlueDrops package below
                 </p>
-                <p className="text-blue-600 text-xs sm:text-sm font-medium">
-                  Join 50,000+ men who chose BlueDrops for lasting results
+                <p className="text-sm sm:text-base text-blue-600">
+                  Don't miss this opportunity to transform your health and confidence
                 </p>
               </div>
-            </div>
-          </div>
-        )}
-        {/* News Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
-        <NewsSection />
-        )}
 
-        {/* Guarantee Section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
-        <GuaranteeSection />
-        )}
-
-        {/* Final purchase section - Only show after 35:55 or admin override */}
-        {(showRestOfContent || isAdmin || isBoltEnvironment) && (
-          <section 
-            id="final-purchase-section"
-            data-purchase-section="true"
-            className="mt-16 sm:mt-20 w-full max-w-5xl mx-auto px-4 animate-fadeInUp animation-delay-2200"
-          >
-            {/* Section Header - Centered and well-spaced */}
-            <div className="text-center mb-8 sm:mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-blue-900 mb-4">
-                <span className="block">Ready to Transform</span>
-                <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-indigo-600 bg-clip-text text-transparent block">
-                  Your Life?
-                </span>
-              </h2>
-              <p className="text-lg sm:text-xl text-blue-700 font-semibold mb-2">
-                Choose your BlueDrops package below
-              </p>
-              <p className="text-sm sm:text-base text-blue-600">
-                Don't miss this opportunity to transform your health and confidence
-              </p>
-            </div>
-
-            {/* Centered Product Offers Container */}
-            <div className="flex justify-center">
-              <div className="w-full max-w-md">
-                <ProductOffers 
-                  showPurchaseButton={true}
-                  onPurchase={handlePurchase}
-                  onSecondaryPackageClick={handleSecondaryPackageClick}
-                />
+              {/* Centered Product Offers Container */}
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <ProductOffers 
+                    showPurchaseButton={true}
+                    onPurchase={handlePurchase}
+                    onSecondaryPackageClick={handleSecondaryPackageClick}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Final Call-to-Action */}
-            <div className="text-center mt-8 sm:mt-12">
-              <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-blue-200 shadow-lg max-w-2xl mx-auto">
-                <h3 className="text-xl sm:text-2xl font-bold text-blue-900 mb-3">
-                  🚀 Your Transformation Starts Today
-                </h3>
-                <p className="text-blue-700 text-sm sm:text-base leading-relaxed">
-                  Join thousands of men who have already discovered the power of BlueDrops. 
-                  With our 180-day guarantee, you have nothing to lose and everything to gain.
-                </p>
+              {/* Final Call-to-Action */}
+              <div className="text-center mt-8 sm:mt-12">
+                <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-blue-200 shadow-lg max-w-2xl mx-auto">
+                  <h3 className="text-xl sm:text-2xl font-bold text-blue-900 mb-3">
+                    🚀 Your Transformation Starts Today
+                  </h3>
+                  <p className="text-blue-700 text-sm sm:text-base leading-relaxed">
+                    Join thousands of men who have already discovered the power of BlueDrops. 
+                    With our 180-day guarantee, you have nothing to lose and everything to gain.
+                  </p>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          </>
         )}
 
         {/* Footer */}
@@ -637,7 +709,7 @@ function App() {
 
       {/* All Modals - Only show popup on main page */}
       <Modals 
-        showPopup={false} // ✅ DISABLED: Popup completamente removido
+        showPopup={false} // Popup completamente removido
         showUpsellPopup={showUpsellPopup}
         selectedPackage={selectedPackage}
         onClosePopup={closePopup}
