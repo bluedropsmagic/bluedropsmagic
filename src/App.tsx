@@ -30,7 +30,7 @@ function App() {
   const [showRestOfContent, setShowRestOfContent] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(1837); // 30:37 in seconds
+  const [timeRemaining, setTimeRemaining] = useState<number>(10); // 10 seconds for testing
   const [timerActive, setTimerActive] = useState(false);
   const [videoStartTime, setVideoStartTime] = useState<number | null>(null);
 
@@ -252,7 +252,7 @@ function App() {
     
     // Start timer immediately on page load
     setTimerActive(true);
-    setTimeRemaining(1837); // 30:37 in seconds
+    setTimeRemaining(10); // 10 seconds for testing
   }, [isBoltEnvironment, isAdmin]);
 
   // Timer effect - runs immediately on page load
