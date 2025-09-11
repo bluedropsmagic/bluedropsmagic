@@ -5,6 +5,7 @@ import { useAnalytics } from '../hooks/useAnalytics';
 export const VideoSection: React.FC = () => {
   const { trackVideoPlay, trackVideoProgress } = useAnalytics();
   const [isVideoCentered, setIsVideoCentered] = useState(false);
+  const autoScrollTriggered = useRef(false);
 
   useEffect(() => {
     // ✅ ULTRA-FAST LOADING: Inject VTurb script with performance optimizations
@@ -95,6 +96,34 @@ export const VideoSection: React.FC = () => {
       }
     };
   }, []);
+
+  // ✅ NEW: Auto-scroll to video container after 10 seconds
+  useEffect(() => {
+    const autoScrollTimer = setTimeout(() => {
+      if (!autoScrollTriggered.current) {
+        autoScrollTriggered.current = true;
+        
+        console.log('⏰ 10 seconds elapsed - auto-scrolling to VTurb video container');
+        
+        const videoContainer = document.getElementById('vturb-video-container');
+        if (videoContainer) {
+          videoContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center',
+            inline: 'nearest'
+          });
+          console.log('📍 Auto-scrolled to VTurb video container');
+        } else {
+          console.warn('⚠️ VTurb video container not found for auto-scroll');
+        }
+      }
+    }, 10000); // 10 seconds
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      clearTimeout(autoScrollTimer);
+    };
+  }, []); // Empty dependency array - runs only once on mount
 
   const setupVideoCenteringOnClick = () => {
     let setupAttempts = 0;
@@ -327,7 +356,10 @@ export const VideoSection: React.FC = () => {
       </div>
 
       <div className="relative w-full max-w-sm mx-auto">
-        <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
+        <div 
+          id="vturb-video-container"
+          className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative"
+        >
           {/* ✅ INSTANT LOADING: VTurb player with immediate availability */}
           <vturb-smartplayer 
             id="vid-68c23f8dbfe9104c306c78ea" 
