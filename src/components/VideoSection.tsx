@@ -6,11 +6,11 @@ export const VideoSection: React.FC = () => {
   const { trackVideoPlay, trackVideoProgress } = useAnalytics();
 
   useEffect(() => {
-    // ✅ INSTANT LOADING: Inject VTurb script immediately with high priority
-    console.log('🚀 INSTANT VIDEO LOADING: Injecting VTurb script with highest priority');
+    // ✅ INSTANT LOADING: Inject NEW VTurb script immediately with high priority
+    console.log('🚀 INSTANT VIDEO LOADING: Injecting NEW VTurb script with highest priority');
     
-    // Clean up any existing VTurb scripts first
-    const existingScripts = document.querySelectorAll('script[src*="68bf9911b38480b5c834d7fa"]');
+    // Clean up any existing VTurb scripts first (both old and new)
+    const existingScripts = document.querySelectorAll('script[src*="68bf9911b38480b5c834d7fa"], script[src*="68ad36221f16ad3567243834"]');
     existingScripts.forEach(script => {
       try {
         script.remove();
@@ -20,14 +20,14 @@ export const VideoSection: React.FC = () => {
       }
     });
 
-    // ✅ CRITICAL: Ensure video container exists BEFORE injecting script
-    const videoContainer = document.getElementById('vid-68bf9911b38480b5c834d7fa');
+    // ✅ CRITICAL: Ensure NEW video container exists BEFORE injecting script
+    const videoContainer = document.getElementById('vid-68ad36221f16ad3567243834');
     if (!videoContainer) {
       console.error('❌ Video container not found! Creating container...');
       
       // Create container if it doesn't exist
       const container = document.createElement('vturb-smartplayer');
-      container.id = 'vid-68bf9911b38480b5c834d7fa';
+      container.id = 'vid-68ad36221f16ad3567243834';
       container.style.cssText = 'display: block; margin: 0 auto; width: 100%; max-width: 400px;';
       
       const targetDiv = document.querySelector('.aspect-\\[9\\/16\\]') || document.querySelector('.video-container');
@@ -42,7 +42,7 @@ export const VideoSection: React.FC = () => {
     script.type = "text/javascript";
     script.async = false; // ✅ CHANGED: Synchronous loading for instant availability
     script.defer = false; // ✅ CHANGED: No defer for immediate execution
-    script.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68bf9911b38480b5c834d7fa/v4/player.js";
+    script.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/v4/player.js";
     
     // ✅ PRELOAD: Add preload hints for faster loading
     const preloadLink = document.createElement('link');
@@ -86,13 +86,13 @@ export const VideoSection: React.FC = () => {
     // Cleanup on unmount
     return () => {
       try {
-        const scriptToRemove = document.querySelector('script[src*="68bf9911b38480b5c834d7fa"]');
+        const scriptToRemove = document.querySelector('script[src*="68ad36221f16ad3567243834"]');
         if (scriptToRemove && scriptToRemove.parentNode) {
           scriptToRemove.parentNode.removeChild(scriptToRemove);
         }
         
         // ✅ CLEANUP: Remove preload link as well
-        const preloadToRemove = document.querySelector('link[href*="68bf9911b38480b5c834d7fa"]');
+        const preloadToRemove = document.querySelector('link[href*="68ad36221f16ad3567243834"]');
         if (preloadToRemove && preloadToRemove.parentNode) {
           preloadToRemove.parentNode.removeChild(preloadToRemove);
         }
@@ -116,7 +116,7 @@ export const VideoSection: React.FC = () => {
         
         // Method 1: Check for smartplayer instances
         if (window.smartplayer && window.smartplayer.instances) {
-          const playerInstance = window.smartplayer.instances['68bf9911b38480b5c834d7fa'];
+          const playerInstance = window.smartplayer.instances['68ad36221f16ad3567243834'];
           if (playerInstance) {
             console.log('🚀 INSTANT SUCCESS: Smartplayer instance found and ready');
             
@@ -146,7 +146,7 @@ export const VideoSection: React.FC = () => {
         }
 
         // Method 2: Check for video elements
-        const videoElement = document.querySelector('#vid-68bf9911b38480b5c834d7fa video');
+        const videoElement = document.querySelector('#vid-68ad36221f16ad3567243834 video');
         if (videoElement) {
           console.log('🚀 INSTANT SUCCESS: Video element found and ready');
           
@@ -169,7 +169,7 @@ export const VideoSection: React.FC = () => {
         }
 
         // Method 3: Check for player container and add click tracking
-        const playerContainer = document.getElementById('vid-68bf9911b38480b5c834d7fa');
+        const playerContainer = document.getElementById('vid-68ad36221f16ad3567243834');
         if (playerContainer) {
           console.log('🚀 INSTANT SUCCESS: Player container found, adding click tracking');
           
@@ -220,7 +220,7 @@ export const VideoSection: React.FC = () => {
         <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ INSTANT LOADING: VTurb player with immediate availability */}
           <vturb-smartplayer 
-            id="vid-68bf9911b38480b5c834d7fa" 
+            id="vid-68ad36221f16ad3567243834" 
             style={{
               display: 'block',
               margin: '0 auto',

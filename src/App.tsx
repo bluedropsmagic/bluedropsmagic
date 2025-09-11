@@ -449,7 +449,7 @@ function App() {
           <div className="mt-2 bg-gray-800 text-white px-3 py-2 rounded-lg text-xs shadow-lg text-center min-w-[140px]">
             <div className="text-xs text-gray-300 mb-1">🎬 VTURB ID</div>
             <div className="font-mono text-yellow-400 text-xs break-all">
-              68bf9911b38480b5c834d7fa
+              68ad36221f16ad3567243834
             </div>
             <div className="text-xs text-gray-400 mt-1">página principal</div>
           </div>
