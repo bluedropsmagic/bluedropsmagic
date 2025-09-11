@@ -390,17 +390,17 @@ export const useAnalytics = () => {
   useEffect(() => {
     // Prevent multiple initializations
     if (isInitialized.current) {
+      console.log('🔄 Analytics already initialized, skipping');
       return;
     }
     isInitialized.current = true;
     pageStartTime.current = Date.now(); // ✅ Record page start time
 
-    // ✅ DEFERRED: Initialize analytics after critical content loads
-    setTimeout(() => {
     const initializeAnalytics = async () => {
       try {
         // ✅ NEW: Initialize fingerprinting
         fingerprintData.current = await initializeFingerprinting();
+        console.log('🔍 Fingerprint initialized:', fingerprintData.current.id);
         
         // Load geolocation data first
         geolocationData.current = await getGeolocationData();
@@ -419,7 +419,7 @@ export const useAnalytics = () => {
             is_returning_user: fingerprintInfo.is_returning_user
           });
         } else {
-          // Silent skip for Brazilian IPs
+          console.log('🇧🇷 Brazilian IP detected - skipping page_enter tracking');
         }
       } catch (error) {
         console.error('Error initializing analytics:', error);
@@ -428,7 +428,6 @@ export const useAnalytics = () => {
     };
 
     initializeAnalytics();
-    }, 2000); // ✅ DEFERRED: Wait 2 seconds for critical content to load first
 
     // Track page exit on unmount and stop ping
     return () => {
@@ -554,7 +553,7 @@ export const useAnalytics = () => {
         country: geolocationData.current?.country_name || 'Unknown',
         vturb_loaded: true,
         video_container_id: '689e7c030f018d362b0e239d',
-        video_container_id: '68ad36221f16ad3567243834',
+        video_container_id: '68bf9911b38480b5c834d7fa',
         timestamp: Date.now()
       });
     } else {

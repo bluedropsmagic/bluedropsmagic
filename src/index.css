@@ -2,81 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ✅ CRITICAL: Performance optimizations for instant loading */
+/* Performance optimizations */
 * {
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
 }
 
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-  text-rendering: optimizeLegibility;
 }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   line-height: 1.5;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-}
-
-/* ✅ INSTANT: Critical loading states */
-.loading-skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* ✅ INSTANT: Optimize images for faster loading */
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-/* ✅ INSTANT: Optimize video containers */
-video, vturb-smartplayer {
-  max-width: 100%;
-  height: auto;
-  will-change: transform;
-  transform: translateZ(0);
-}
-
-/* ✅ INSTANT: Optimize buttons for touch */
-button {
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  will-change: transform;
-}
-
-/* ✅ INSTANT: Optimize animations */
-.animate-fadeInUp {
-  animation: fadeInUp 0.4s ease-out;
-  animation-fill-mode: both;
-  will-change: transform, opacity;
-}
-
-.animate-fadeInDown {
-  animation: fadeInDown 0.4s ease-out;
-  animation-fill-mode: both;
-  will-change: transform, opacity;
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  will-change: opacity;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Reduce motion for users who prefer it */
@@ -89,6 +30,19 @@ button {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Optimize images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Optimize video containers */
+video {
+  max-width: 100%;
+  height: auto;
 }
 
 @layer utilities {
@@ -154,6 +108,25 @@ button {
   will-change: transform;
 }
 
+/* Optimized scrollbar for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.5);
+}
+
 /* Optimized animations with better performance */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
@@ -165,7 +138,7 @@ button {
   will-change: transform;
 }
 
-/* ✅ OPTIMIZED: Enhanced pulsing animation for buttons */
+/* Enhanced pulsing animation for buttons */
 @keyframes buttonPulse {
   0%, 100% { 
     transform: scale(1);
@@ -182,7 +155,7 @@ button {
   will-change: transform, box-shadow;
 }
 
-/* ✅ OPTIMIZED: Pulsing ring effect */
+/* Pulsing ring effect */
 @keyframes ringPulse {
   0% {
     transform: scale(0.95);
@@ -203,7 +176,7 @@ button {
   will-change: transform, opacity;
 }
 
-/* ✅ OPTIMIZED: Gradient button hover effects */
+/* Optimized gradient button hover effects */
 .gradient-button {
   background: linear-gradient(135deg, #ff6b35, #f7931e, #ff6b9d, #c471ed);
   background-size: 300% 300%;
@@ -217,7 +190,7 @@ button {
   100% { background-position: 0% 50%; }
 }
 
-/* ✅ OPTIMIZED: Enhanced glassmorphism */
+/* Enhanced glassmorphism with better performance */
 .glass-strong {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(25px);
@@ -228,7 +201,7 @@ button {
   will-change: transform;
 }
 
-/* ✅ OPTIMIZED: Video container for instant loading */
+/* Optimized video container */
 .video-container {
   position: relative;
   overflow: hidden;
@@ -239,7 +212,7 @@ button {
   will-change: transform;
 }
 
-/* ✅ OPTIMIZED: Button glow effect */
+/* Optimized button glow effect */
 .glow-button {
   position: relative;
   overflow: hidden;
@@ -262,7 +235,7 @@ button {
   left: 100%;
 }
 
-/* ✅ OPTIMIZED: Text rendering */
+/* Enhanced text rendering */
 h1, h2, h3, h4, h5, h6 {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -276,7 +249,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
 }
 
-/* ✅ OPTIMIZED: Gradient text */
+/* Optimized gradient text */
 .gradient-text {
   background-clip: text;
   -webkit-background-clip: text;
@@ -291,7 +264,7 @@ h1, h2, h3, h4, h5, h6 {
   50% { background-position: 100% 50%; }
 }
 
-/* ✅ OPTIMIZED: Popup animations */
+/* Optimized popup animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -379,7 +352,7 @@ h1, h2, h3, h4, h5, h6 {
   will-change: transform, opacity;
 }
 
-/* ✅ OPTIMIZED: Shimmer animation */
+/* Shimmer animation for buttons */
 @keyframes shimmer {
   0% {
     transform: translateX(-100%) skewX(-12deg);
@@ -394,7 +367,7 @@ h1, h2, h3, h4, h5, h6 {
   will-change: transform;
 }
 
-/* ✅ OPTIMIZED: Enhanced bounce animation */
+/* Enhanced bounce animation */
 @keyframes enhancedBounce {
   0%, 20%, 53%, 80%, 100% {
     transform: translate3d(0, 0, 0) scale(1);
@@ -415,7 +388,7 @@ h1, h2, h3, h4, h5, h6 {
   will-change: transform;
 }
 
-/* ✅ OPTIMIZED: Touch optimization */
+/* Touch optimization */
 .touch-manipulation {
   touch-action: manipulation;
 }
@@ -428,7 +401,7 @@ h1, h2, h3, h4, h5, h6 {
   user-select: none;
 }
 
-/* ✅ OPTIMIZED: GPU acceleration */
+/* Optimize transforms */
 .transform-gpu {
   transform: translateZ(0);
   will-change: transform;
@@ -441,4 +414,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .aspect-ratio-9-16 {
   aspect-ratio: 9 / 16;
+}
+
+/* Optimize loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

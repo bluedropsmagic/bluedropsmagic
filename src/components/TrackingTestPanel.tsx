@@ -324,12 +324,12 @@ export const TrackingTestPanel: React.FC = () => {
     
     try {
       // Check if video container exists
-      const videoContainer = document.getElementById('vid_68ad36221f16ad3567243834');
+      const videoContainer = document.getElementById('vid_68bf9911b38480b5c834d7fa');
       if (!videoContainer) {
         updateStatus(index, { 
           status: 'error', 
           message: 'Video container missing!',
-          details: 'Element vid_68ad36221f16ad3567243834 does not exist in DOM'
+          details: 'Element vid_68bf9911b38480b5c834d7fa does not exist in DOM'
         });
         
         // ✅ NEW: Show available containers for debugging
