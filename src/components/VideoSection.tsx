@@ -5,7 +5,6 @@ import { useAnalytics } from '../hooks/useAnalytics';
 export const VideoSection: React.FC = () => {
   const { trackVideoPlay, trackVideoProgress } = useAnalytics();
   const [isVideoCentered, setIsVideoCentered] = useState(false);
-  const [autoScrollTriggered, setAutoScrollTriggered] = useState(false);
 
   useEffect(() => {
     // ✅ ULTRA-FAST LOADING: Inject VTurb script with performance optimizations
@@ -96,26 +95,12 @@ export const VideoSection: React.FC = () => {
     };
   }, []);
 
-  // ✅ NEW: Auto-scroll to center video after 10 seconds
-  useEffect(() => {
-    const autoScrollTimer = setTimeout(() => {
-      if (!autoScrollTriggered && !isVideoCentered) {
-        console.log('⏰ 10 seconds elapsed - auto-centering video');
-        setAutoScrollTriggered(true);
-        handleVideoClick();
-      }
-    }, 10000); // 10 seconds
-    
-    return () => clearTimeout(autoScrollTimer);
-  }, [autoScrollTriggered, isVideoCentered]);
-
   const handleVideoClick = () => {
     console.log('🎬 Video clicked - centering and blocking scroll');
     setIsVideoCentered(true);
     
     // Block scroll
     document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
     
     // Center the video
     const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
@@ -141,7 +126,6 @@ export const VideoSection: React.FC = () => {
     
     // Restore scroll
     document.body.style.overflow = '';
-    document.documentElement.style.overflow = '';
     
     // Restore video position
     const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
