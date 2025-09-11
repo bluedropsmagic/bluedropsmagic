@@ -552,8 +552,7 @@ export const useAnalytics = () => {
       trackEvent('video_play', { 
         country: geolocationData.current?.country_name || 'Unknown',
         vturb_loaded: true,
-        video_container_id: '689e7c030f018d362b0e239d',
-        video_container_id: '68ad36221f16ad3567243834',
+        video_container_id: '68c23f8dbfe9104c306c78ea',
         timestamp: Date.now()
       });
     } else {
