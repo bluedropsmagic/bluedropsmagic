@@ -548,6 +548,12 @@ export const useAnalytics = () => {
     // ✅ NEW: Track video play as VTurb loading successfully
     if (!hasTrackedVideoPlay.current) {
       hasTrackedVideoPlay.current = true;
+      
+      // Start timer from video play
+      if (typeof window !== 'undefined' && (window as any).startTimerFromVideoPlay) {
+        (window as any).startTimerFromVideoPlay();
+      }
+      
       console.log('🎬 TRACKING VIDEO PLAY (VTurb loaded successfully) - Enviando evento para Supabase');
       trackEvent('video_play', { 
         country: geolocationData.current?.country_name || 'Unknown',

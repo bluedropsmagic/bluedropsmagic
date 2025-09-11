@@ -30,8 +30,9 @@ function App() {
   const [showRestOfContent, setShowRestOfContent] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(1958); // 32:38 in seconds
+  const [timeRemaining, setTimeRemaining] = useState<number>(1837); // 30:37 in seconds
   const [timerActive, setTimerActive] = useState(false);
+  const [videoStartTime, setVideoStartTime] = useState<number | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -191,6 +192,14 @@ function App() {
 
   // Expose function globally for external triggers
   useEffect(() => {
+    // Function to start timer from video play
+    (window as any).startTimerFromVideoPlay = () => {
+      console.log('🎬 Video started playing - starting 30:37 timer');
+      setVideoStartTime(Date.now());
+      setTimeRemaining(1837); // 30:37 in seconds
+      setTimerActive(true);
+    };
+    
     (window as any).showRestOfContentAfterDelay = () => {
       console.log('🎯 External trigger: Showing content after delay');
       setShowRestOfContent(true);
@@ -228,6 +237,9 @@ function App() {
     
     // Cleanup on unmount
     return () => {
+      if ((window as any).startTimerFromVideoPlay) {
+        delete (window as any).startTimerFromVideoPlay;
+      }
       if ((window as any).showRestOfContentAfterDelay) {
         delete (window as any).showRestOfContentAfterDelay;
       }
@@ -236,61 +248,77 @@ function App() {
 
   // Auto-trigger content reveal after 32:38 for normal users
   useEffect(() => {
-    // Skip timer if already shown by persistence or in Bolt environment
-    if (isBoltEnvironment || (!isAdmin && sessionStorage.getItem('has_seen_content') === 'true')) {
+    // Skip auto-timer - now only starts when video plays
+    if (isBoltEnvironment) {
+      console.log('🔧 Bolt environment - content visible immediately');
       return;
     }
     
-    console.log('🕐 Setting up 32:38 timer for content reveal');
+    if (!isAdmin && sessionStorage.getItem('has_seen_content') === 'true') {
+      console.log('👤 User has already seen content - showing immediately');
+      return;
+    }
     
-    const timer = setTimeout(() => {
-      console.log('🎯 32:38 elapsed - triggering content reveal');
-      setShowRestOfContent(true);
-      setShowPurchaseButton(true);
+    console.log('🕐 Timer will start when video plays (30:37 from video start)');
+  }, [isBoltEnvironment, isAdmin]);
+
+  // Timer effect - runs when video starts playing
+  useEffect(() => {
+    if (!timerActive || !videoStartTime) return;
+    
+    const interval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - videoStartTime) / 1000);
+      const remaining = 1837 - elapsed; // 30:37 in seconds
       
-      // Save state for normal users only
-      if (!isAdmin && !isBoltEnvironment) {
-        sessionStorage.setItem('has_seen_content', 'true');
+      if (remaining <= 0) {
+        console.log('🎯 30:37 elapsed from video start - triggering content reveal');
+        setShowRestOfContent(true);
+        setShowPurchaseButton(true);
+        setTimerActive(false);
+        
+        // Save state for normal users only
+        if (!isAdmin && !isBoltEnvironment) {
+          sessionStorage.setItem('has_seen_content', 'true');
+        }
+        
+        // Auto-scroll to 6-bottle button after content appears
+        setTimeout(() => {
+          const sixBottleButton = document.getElementById('six-bottle-package') || 
+                                document.querySelector('[data-purchase-section="true"]') ||
+                                document.querySelector('.purchase-button-main');
+          
+          if (sixBottleButton) {
+            sixBottleButton.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'nearest'
+            });
+            
+            // Add highlight effect
+            const element = sixBottleButton as HTMLElement;
+            element.style.transition = 'all 0.8s ease';
+            element.style.transform = 'scale(1.02)';
+            element.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
+            
+            // Remove highlight after 4 seconds
+            setTimeout(() => {
+              element.style.transform = 'scale(1)';
+              element.style.boxShadow = '';
+            }, 4000);
+            
+            console.log('📍 Auto-scrolled to 6-bottle purchase button after 30:37 from video start');
+          }
+        }, 1000);
+        
+        clearInterval(interval);
+        return;
       }
       
-      // Auto-scroll to 6-bottle button after content appears
-      setTimeout(() => {
-        const sixBottleButton = document.getElementById('six-bottle-package') || 
-                              document.querySelector('[data-purchase-section="true"]') ||
-                              document.querySelector('.purchase-button-main');
-        
-        if (sixBottleButton) {
-          sixBottleButton.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center',
-            inline: 'nearest'
-          });
-          
-          // Add highlight effect
-          const element = sixBottleButton as HTMLElement;
-          element.style.transition = 'all 0.8s ease';
-          element.style.transform = 'scale(1.02)';
-          element.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
-          
-          // Remove highlight after 4 seconds
-          setTimeout(() => {
-            element.style.transform = 'scale(1)';
-            element.style.boxShadow = '';
-          }, 4000);
-          
-          console.log('📍 Auto-scrolled to 6-bottle purchase button after 32:38');
-        } else {
-          console.log('⚠️ 6-bottle button not found for auto-scroll');
-        }
-      }, 1000); // Wait 1 second for content to render
-      
-    }, 1958000); // 32:38 = 32*60 + 38 = 1958 seconds = 1,958,000 milliseconds
+      setTimeRemaining(remaining);
+    }, 1000);
     
-    return () => {
-      console.log('🧹 Cleaning up timer');
-      clearTimeout(timer);
-    };
-  }, [isBoltEnvironment, isAdmin]);
+    return () => clearInterval(interval);
+  }, [timerActive, videoStartTime, isAdmin, isBoltEnvironment]);
 
   useEffect(() => {
     // Initialize URL tracking parameters

@@ -144,6 +144,10 @@ export const VideoSection: React.FC = () => {
             if (!hasTrackedPlay) {
               hasTrackedPlay = true;
               trackVideoPlay();
+              // Start timer from video play
+              if (typeof window !== 'undefined' && (window as any).startTimerFromVideoPlay) {
+                (window as any).startTimerFromVideoPlay();
+              }
               console.log('🎬 ULTRA-FAST TRACK: Video play tracked via video element');
             }
           });
@@ -167,6 +171,10 @@ export const VideoSection: React.FC = () => {
             if (!hasTrackedPlay) {
               hasTrackedPlay = true;
               trackVideoPlay();
+              // Start timer from video play
+              if (typeof window !== 'undefined' && (window as any).startTimerFromVideoPlay) {
+                (window as any).startTimerFromVideoPlay();
+              }
               console.log('🎬 ULTRA-FAST TRACK: Video play tracked via container click');
             }
           };
