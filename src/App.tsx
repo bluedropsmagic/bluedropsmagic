@@ -293,32 +293,20 @@ function App() {
   }, [isBoltEnvironment, isAdmin]);
 
   useEffect(() => {
-    // Initialize URL tracking parameters
-    initializeTracking();
-    initializeRedTrack();
-    initializeFacebookPixelTracking();
-    
-    // ✅ INSTANT VIDEO LOADING: Pre-warm VTurb environment
-    console.log('🚀 Pre-warming VTurb environment for instant video loading...');
-    
-    // Pre-create global VTurb variables if they don't exist
-    if (typeof window !== 'undefined') {
-      window.vslVideoLoaded = false;
+    // ✅ DEFERRED: Initialize tracking systems after critical content loads
+    setTimeout(() => {
+      initializeTracking();
+      initializeRedTrack();
+      initializeFacebookPixelTracking();
       
-      // ✅ INSTANT LOADING: Pre-initialize smartplayer namespace
-      if (!window.smartplayer) {
-        window.smartplayer = { instances: {} };
-        console.log('🎬 Pre-initialized smartplayer namespace for instant loading');
-      }
-    }
-    
-    // Initialize native fingerprinting
-    initializeFingerprinting().then(() => {
-      console.log('🔍 Native fingerprinting initialized');
-      showFingerprintDebug();
-    }).catch(error => {
-      console.error('Error initializing fingerprinting:', error);
-    });
+      // Initialize native fingerprinting
+      initializeFingerprinting().then(() => {
+        console.log('🔍 Native fingerprinting initialized');
+        showFingerprintDebug();
+      }).catch(error => {
+        console.error('Error initializing fingerprinting:', error);
+      });
+    }, 1000); // ✅ DEFERRED: Wait 1 second for critical content to load first
   }, []);
 
   // Expose tracking functions globally for testing

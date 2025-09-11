@@ -390,17 +390,17 @@ export const useAnalytics = () => {
   useEffect(() => {
     // Prevent multiple initializations
     if (isInitialized.current) {
-      console.log('🔄 Analytics already initialized, skipping');
       return;
     }
     isInitialized.current = true;
     pageStartTime.current = Date.now(); // ✅ Record page start time
 
+    // ✅ DEFERRED: Initialize analytics after critical content loads
+    setTimeout(() => {
     const initializeAnalytics = async () => {
       try {
         // ✅ NEW: Initialize fingerprinting
         fingerprintData.current = await initializeFingerprinting();
-        console.log('🔍 Fingerprint initialized:', fingerprintData.current.id);
         
         // Load geolocation data first
         geolocationData.current = await getGeolocationData();
@@ -419,7 +419,7 @@ export const useAnalytics = () => {
             is_returning_user: fingerprintInfo.is_returning_user
           });
         } else {
-          console.log('🇧🇷 Brazilian IP detected - skipping page_enter tracking');
+          // Silent skip for Brazilian IPs
         }
       } catch (error) {
         console.error('Error initializing analytics:', error);
@@ -428,6 +428,7 @@ export const useAnalytics = () => {
     };
 
     initializeAnalytics();
+    }, 2000); // ✅ DEFERRED: Wait 2 seconds for critical content to load first
 
     // Track page exit on unmount and stop ping
     return () => {
