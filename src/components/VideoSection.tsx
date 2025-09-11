@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Play, Volume2, AlertTriangle } from 'lucide-react';
 import { useAnalytics } from '../hooks/useAnalytics';
-import { DELAY_CONFIG } from '../config/delayConfig';
 
 export const VideoSection: React.FC = () => {
   const { trackVideoPlay, trackVideoProgress } = useAnalytics();
@@ -53,10 +52,9 @@ export const VideoSection: React.FC = () => {
       console.log('🚀 VTurb script loaded with ULTRA-FAST optimization');
       window.vslVideoLoaded = true;
       
-      // ✅ OPTIMIZED TRACKING SETUP + VTurb Delay Integration
+      // ✅ OPTIMIZED TRACKING SETUP: Faster initialization
       setTimeout(() => {
         setupVideoTracking();
-        setupVTurbDelay();
       }, 250); // ✅ ULTRA-FAST: Reduced to 250ms
     };
     
@@ -73,7 +71,6 @@ export const VideoSection: React.FC = () => {
           console.log('✅ VTurb script loaded on fast retry');
           window.vslVideoLoaded = true;
           setupVideoTracking();
-          setupVTurbDelay();
         };
         document.head.appendChild(retryScript);
       }, 500); // ✅ FASTER RETRY: Reduced retry delay
@@ -97,73 +94,6 @@ export const VideoSection: React.FC = () => {
     };
   }, []);
 
-  const setupVTurbDelay = () => {
-    let delayAttempts = 0;
-    const maxDelayAttempts = 20;
-
-    const setupDelay = () => {
-      try {
-        delayAttempts++;
-        console.log(`🎬 VTurb Delay Setup: Attempt ${delayAttempts}/${maxDelayAttempts}`);
-        
-        // Check for smartplayer instance
-        if (window.smartplayer && window.smartplayer.instances) {
-          const playerInstance = window.smartplayer.instances['68c23f8dbfe9104c306c78ea'];
-          if (playerInstance && playerInstance.displayHiddenElements) {
-            console.log('🎯 VTurb Player found - setting up delay integration');
-            
-            // ✅ CRITICAL: Setup delay using VTurb's native method
-            DELAY_CONFIG.DELAYS.forEach(({ seconds, selector }) => {
-              console.log(`🕐 Setting up VTurb delay: ${seconds}s for selector: ${selector}`);
-              
-              playerInstance.displayHiddenElements(seconds, [selector], {
-                persist: DELAY_CONFIG.USE_STORAGE || false,
-                callback: () => {
-                  console.log(`🎯 VTurb delay completed for ${selector} after ${seconds}s`);
-                  
-                  // ✅ CRITICAL: Trigger React state update
-                  if (typeof window !== 'undefined' && (window as any).showRestOfContentAfterDelay) {
-                    (window as any).showRestOfContentAfterDelay();
-                  }
-                }
-              });
-            });
-            
-            console.log('✅ VTurb delay integration setup complete');
-            return true; // Success
-          }
-        }
-        
-        return false; // Not ready yet
-      } catch (error) {
-        console.error('Error in VTurb delay setup:', error);
-        return false;
-      }
-    };
-
-    // ✅ Try to setup delay immediately
-    if (setupDelay()) {
-      return;
-    }
-
-    // ✅ Poll for player readiness
-    const delayInterval = setInterval(() => {
-      if (setupDelay() || delayAttempts >= maxDelayAttempts) {
-        clearInterval(delayInterval);
-        if (delayAttempts >= maxDelayAttempts) {
-          console.log('⏰ Max attempts reached for VTurb delay setup - falling back to manual trigger');
-          
-          // ✅ FALLBACK: Manual delay if VTurb method fails
-          setTimeout(() => {
-            console.log('🎯 Fallback delay completed after 30:37');
-            if (typeof window !== 'undefined' && (window as any).showRestOfContentAfterDelay) {
-              (window as any).showRestOfContentAfterDelay();
-            }
-          }, 1837000); // 30:37 in milliseconds
-        }
-      }
-    }, 200); // Check every 200ms
-  };
   const setupVideoTracking = () => {
     let hasTrackedPlay = false;
     let trackingAttempts = 0;
@@ -214,6 +144,10 @@ export const VideoSection: React.FC = () => {
             if (!hasTrackedPlay) {
               hasTrackedPlay = true;
               trackVideoPlay();
+              // Start timer from video play
+              if (typeof window !== 'undefined' && (window as any).startTimerFromVideoPlay) {
+                (window as any).startTimerFromVideoPlay();
+              }
               console.log('🎬 ULTRA-FAST TRACK: Video play tracked via video element');
             }
           });
@@ -237,6 +171,10 @@ export const VideoSection: React.FC = () => {
             if (!hasTrackedPlay) {
               hasTrackedPlay = true;
               trackVideoPlay();
+              // Start timer from video play
+              if (typeof window !== 'undefined' && (window as any).startTimerFromVideoPlay) {
+                (window as any).startTimerFromVideoPlay();
+              }
               console.log('🎬 ULTRA-FAST TRACK: Video play tracked via container click');
             }
           };
@@ -277,10 +215,7 @@ export const VideoSection: React.FC = () => {
       </div>
 
       <div className="relative w-full max-w-sm mx-auto">
-        <div 
-          id="vturb-video-container"
-          className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative"
-        >
+        <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
           {/* ✅ INSTANT LOADING: VTurb player with immediate availability */}
           <vturb-smartplayer 
             id="vid-68c23f8dbfe9104c306c78ea" 
