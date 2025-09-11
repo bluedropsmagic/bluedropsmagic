@@ -192,14 +192,6 @@ function App() {
 
   // Expose function globally for external triggers
   useEffect(() => {
-    // Function to start timer from video play
-    (window as any).startTimerFromVideoPlay = () => {
-      console.log('🎬 Video started playing - starting 30:37 timer');
-      setVideoStartTime(Date.now());
-      setTimeRemaining(1837); // 30:37 in seconds
-      setTimerActive(true);
-    };
-    
     (window as any).showRestOfContentAfterDelay = () => {
       console.log('🎯 External trigger: Showing content after delay');
       setShowRestOfContent(true);
@@ -237,9 +229,6 @@ function App() {
     
     // Cleanup on unmount
     return () => {
-      if ((window as any).startTimerFromVideoPlay) {
-        delete (window as any).startTimerFromVideoPlay;
-      }
       if ((window as any).showRestOfContentAfterDelay) {
         delete (window as any).showRestOfContentAfterDelay;
       }
@@ -248,7 +237,7 @@ function App() {
 
   // Auto-trigger content reveal after 32:38 for normal users
   useEffect(() => {
-    // Skip auto-timer - now only starts when video plays
+    // Start timer immediately on page load for all users
     if (isBoltEnvironment) {
       console.log('🔧 Bolt environment - content visible immediately');
       return;
@@ -259,22 +248,26 @@ function App() {
       return;
     }
     
-    console.log('🕐 Timer will start when video plays (30:37 from video start)');
+    console.log('🕐 Starting 30:37 timer immediately on page load');
+    
+    // Start timer immediately on page load
+    setTimerActive(true);
+    setTimeRemaining(1837); // 30:37 in seconds
   }, [isBoltEnvironment, isAdmin]);
 
-  // Timer effect - runs when video starts playing
+  // Timer effect - runs immediately on page load
   useEffect(() => {
-    if (!timerActive || !videoStartTime) return;
+    if (!timerActive) return;
     
     const interval = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - videoStartTime) / 1000);
-      const remaining = 1837 - elapsed; // 30:37 in seconds
-      
-      if (remaining <= 0) {
-        console.log('🎯 30:37 elapsed from video start - triggering content reveal');
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          console.log('🎯 30:37 elapsed from page load - triggering content reveal');
+          setTimerActive(false);
+          
+          // Show content after timer ends
         setShowRestOfContent(true);
         setShowPurchaseButton(true);
-        setTimerActive(false);
         
         // Save state for normal users only
         if (!isAdmin && !isBoltEnvironment) {
@@ -306,19 +299,18 @@ function App() {
               element.style.boxShadow = '';
             }, 4000);
             
-            console.log('📍 Auto-scrolled to 6-bottle purchase button after 30:37 from video start');
+            console.log('⚠️ 6-bottle button not found for auto-scroll after timer');
           }
         }, 1000);
         
-        clearInterval(interval);
-        return;
-      }
-      
-      setTimeRemaining(remaining);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [timerActive, videoStartTime, isAdmin, isBoltEnvironment]);
+  }, [timerActive, isAdmin, isBoltEnvironment]);
 
   useEffect(() => {
     // Initialize URL tracking parameters
