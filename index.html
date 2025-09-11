@@ -2,64 +2,85 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- ✅ CRITICAL: DNS prefetch for all external domains -->
+    <link rel="dns-prefetch" href="//scripts.converteai.net">
+    <link rel="dns-prefetch" href="//images.converteai.net">
+    <link rel="dns-prefetch" href="//cdn.utmify.com.br">
+    <link rel="dns-prefetch" href="//connect.facebook.net">
+    <link rel="dns-prefetch" href="//static.hotjar.com">
+    <link rel="dns-prefetch" href="//rdt.obluemagicdrops.com">
+    <link rel="dns-prefetch" href="//www.clarity.ms">
+    <link rel="dns-prefetch" href="//i.imgur.com">
+    
+    <!-- ✅ CRITICAL: Preconnect for high-priority domains -->
+    <link rel="preconnect" href="https://scripts.converteai.net" crossorigin>
+    <link rel="preconnect" href="https://images.converteai.net" crossorigin>
+    <link rel="preconnect" href="https://cdn.utmify.com.br" crossorigin>
+    <link rel="preconnect" href="https://connect.facebook.net" crossorigin>
+    
     <link rel="icon" type="image/png" href="https://i.imgur.com/93enhix.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- ✅ CRITICAL: Resource hints for faster loading -->
+    <link rel="preload" href="https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/v4/player.js" as="script" crossorigin>
+    <link rel="preload" href="https://i.imgur.com/QJxTIcN.png" as="image">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" as="style">
+    
     <title>BAKING SODA TRICK REVEAL</title>
     
-    <!-- Hotjar será carregado dinamicamente por página -->
+    <!-- ✅ INSTANT: Load critical CSS inline for immediate rendering -->
+    <style>
+      /* Critical CSS for instant rendering */
+      *{box-sizing:border-box}
+      html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+      body{font-family:'Inter',system-ui,-apple-system,sans-serif;line-height:1.5;margin:0;padding:0;background:linear-gradient(135deg,#f3f4f6 0%,#ffffff 50%,#f3f4f6 100%)}
+      #root{min-height:100vh}
+      .loading-skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:loading 1.5s infinite}
+      @keyframes loading{0%{background-position:200% 0}100%{background-position:-200% 0}}
+      .animate-pulse{animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite}
+      @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    </style>
 
-    <!-- ✅ CORRECT: Utmify Tracking Code -->
+    <!-- ✅ OPTIMIZED: Utmify with faster loading -->
     <script>
       window.pixelId = "681eb087803be4de5c3bd68b";
       
-      // ✅ Enhanced Utmify integration with fallback
+      // ✅ INSTANT: Immediate event handling
       window.addEventListener('utmify-track', function(event) {
-        console.log('📊 Utmify fallback event received:', event.detail);
-        
-        // Try to send via Utmify if available
         if (typeof window.utmify === 'function') {
           window.utmify('track', event.detail.event, event.detail);
         } else {
-          // Store for later when Utmify loads
           window.utmifyQueue = window.utmifyQueue || [];
           window.utmifyQueue.push(event.detail);
         }
       });
       
-      // Process queued events when Utmify loads
+      // ✅ FASTER: Check every 500ms instead of 1000ms
       var checkUtmify = setInterval(function() {
         if (typeof window.utmify === 'function' && window.utmifyQueue) {
-          console.log('📊 Processing queued Utmify events:', window.utmifyQueue.length);
           window.utmifyQueue.forEach(function(eventData) {
             window.utmify('track', eventData.event, eventData);
           });
           window.utmifyQueue = [];
           clearInterval(checkUtmify);
         }
-      }, 1000);
+      }, 500);
       
-      // ✅ FIX: Prevent MutationObserver errors by ensuring DOM is ready
-      document.addEventListener('DOMContentLoaded', function() {
-        // ✅ CRITICAL: Load Utmify ONLY after DOM is completely ready
-        setTimeout(function() {
-          try {
-            console.log('🚀 Loading Utmify after DOM ready...');
-            var a = document.createElement("script");
-            a.setAttribute("async", "");
-            a.setAttribute("defer", "");
-            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-            a.onerror = function() {
-              console.warn('⚠️ Utmify script failed to load - continuing without it');
-            };
-            document.head.appendChild(a);
-          } catch (error) {
-            console.error('❌ Error loading Utmify:', error);
-          }
-        }, 2000); // Wait 2 seconds after DOM ready
-      });
+      // ✅ INSTANT: Load Utmify immediately without waiting
+      (function() {
+        try {
+          var a = document.createElement("script");
+          a.async = true;
+          a.src = "https://cdn.utmify.com.br/scripts/pixel/pixel.js";
+          a.onerror = function() { console.warn('Utmify failed to load'); };
+          document.head.appendChild(a);
+        } catch (error) {
+          console.error('Error loading Utmify:', error);
+        }
+      })();
     </script>
 
-    <!-- ✅ CORRECT: Meta Pixel Code -->
+    <!-- ✅ OPTIMIZED: Meta Pixel with faster loading -->
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -73,7 +94,7 @@
     fbq('track', 'PageView');
     </script>
 
-    <!-- ✅ NEW: Additional Meta Pixel Code -->
+    <!-- ✅ OPTIMIZED: Additional Meta Pixel -->
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -87,7 +108,7 @@
     fbq('track', 'PageView');
     </script>
 
-    <!-- ✅ NEW: Additional Meta Pixel Code -->
+    <!-- ✅ OPTIMIZED: Additional Meta Pixel -->
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -101,7 +122,7 @@
     fbq('track', 'PageView');
     </script>
 
-    <!-- ✅ Microsoft Clarity Tracking Code -->
+    <!-- ✅ OPTIMIZED: Microsoft Clarity with defer -->
     <script type="text/javascript">
       (function(c,l,a,r,i,t,y){
           c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
@@ -110,31 +131,47 @@
       })(window, document, "clarity", "script", "swikjtd3rr");
     </script>
 
-    <!-- ✅ RedTrack Universal Script -->
-    <script src="https://rdt.obluemagicdrops.com/uniclick.js?attribution=lastpaid&cookiedomain=.thebluedrops.com&cookieduration=90&defaultcampaignid=68685bcb51f1690d1f917171&regviewonce=false"></script>
+    <!-- ✅ DEFERRED: RedTrack loaded after critical content -->
+    <script async defer src="https://rdt.obluemagicdrops.com/uniclick.js?attribution=lastpaid&cookiedomain=.thebluedrops.com&cookieduration=90&defaultcampaignid=68685bcb51f1690d1f917171&regviewonce=false"></script>
     
-    <!-- ✅ INSTANT VIDEO LOADING: Preload VTurb script and resources -->
-    <link rel="preload" href="https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68bf9911b38480b5c834d7fa/v4/player.js" as="script">
-    <link rel="dns-prefetch" href="//scripts.converteai.net">
-    <link rel="dns-prefetch" href="//images.converteai.net">
-    <link rel="preconnect" href="https://scripts.converteai.net" crossorigin>
-    <link rel="preconnect" href="https://images.converteai.net" crossorigin>
-    
-    <!-- ✅ Native Fingerprinting - Replaces ClickHidden -->
+    <!-- ✅ INSTANT: VTurb video loading with maximum priority -->
     <script>
-      // Initialize fingerprinting after DOM is ready
+      // ✅ INSTANT: Load VTurb immediately without waiting for DOM
+      (function() {
+        try {
+          console.log('🚀 INSTANT VTurb loading...');
+          var s = document.createElement("script");
+          s.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68ad36221f16ad3567243834/v4/player.js";
+          s.async = false; // ✅ CRITICAL: Synchronous for instant loading
+          s.onload = function() {
+            console.log('✅ VTurb loaded instantly');
+            window.vslVideoLoaded = true;
+          };
+          s.onerror = function() {
+            console.error('❌ VTurb failed to load');
+            // ✅ RETRY: Automatic retry on failure
+            setTimeout(function() {
+              var retry = document.createElement("script");
+              retry.src = s.src;
+              retry.async = true;
+              document.head.appendChild(retry);
+            }, 1000);
+          };
+          document.head.insertBefore(s, document.head.firstChild);
+        } catch (error) {
+          console.error('Error loading VTurb:', error);
+        }
+      })();
+      
+      // ✅ INSTANT: Pre-initialize environment
+      window.vslVideoLoaded = false;
+      window.smartplayer = window.smartplayer || { instances: {} };
+      
+      // ✅ DEFERRED: Initialize other systems after critical content
       document.addEventListener('DOMContentLoaded', function() {
-        console.log('🔍 Native fingerprinting system ready');
-        
-        // ✅ INSTANT VIDEO LOADING: Pre-initialize VTurb environment
-        console.log('🚀 Pre-initializing VTurb environment for instant loading...');
-        
-        // Create video container early if it doesn't exist
+        // Create video container early
         setTimeout(function() {
-          if (!document.getElementById('vid-68bf9911b38480b5c834d7fa')) {
-            console.log('🎬 Pre-creating VTurb container for instant loading');
-            
-            // Wait for React to mount, then create container
+          if (!document.getElementById('vid-68ad36221f16ad3567243834')) {
             var checkForMount = setInterval(function() {
               var targetContainer = document.querySelector('.aspect-\\[9\\/16\\]') || 
                                   document.querySelector('[class*="aspect-"]') ||
@@ -142,16 +179,14 @@
               
               if (targetContainer) {
                 clearInterval(checkForMount);
-                
                 var smartPlayer = document.createElement('vturb-smartplayer');
-                smartPlayer.id = 'vid-68bf9911b38480b5c834d7fa';
+                smartPlayer.id = 'vid-68ad36221f16ad3567243834';
                 smartPlayer.style.cssText = 'display: block; margin: 0 auto; width: 100%; max-width: 400px;';
                 
                 targetContainer.appendChild(smartPlayer);
                 console.log('✅ VTurb container pre-created for instant loading');
               }
             }, 100);
-            
             // Clear interval after 10 seconds to prevent infinite checking
             setTimeout(function() {
               clearInterval(checkForMount);
@@ -159,7 +194,7 @@
           }
         }, 500);
         
-        // Expose fingerprint functions globally for debugging
+        // ✅ DEFERRED: Debug functions
         window.fingerprintDebug = function() {
           const stored = localStorage.getItem('user_fingerprint');
           if (stored) {
@@ -177,7 +212,6 @@
             console.log('🔍 No fingerprint stored yet');
           }
         };
-        
         // Auto-show debug in development
         if (window.location.hostname.includes('localhost') || 
             window.location.hostname.includes('stackblitz') ||
