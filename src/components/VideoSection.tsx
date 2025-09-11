@@ -5,176 +5,6 @@ import { useAnalytics } from '../hooks/useAnalytics';
 export const VideoSection: React.FC = () => {
   const { trackVideoPlay, trackVideoProgress } = useAnalytics();
 
-  // Function to center video and block scroll
-  const centerVideoAndBlockScroll = () => {
-    const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
-    if (!videoContainer) return;
-
-    console.log('🎬 Centralizing video and blocking scroll');
-
-    // Block scroll on body
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-
-    // Get the video container's parent (the aspect ratio container)
-    const aspectContainer = videoContainer.closest('.aspect-\\[9\\/16\\]') as HTMLElement;
-    if (!aspectContainer) return;
-
-    // Store original styles
-    const originalStyles = {
-      position: aspectContainer.style.position,
-      top: aspectContainer.style.top,
-      left: aspectContainer.style.left,
-      width: aspectContainer.style.width,
-      height: aspectContainer.style.height,
-      zIndex: aspectContainer.style.zIndex,
-      transform: aspectContainer.style.transform,
-      transition: aspectContainer.style.transition
-    };
-
-    // Store original styles in data attribute for restoration
-    aspectContainer.setAttribute('data-original-styles', JSON.stringify(originalStyles));
-
-    // Apply centering styles
-    aspectContainer.style.position = 'fixed';
-    aspectContainer.style.top = '50%';
-    aspectContainer.style.left = '50%';
-    aspectContainer.style.transform = 'translate(-50%, -50%)';
-    aspectContainer.style.width = '90vw';
-    aspectContainer.style.maxWidth = '400px';
-    aspectContainer.style.height = 'auto';
-    aspectContainer.style.zIndex = '9999';
-    aspectContainer.style.transition = 'all 0.5s ease-in-out';
-    aspectContainer.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.5)';
-    aspectContainer.style.borderRadius = '1rem';
-
-    // Add backdrop
-    const backdrop = document.createElement('div');
-    backdrop.id = 'video-backdrop';
-    backdrop.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      z-index: 9998;
-      transition: all 0.5s ease-in-out;
-    `;
-    document.body.appendChild(backdrop);
-
-    // Add close button
-    const closeButton = document.createElement('button');
-    closeButton.id = 'video-close-button';
-    closeButton.innerHTML = '✕';
-    closeButton.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      border-radius: 50%;
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
-      cursor: pointer;
-      z-index: 10000;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    `;
-    
-    closeButton.addEventListener('mouseenter', () => {
-      closeButton.style.background = 'rgba(255, 255, 255, 1)';
-      closeButton.style.transform = 'scale(1.1)';
-    });
-    
-    closeButton.addEventListener('mouseleave', () => {
-      closeButton.style.background = 'rgba(255, 255, 255, 0.9)';
-      closeButton.style.transform = 'scale(1)';
-    });
-
-    closeButton.addEventListener('click', restoreVideoPosition);
-    document.body.appendChild(closeButton);
-
-    console.log('✅ Video centered and scroll blocked');
-  };
-
-  // Function to restore video position and enable scroll
-  const restoreVideoPosition = () => {
-    console.log('🔄 Restoring video position and enabling scroll');
-
-    // Restore scroll
-    document.body.style.overflow = '';
-    document.documentElement.style.overflow = '';
-
-    // Remove backdrop
-    const backdrop = document.getElementById('video-backdrop');
-    if (backdrop) {
-      backdrop.remove();
-    }
-
-    // Remove close button
-    const closeButton = document.getElementById('video-close-button');
-    if (closeButton) {
-      closeButton.remove();
-    }
-
-    // Restore video container
-    const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
-    if (!videoContainer) return;
-
-    const aspectContainer = videoContainer.closest('.aspect-\\[9\\/16\\]') as HTMLElement;
-    if (!aspectContainer) return;
-
-    // Get original styles
-    const originalStylesData = aspectContainer.getAttribute('data-original-styles');
-    if (originalStylesData) {
-      try {
-        const originalStyles = JSON.parse(originalStylesData);
-        
-        // Restore original styles
-        Object.entries(originalStyles).forEach(([property, value]) => {
-          if (value) {
-            (aspectContainer.style as any)[property] = value;
-          } else {
-            (aspectContainer.style as any)[property] = '';
-          }
-        });
-        
-        aspectContainer.removeAttribute('data-original-styles');
-      } catch (error) {
-        console.error('Error restoring original styles:', error);
-        
-        // Fallback: reset to default
-        aspectContainer.style.position = '';
-        aspectContainer.style.top = '';
-        aspectContainer.style.left = '';
-        aspectContainer.style.transform = '';
-        aspectContainer.style.width = '';
-        aspectContainer.style.height = '';
-        aspectContainer.style.zIndex = '';
-        aspectContainer.style.transition = '';
-        aspectContainer.style.boxShadow = '';
-      }
-    }
-
-    console.log('✅ Video position restored and scroll enabled');
-  };
-
-  // Expose functions globally
-  useEffect(() => {
-    (window as any).centerVideoAndBlockScroll = centerVideoAndBlockScroll;
-    (window as any).restoreVideoPosition = restoreVideoPosition;
-    
-    return () => {
-      delete (window as any).centerVideoAndBlockScroll;
-      delete (window as any).restoreVideoPosition;
-    };
-  }, []);
-
   useEffect(() => {
     // ✅ ULTRA-FAST LOADING: Inject VTurb script with performance optimizations
     console.log('🚀 ULTRA-FAST VIDEO LOADING: Injecting optimized VTurb script');
@@ -286,8 +116,6 @@ export const VideoSection: React.FC = () => {
                 if (!hasTrackedPlay) {
                   hasTrackedPlay = true;
                   trackVideoPlay();
-                  // Center video and block scroll on play
-                  centerVideoAndBlockScroll();
                   console.log('🎬 ULTRA-FAST TRACK: Video play tracked via smartplayer');
                 }
               });
@@ -320,8 +148,6 @@ export const VideoSection: React.FC = () => {
               if (typeof window !== 'undefined' && (window as any).startTimerFromVideoPlay) {
                 (window as any).startTimerFromVideoPlay();
               }
-              // Center video and block scroll on play
-              centerVideoAndBlockScroll();
               console.log('🎬 ULTRA-FAST TRACK: Video play tracked via video element');
             }
           });
@@ -349,8 +175,6 @@ export const VideoSection: React.FC = () => {
               if (typeof window !== 'undefined' && (window as any).startTimerFromVideoPlay) {
                 (window as any).startTimerFromVideoPlay();
               }
-              // Center video and block scroll on play
-              centerVideoAndBlockScroll();
               console.log('🎬 ULTRA-FAST TRACK: Video play tracked via container click');
             }
           };
