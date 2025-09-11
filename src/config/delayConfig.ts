@@ -15,7 +15,7 @@ export const DELAY_CONFIG: DelayConfig = {
   CLASS_TO_HIDE: '.main-content-to-reveal', // CSS class for content to hide initially
   DELAYS: [
     {
-      seconds: 1837, // 30:37 in seconds (30 * 60 + 37 = 1837)
+      seconds: 10, // 10 seconds for testing
       selector: '.main-content-to-reveal'
     }
   ]
