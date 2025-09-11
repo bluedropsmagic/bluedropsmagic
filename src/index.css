@@ -45,6 +45,16 @@ video {
   height: auto;
 }
 
+/* VTurb Delay Integration - Hide content initially */
+.main-content-to-reveal {
+  display: none !important;
+}
+
+/* VTurb will override this when delay is reached */
+.main-content-to-reveal.vturb-revealed {
+  display: block !important;
+}
+
 @layer utilities {
   .animation-delay-200 {
     animation-delay: 0.2s;

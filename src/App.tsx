@@ -5,6 +5,7 @@ import { initializeRedTrack } from './utils/redtrackIntegration';
 import { initializeFacebookPixelTracking } from './utils/facebookPixelTracking';
 import { buildUrlWithParams, initializeTracking } from './utils/urlUtils';
 import { initializeFingerprinting, showFingerprintDebug } from './utils/fingerprinting';
+import { DELAY_CONFIG } from './config/delayConfig';
 
 // Import BoltNavigation
 import { BoltNavigation } from './components/BoltNavigation';
@@ -30,9 +31,6 @@ function App() {
   const [showRestOfContent, setShowRestOfContent] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(1837); // 30:37 in seconds
-  const [timerActive, setTimerActive] = useState(false);
-  const [videoStartTime, setVideoStartTime] = useState<number | null>(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,8 +47,6 @@ function App() {
         console.log('👤 Normal user has already seen content - showing immediately');
         setShowRestOfContent(true);
         setShowPurchaseButton(true);
-        setTimeRemaining(0);
-        setTimerActive(false);
       }
     }
   }, [isAdmin, isBoltEnvironment]);
@@ -151,51 +147,27 @@ function App() {
       console.log('🔧 Bolt environment - showing content immediately');
       setShowRestOfContent(true);
       setShowPurchaseButton(true);
-      setTimerActive(true); // Timer active for reference
     } else if (isAdmin) {
       console.log('👨‍💼 Admin logged in - content hidden until manual skip or timer ends');
       setShowRestOfContent(false); // Keep content hidden
       setShowPurchaseButton(false); // Keep purchase button hidden
-      setTimerActive(true); // Start timer
     } else {
       // Normal user logic (handled by initial useEffect for persistence)
-      // If not already shown by persistence, start timer
-      if (sessionStorage.getItem('has_seen_content') !== 'true') {
-        setTimerActive(true);
-      }
     }
   }, [isAdmin, isBoltEnvironment]);
-
-  // Countdown timer effect
-  useEffect(() => {
-    if (!timerActive || showRestOfContent) return;
-    
-    const interval = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          setTimerActive(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(interval);
-  }, [timerActive, showRestOfContent]);
-
-  // Format time remaining
-  const formatTimeRemaining = (seconds: number): string => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
 
   // Expose function globally for external triggers
   useEffect(() => {
     (window as any).showRestOfContentAfterDelay = () => {
-      console.log('🎯 External trigger: Showing content after delay');
+      console.log('🎯 VTurb trigger: Showing content after 30:37 video delay');
       setShowRestOfContent(true);
       setShowPurchaseButton(true);
+      
+      // Save state for normal users only
+      if (!isAdmin && !isBoltEnvironment) {
+        sessionStorage.setItem('has_seen_content', 'true');
+        console.log('💾 Saved content state for normal user');
+      }
       
       // Auto-scroll to 6-bottle button
       setTimeout(() => {
@@ -222,7 +194,7 @@ function App() {
             element.style.boxShadow = '';
           }, 4000);
           
-          console.log('📍 Auto-scrolled to 6-bottle purchase button via external trigger');
+          console.log('📍 Auto-scrolled to 6-bottle purchase button via VTurb trigger');
         }
       }, 1000);
     };
@@ -235,88 +207,15 @@ function App() {
     };
   }, []);
 
-  // Auto-trigger content reveal after 32:38 for normal users
-  useEffect(() => {
-    // Start timer immediately on page load for all users
-    if (isBoltEnvironment) {
-      console.log('🔧 Bolt environment - content visible immediately');
-      return;
-    }
-    
-    if (!isAdmin && sessionStorage.getItem('has_seen_content') === 'true') {
-      console.log('👤 User has already seen content - showing immediately');
-      return;
-    }
-    
-    console.log('🕐 Starting 30:37 timer immediately on page load');
-    
-    // Start timer immediately on page load
-    setTimerActive(true);
-    setTimeRemaining(1837); // 30:37 in seconds
-  }, [isBoltEnvironment, isAdmin]);
-
-  // Timer effect - runs immediately on page load
-  useEffect(() => {
-    if (!timerActive) return;
-    
-    const interval = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          console.log('🎯 30:37 elapsed from page load - triggering content reveal');
-          setTimerActive(false);
-          
-          // Show content after timer ends
-        setShowRestOfContent(true);
-        setShowPurchaseButton(true);
-        
-        // Save state for normal users only
-        if (!isAdmin && !isBoltEnvironment) {
-          sessionStorage.setItem('has_seen_content', 'true');
-        }
-        
-        // Auto-scroll to 6-bottle button after content appears
-        setTimeout(() => {
-          const sixBottleButton = document.getElementById('six-bottle-package') || 
-                                document.querySelector('[data-purchase-section="true"]') ||
-                                document.querySelector('.purchase-button-main');
-          
-          if (sixBottleButton) {
-            sixBottleButton.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center',
-              inline: 'nearest'
-            });
-            
-            // Add highlight effect
-            const element = sixBottleButton as HTMLElement;
-            element.style.transition = 'all 0.8s ease';
-            element.style.transform = 'scale(1.02)';
-            element.style.boxShadow = '0 0 40px rgba(59, 130, 246, 0.4)';
-            
-            // Remove highlight after 4 seconds
-            setTimeout(() => {
-              element.style.transform = 'scale(1)';
-              element.style.boxShadow = '';
-            }, 4000);
-            
-            console.log('⚠️ 6-bottle button not found for auto-scroll after timer');
-          }
-        }, 1000);
-        
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(interval);
-  }, [timerActive, isAdmin, isBoltEnvironment]);
-
   useEffect(() => {
     // Initialize URL tracking parameters
     initializeTracking();
     initializeRedTrack();
     initializeFacebookPixelTracking();
+    
+    // ✅ CRITICAL: Make delay config available globally for VTurb
+    (window as any).DELAY_CONFIG = DELAY_CONFIG;
+    console.log('🎬 VTurb delay config initialized:', DELAY_CONFIG);
     
     // ✅ INSTANT VIDEO LOADING: Pre-warm VTurb environment
     console.log('🚀 Pre-warming VTurb environment for instant video loading...');
@@ -447,23 +346,17 @@ function App() {
         </div>
       )}
 
-      {/* Timer, VTurb ID, and Skip Delay Button (Admin/Bolt only) */}
+      {/* VTurb ID and Skip Delay Button (Admin/Bolt only) */}
       {(isAdmin || isBoltEnvironment) && (
         <div className="fixed top-20 right-4 z-40">
-          {!showRestOfContent ? (
-            <div className="bg-red-500 text-white px-4 py-3 rounded-lg font-bold text-sm shadow-lg text-center min-w-[140px]">
-              <div className="text-xs mb-1">⏰ DELAY TIMER</div>
-              <div className="text-xl font-mono">
-                {formatTimeRemaining(timeRemaining)}
-              </div>
-              <div className="text-xs mt-1">até mostrar conteúdo</div>
+          {/* VTurb Delay Status */}
+          <div className={`${!showRestOfContent ? 'bg-red-500' : 'bg-green-500'} text-white px-4 py-3 rounded-lg font-bold text-sm shadow-lg text-center min-w-[140px]`}>
+            <div className="text-xs mb-1">🎬 VTURB DELAY</div>
+            <div className="text-sm">
+              {!showRestOfContent ? 'Aguardando 30:37' : 'Conteúdo liberado'}
             </div>
-          ) : (
-            <div className="bg-green-500 text-white px-4 py-3 rounded-lg font-bold text-sm shadow-lg text-center min-w-[140px]">
-              <div className="text-xs">✅ DELAY COMPLETO</div>
-              <div className="text-sm">Conteúdo liberado</div>
-            </div>
-          )}
+            <div className="text-xs mt-1">via player.displayHiddenElements</div>
+          </div>
           
           {/* VTurb Video ID Display */}
           <div className="mt-2 bg-gray-800 text-white px-3 py-2 rounded-lg text-xs shadow-lg text-center min-w-[140px]">
@@ -479,11 +372,12 @@ function App() {
             <div className="mt-2">
               <button
                 onClick={() => {
-                  console.log('⚡ Admin: Skipping delay timer manually');
-                  setTimeRemaining(0);
-                  setTimerActive(false);
+                  console.log('⚡ Admin: Skipping VTurb delay manually');
                   setShowRestOfContent(true);
                   setShowPurchaseButton(true);
+                  
+                  // Save state for admin testing
+                  sessionStorage.setItem('has_seen_content', 'true');
                   
                   // Auto-scroll to 6-bottle button after skipping
                   setTimeout(() => {
@@ -518,9 +412,9 @@ function App() {
                 }}
                 className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-2 px-3 rounded-lg text-xs shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95"
               >
-                ⚡ SKIP DELAY
+                ⚡ SKIP VTURB DELAY
               </button>
-              <p className="text-xs text-gray-400 mt-1 text-center">força mostrar conteúdo</p>
+              <p className="text-xs text-gray-400 mt-1 text-center">força revelar via VTurb</p>
             </div>
           )}
         </div>
@@ -544,7 +438,7 @@ function App() {
         </div>
 
         {/* Rest of Content - Only show after timer or admin override */}
-        {(showRestOfContent || isBoltEnvironment) && (
+        <div className={`main-content-to-reveal ${(showRestOfContent || isBoltEnvironment) ? '' : 'hidden'}`}>
           <>
             {/* Product Offers */}
             <div className="w-full max-w-md mx-auto">
@@ -735,7 +629,7 @@ function App() {
               </div>
             </section>
           </>
-        )}
+        </div>
 
         {/* Footer */}
         <Footer />
@@ -765,6 +659,7 @@ declare global {
       instances?: {
         [key: string]: {
           on: (event: string, callback: (event?: any) => void) => void;
+          displayHiddenElements?: (seconds: number, selectors: string[], options?: any) => void;
           play?: () => void;
           pause?: () => void;
           getCurrentTime?: () => number;
@@ -775,6 +670,7 @@ declare global {
     vslVideoLoaded?: boolean;
     vslCustomElementsRegistered?: boolean;
     pixelId?: string;
+    showRestOfContentAfterDelay?: () => void;
   }
 }
 

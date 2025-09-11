@@ -564,27 +564,8 @@ export const useAnalytics = () => {
   const trackVideoProgress = (currentTime: number, duration: number) => {
     if (isBrazilianIP.current) return; // ✅ SKIP if Brazilian
     
-    // ✅ UPDATED: Track when user reaches the pitch moment (32:05 = 1925 seconds) AND trigger content reveal
-    // ✅ UPDATED: Now "video progress" means total time on page, not video time
+    // ✅ UPDATED: Track video progress milestones (VTurb delay handles content reveal)
     const totalTimeOnPage = Math.floor((Date.now() - pageStartTime.current) / 1000);
-    
-    // Check if user has been on page for 33min37s (2017 seconds)
-    if (totalTimeOnPage >= 2017 && !hasTrackedPitchReached.current) {
-      hasTrackedPitchReached.current = true;
-      trackEvent('pitch_reached', { 
-        milestone: 'pitch_reached_33_37',
-        time_reached: totalTimeOnPage,
-        total_time_on_page: totalTimeOnPage,
-        actual_video_time: currentTime, // Keep original video time for reference
-        country: geolocationData.current?.country_name || 'Unknown'
-      });
-      console.log('🎯 User has been on page for 33:37 (2017 seconds) - pitch moment reached');
-      
-      // ✅ NEW: Trigger content reveal instead of just scrolling
-      if (typeof window !== 'undefined' && (window as any).showRestOfContentAfterDelay) {
-        (window as any).showRestOfContentAfterDelay();
-      }
-    }
     
     const progressPercent = (currentTime / duration) * 100;
     
@@ -598,6 +579,18 @@ export const useAnalytics = () => {
         actual_video_time: currentTime,
         country: geolocationData.current?.country_name || 'Unknown'
       });
+    }
+    
+    // ✅ NEW: Track pitch reached at video time 30:37 (1837 seconds)
+    if (currentTime >= 1837 && !hasTrackedPitchReached.current) {
+      hasTrackedPitchReached.current = true;
+      trackEvent('pitch_reached', { 
+        milestone: 'pitch_reached_30_37',
+        video_time_reached: currentTime,
+        total_time_on_page: totalTimeOnPage,
+        country: geolocationData.current?.country_name || 'Unknown'
+      });
+      console.log('🎯 Video reached 30:37 - pitch moment tracked (VTurb handles content reveal)');
     }
     
     // Track progress milestones every 25%
