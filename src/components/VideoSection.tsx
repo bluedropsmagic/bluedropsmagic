@@ -5,6 +5,7 @@ import { useAnalytics } from '../hooks/useAnalytics';
 export const VideoSection: React.FC = () => {
   const { trackVideoPlay, trackVideoProgress } = useAnalytics();
   const [isVideoCentered, setIsVideoCentered] = useState(false);
+  const [autoScrollTriggered, setAutoScrollTriggered] = useState(false);
 
   useEffect(() => {
     // ✅ ULTRA-FAST LOADING: Inject VTurb script with performance optimizations
@@ -95,28 +96,44 @@ export const VideoSection: React.FC = () => {
     };
   }, []);
 
+  // ✅ NEW: Auto-center video after 10 seconds
+  useEffect(() => {
+    const autoScrollTimer = setTimeout(() => {
+      if (!isVideoCentered && !autoScrollTriggered) {
+        console.log('⏰ 10 seconds elapsed - auto-centering video box');
+        setAutoScrollTriggered(true);
+        handleVideoClick();
+      }
+    }, 10000); // 10 seconds
+
+    return () => {
+      clearTimeout(autoScrollTimer);
+    };
+  }, [isVideoCentered, autoScrollTriggered]);
+
   const handleVideoClick = () => {
     console.log('🎬 Video clicked - centering and blocking scroll');
     setIsVideoCentered(true);
     
-    // Block scroll
+    // ✅ ENHANCED: Block scroll on both body and html
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     
-    // Center the video
-    const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
-    if (videoContainer) {
-      videoContainer.style.position = 'fixed';
-      videoContainer.style.top = '50%';
-      videoContainer.style.left = '50%';
-      videoContainer.style.transform = 'translate(-50%, -50%)';
-      videoContainer.style.zIndex = '9999';
-      videoContainer.style.width = '90vw';
-      videoContainer.style.maxWidth = '600px';
-      videoContainer.style.height = 'auto';
-      videoContainer.style.aspectRatio = '9/16';
-      videoContainer.style.borderRadius = '1rem';
-      videoContainer.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.3)';
-      videoContainer.style.transition = 'all 0.5s ease';
+    // ✅ FIXED: Center the video box (the rounded container)
+    const videoBox = document.getElementById('main-video-box');
+    if (videoBox) {
+      videoBox.style.position = 'fixed';
+      videoBox.style.top = '50%';
+      videoBox.style.left = '50%';
+      videoBox.style.transform = 'translate(-50%, -50%)';
+      videoBox.style.zIndex = '9999';
+      videoBox.style.width = '90vw';
+      videoBox.style.maxWidth = '600px';
+      videoBox.style.height = 'auto';
+      videoBox.style.aspectRatio = '9/16';
+      videoBox.style.borderRadius = '1rem';
+      videoBox.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.3)';
+      videoBox.style.transition = 'all 0.5s ease';
     }
   };
 
@@ -124,24 +141,25 @@ export const VideoSection: React.FC = () => {
     console.log('❌ Closing centered video');
     setIsVideoCentered(false);
     
-    // Restore scroll
+    // ✅ ENHANCED: Restore scroll on both body and html
     document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
     
-    // Restore video position
-    const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
-    if (videoContainer) {
-      videoContainer.style.position = '';
-      videoContainer.style.top = '';
-      videoContainer.style.left = '';
-      videoContainer.style.transform = '';
-      videoContainer.style.zIndex = '';
-      videoContainer.style.width = '';
-      videoContainer.style.maxWidth = '';
-      videoContainer.style.height = '';
-      videoContainer.style.aspectRatio = '';
-      videoContainer.style.borderRadius = '';
-      videoContainer.style.boxShadow = '';
-      videoContainer.style.transition = '';
+    // ✅ FIXED: Restore video box position
+    const videoBox = document.getElementById('main-video-box');
+    if (videoBox) {
+      videoBox.style.position = '';
+      videoBox.style.top = '';
+      videoBox.style.left = '';
+      videoBox.style.transform = '';
+      videoBox.style.zIndex = '';
+      videoBox.style.width = '';
+      videoBox.style.maxWidth = '';
+      videoBox.style.height = '';
+      videoBox.style.aspectRatio = '';
+      videoBox.style.borderRadius = '';
+      videoBox.style.boxShadow = '';
+      videoBox.style.transition = '';
     }
   };
 
@@ -289,7 +307,10 @@ export const VideoSection: React.FC = () => {
       </div>
 
       <div className="relative w-full max-w-sm mx-auto">
-        <div className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative">
+        <div 
+          id="main-video-box"
+          className="aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl bg-black relative"
+        >
           {/* ✅ INSTANT LOADING: VTurb player with immediate availability */}
           <vturb-smartplayer 
             id="vid-68c23f8dbfe9104c306c78ea" 
