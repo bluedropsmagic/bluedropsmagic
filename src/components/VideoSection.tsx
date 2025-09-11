@@ -6,21 +6,21 @@ export const VideoSection: React.FC = () => {
   const { trackVideoPlay, trackVideoProgress } = useAnalytics();
 
   useEffect(() => {
-    // ✅ INSTANT LOADING: Inject VTurb script immediately with high priority
-    console.log('🚀 INSTANT VIDEO LOADING: Injecting VTurb script with highest priority');
+    // ✅ ULTRA-FAST LOADING: Inject VTurb script with performance optimizations
+    console.log('🚀 ULTRA-FAST VIDEO LOADING: Injecting optimized VTurb script');
     
     // Clean up any existing VTurb scripts first
     const existingScripts = document.querySelectorAll('script[src*="68ad36221f16ad3567243834"], script[src*="68c23f8dbfe9104c306c78ea"]');
     existingScripts.forEach(script => {
       try {
         script.remove();
-        console.log('🧹 Removed existing VTurb script for instant reload');
+        console.log('🧹 Removed existing VTurb script for ultra-fast reload');
       } catch (error) {
         console.log('Script cleanup completed');
       }
     });
 
-    // ✅ CRITICAL: Ensure video container exists BEFORE injecting script
+    // ✅ CRITICAL: Ensure optimized video container exists BEFORE injecting script
     const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
     if (!videoContainer) {
       console.error('❌ Video container not found! Creating container...');
@@ -28,60 +28,57 @@ export const VideoSection: React.FC = () => {
       // Create container if it doesn't exist
       const container = document.createElement('vturb-smartplayer');
       container.id = 'vid-68c23f8dbfe9104c306c78ea';
-      container.style.cssText = 'display: block; margin: 0 auto; width: 100%; max-width: 400px;';
+      container.style.cssText = 'display: block; margin: 0 auto; width: 100%; max-width: 400px; will-change: transform; contain: layout style paint;';
       
       const targetDiv = document.querySelector('.aspect-\\[9\\/16\\]') || document.querySelector('.video-container');
       if (targetDiv) {
         targetDiv.appendChild(container);
-        console.log('✅ Video container created and added to DOM');
+        console.log('✅ Optimized video container created and added to DOM');
       }
     }
 
-    // ✅ INSTANT INJECTION: No delays, maximum priority
+    // ✅ ULTRA-FAST INJECTION: Performance-optimized loading
     const script = document.createElement("script");
     script.type = "text/javascript";
-    script.async = false; // ✅ CHANGED: Synchronous loading for instant availability
-    script.defer = false; // ✅ CHANGED: No defer for immediate execution
+    script.async = true; // ✅ OPTIMIZED: Async for better performance
+    script.defer = false;
     script.src = "https://scripts.converteai.net/b792ccfe-b151-4538-84c6-42bb48a19ba4/players/68c23f8dbfe9104c306c78ea/v4/player.js";
     
-    // ✅ PRELOAD: Add preload hints for faster loading
-    const preloadLink = document.createElement('link');
-    preloadLink.rel = 'preload';
-    preloadLink.href = script.src;
-    preloadLink.as = 'script';
-    document.head.appendChild(preloadLink);
+    // ✅ PERFORMANCE: Set high priority for faster loading
+    script.setAttribute('importance', 'high');
+    script.setAttribute('fetchpriority', 'high');
     
     script.onload = () => {
-      console.log('🚀 VTurb script loaded INSTANTLY');
+      console.log('🚀 VTurb script loaded with ULTRA-FAST optimization');
       window.vslVideoLoaded = true;
       
-      // ✅ IMMEDIATE TRACKING SETUP: No delays
+      // ✅ OPTIMIZED TRACKING SETUP: Faster initialization
       setTimeout(() => {
         setupVideoTracking();
-      }, 500); // ✅ REDUCED: From 2000ms to 500ms
+      }, 250); // ✅ ULTRA-FAST: Reduced to 250ms
     };
     
     script.onerror = () => {
-      console.error('❌ Failed to load VTurb script - retrying...');
+      console.error('❌ Failed to load optimized VTurb script - retrying...');
       
-      // ✅ RETRY MECHANISM: Automatic retry on failure
+      // ✅ FAST RETRY: Quick automatic retry on failure
       setTimeout(() => {
         const retryScript = document.createElement("script");
         retryScript.type = "text/javascript";
-        retryScript.async = false;
+        retryScript.async = true;
         retryScript.src = script.src;
         retryScript.onload = () => {
-          console.log('✅ VTurb script loaded on retry');
+          console.log('✅ VTurb script loaded on fast retry');
           window.vslVideoLoaded = true;
           setupVideoTracking();
         };
         document.head.appendChild(retryScript);
-      }, 1000);
+      }, 500); // ✅ FASTER RETRY: Reduced retry delay
     };
     
-    // ✅ HIGHEST PRIORITY: Insert at the beginning of head for immediate loading
+    // ✅ ULTRA-PRIORITY: Insert with performance optimizations
     document.head.insertBefore(script, document.head.firstChild);
-    console.log('🚀 VTurb script injected with HIGHEST PRIORITY for instant loading');
+    console.log('🚀 VTurb script injected with ULTRA-FAST optimizations');
 
     // Cleanup on unmount
     return () => {
@@ -90,13 +87,6 @@ export const VideoSection: React.FC = () => {
         if (scriptToRemove && scriptToRemove.parentNode) {
           scriptToRemove.parentNode.removeChild(scriptToRemove);
         }
-        
-        // ✅ CLEANUP: Remove preload link as well
-        const preloadToRemove = document.querySelector('link[href*="68c23f8dbfe9104c306c78ea"]');
-        if (preloadToRemove && preloadToRemove.parentNode) {
-          preloadToRemove.parentNode.removeChild(preloadToRemove);
-        }
-        
         window.vslVideoLoaded = false;
       } catch (error) {
         console.log('Cleanup completed');
@@ -112,13 +102,13 @@ export const VideoSection: React.FC = () => {
     const checkForPlayer = () => {
       try {
         trackingAttempts++;
-        console.log(`🔍 INSTANT CHECK: Looking for player (attempt ${trackingAttempts}/${maxAttempts})`);
+        console.log(`🔍 ULTRA-FAST CHECK: Looking for player (attempt ${trackingAttempts}/${maxAttempts})`);
         
         // Method 1: Check for smartplayer instances
         if (window.smartplayer && window.smartplayer.instances) {
           const playerInstance = window.smartplayer.instances['68c23f8dbfe9104c306c78ea'];
           if (playerInstance) {
-            console.log('🚀 INSTANT SUCCESS: Smartplayer instance found and ready');
+            console.log('🚀 ULTRA-FAST SUCCESS: Smartplayer instance found and ready');
             
             // Track video play
             if (playerInstance.on) {
@@ -126,7 +116,7 @@ export const VideoSection: React.FC = () => {
                 if (!hasTrackedPlay) {
                   hasTrackedPlay = true;
                   trackVideoPlay();
-                  console.log('🎬 INSTANT TRACK: Video play tracked via smartplayer');
+                  console.log('🎬 ULTRA-FAST TRACK: Video play tracked via smartplayer');
                 }
               });
 
@@ -148,13 +138,13 @@ export const VideoSection: React.FC = () => {
         // Method 2: Check for video elements
         const videoElement = document.querySelector('#vid-68c23f8dbfe9104c306c78ea video');
         if (videoElement) {
-          console.log('🚀 INSTANT SUCCESS: Video element found and ready');
+          console.log('🚀 ULTRA-FAST SUCCESS: Video element found and ready');
           
           videoElement.addEventListener('play', () => {
             if (!hasTrackedPlay) {
               hasTrackedPlay = true;
               trackVideoPlay();
-              console.log('🎬 INSTANT TRACK: Video play tracked via video element');
+              console.log('🎬 ULTRA-FAST TRACK: Video play tracked via video element');
             }
           });
           
@@ -171,13 +161,13 @@ export const VideoSection: React.FC = () => {
         // Method 3: Check for player container and add click tracking
         const playerContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
         if (playerContainer) {
-          console.log('🚀 INSTANT SUCCESS: Player container found, adding click tracking');
+          console.log('🚀 ULTRA-FAST SUCCESS: Player container found, adding click tracking');
           
           const clickHandler = () => {
             if (!hasTrackedPlay) {
               hasTrackedPlay = true;
               trackVideoPlay();
-              console.log('🎬 INSTANT TRACK: Video play tracked via container click');
+              console.log('🎬 ULTRA-FAST TRACK: Video play tracked via container click');
             }
           };
           
@@ -193,20 +183,20 @@ export const VideoSection: React.FC = () => {
       }
     };
 
-    // ✅ INSTANT CHECK: Try to find player immediately with no delay
+    // ✅ ULTRA-FAST CHECK: Try to find player immediately with no delay
     if (checkForPlayer()) {
       return;
     }
 
-    // ✅ FASTER POLLING: Check every 200ms instead of 1000ms for instant response
+    // ✅ ULTRA-FAST POLLING: Check every 100ms for maximum responsiveness
     const interval = setInterval(() => {
       if (checkForPlayer() || trackingAttempts >= maxAttempts) {
         clearInterval(interval);
         if (trackingAttempts >= maxAttempts) {
-          console.log('⏰ INSTANT LOADING: Max attempts reached for video tracking setup');
+          console.log('⏰ ULTRA-FAST LOADING: Max attempts reached for video tracking setup');
         }
       }
-    }, 200); // ✅ FASTER: Check every 200ms for instant response
+    }, 100); // ✅ ULTRA-FAST: Check every 100ms for maximum responsiveness
   };
 
   return (
@@ -225,7 +215,9 @@ export const VideoSection: React.FC = () => {
               display: 'block',
               margin: '0 auto',
               width: '100%',
-              maxWidth: '400px'
+              maxWidth: '400px',
+              willChange: 'transform',
+              contain: 'layout style paint'
             }}
           />
         </div>
