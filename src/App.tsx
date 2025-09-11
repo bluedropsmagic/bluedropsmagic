@@ -166,23 +166,6 @@ function App() {
     }
   }, [isAdmin, isBoltEnvironment]);
 
-  // Countdown timer effect
-  useEffect(() => {
-    if (!timerActive || showRestOfContent) return;
-    
-    const interval = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          setTimerActive(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    return () => clearInterval(interval);
-  }, [timerActive, showRestOfContent]);
-
   // Format time remaining
   const formatTimeRemaining = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
