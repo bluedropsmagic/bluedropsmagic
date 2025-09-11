@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Play, Volume2, AlertTriangle } from 'lucide-react';
 import { useAnalytics } from '../hooks/useAnalytics';
 
 export const VideoSection: React.FC = () => {
   const { trackVideoPlay, trackVideoProgress } = useAnalytics();
+  const [isVideoCentered, setIsVideoCentered] = useState(false);
 
   useEffect(() => {
     // ✅ ULTRA-FAST LOADING: Inject VTurb script with performance optimizations
@@ -55,6 +56,7 @@ export const VideoSection: React.FC = () => {
       // ✅ OPTIMIZED TRACKING SETUP: Faster initialization
       setTimeout(() => {
         setupVideoTracking();
+        setupVideoCenteringOnClick();
       }, 250); // ✅ ULTRA-FAST: Reduced to 250ms
     };
     
@@ -93,6 +95,116 @@ export const VideoSection: React.FC = () => {
       }
     };
   }, []);
+
+  const setupVideoCenteringOnClick = () => {
+    let setupAttempts = 0;
+    const maxSetupAttempts = 20;
+
+    const setupClickHandler = () => {
+      setupAttempts++;
+      console.log(`🎯 Setting up video centering (attempt ${setupAttempts}/${maxSetupAttempts})`);
+
+      // Method 1: Try video container
+      const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
+      if (videoContainer) {
+        videoContainer.addEventListener('click', handleVideoClick);
+        console.log('✅ Video centering click handler added to container');
+        return true;
+      }
+
+      // Method 2: Try video element directly
+      const videoElement = document.querySelector('#vid-68c23f8dbfe9104c306c78ea video');
+      if (videoElement) {
+        videoElement.addEventListener('click', handleVideoClick);
+        console.log('✅ Video centering click handler added to video element');
+        return true;
+      }
+
+      return false;
+    };
+
+    // Try immediately
+    if (setupClickHandler()) {
+      return;
+    }
+
+    // Retry with polling
+    const interval = setInterval(() => {
+      if (setupClickHandler() || setupAttempts >= maxSetupAttempts) {
+        clearInterval(interval);
+        if (setupAttempts >= maxSetupAttempts) {
+          console.log('⏰ Max attempts reached for video centering setup');
+        }
+      }
+    }, 200);
+  };
+
+  const handleVideoClick = () => {
+    console.log('🎬 Video clicked - centering and blocking scroll');
+    setIsVideoCentered(true);
+    
+    // Block scroll
+    document.body.style.overflow = 'hidden';
+    
+    // Center the video
+    const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
+    if (videoContainer) {
+      videoContainer.style.position = 'fixed';
+      videoContainer.style.top = '50%';
+      videoContainer.style.left = '50%';
+      videoContainer.style.transform = 'translate(-50%, -50%)';
+      videoContainer.style.zIndex = '9999';
+      videoContainer.style.width = '90vw';
+      videoContainer.style.maxWidth = '600px';
+      videoContainer.style.height = 'auto';
+      videoContainer.style.aspectRatio = '9/16';
+      videoContainer.style.borderRadius = '1rem';
+      videoContainer.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.3)';
+      videoContainer.style.transition = 'all 0.5s ease';
+    }
+  };
+
+  const handleCloseVideo = () => {
+    console.log('❌ Closing centered video');
+    setIsVideoCentered(false);
+    
+    // Restore scroll
+    document.body.style.overflow = '';
+    
+    // Restore video position
+    const videoContainer = document.getElementById('vid-68c23f8dbfe9104c306c78ea');
+    if (videoContainer) {
+      videoContainer.style.position = '';
+      videoContainer.style.top = '';
+      videoContainer.style.left = '';
+      videoContainer.style.transform = '';
+      videoContainer.style.zIndex = '';
+      videoContainer.style.width = '';
+      videoContainer.style.maxWidth = '';
+      videoContainer.style.height = '';
+      videoContainer.style.aspectRatio = '';
+      videoContainer.style.borderRadius = '';
+      videoContainer.style.boxShadow = '';
+      videoContainer.style.transition = '';
+    }
+  };
+
+  // Handle ESC key to close centered video
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isVideoCentered) {
+        handleCloseVideo();
+      }
+    };
+
+    if (isVideoCentered) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isVideoCentered]);
 
   const setupVideoTracking = () => {
     let hasTrackedPlay = false;
@@ -229,6 +341,17 @@ export const VideoSection: React.FC = () => {
             }}
           />
         </div>
+        
+        {/* Close button for centered video */}
+        {isVideoCentered && (
+          <button
+            onClick={handleCloseVideo}
+            className="fixed top-4 right-4 z-[10000] w-10 h-10 bg-white/90 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+            style={{ backdropFilter: 'blur(10px)' }}
+          >
+            <span className="text-lg font-bold">×</span>
+          </button>
+        )}
       </div>
 
       {/* Important notices */}
