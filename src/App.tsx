@@ -30,7 +30,7 @@ function App() {
   const [showRestOfContent, setShowRestOfContent] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isBoltEnvironment, setIsBoltEnvironment] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState<number>(10); // 10 seconds for testing
+  const [timeRemaining, setTimeRemaining] = useState<number>(1837); // 30:37 in seconds
   const [timerActive, setTimerActive] = useState(false);
   const [videoStartTime, setVideoStartTime] = useState<number | null>(null);
 
@@ -166,6 +166,23 @@ function App() {
     }
   }, [isAdmin, isBoltEnvironment]);
 
+  // Countdown timer effect
+  useEffect(() => {
+    if (!timerActive || showRestOfContent) return;
+    
+    const interval = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          setTimerActive(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [timerActive, showRestOfContent]);
+
   // Format time remaining
   const formatTimeRemaining = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -175,6 +192,14 @@ function App() {
 
   // Expose function globally for external triggers
   useEffect(() => {
+    // Function to start timer from video play
+    (window as any).startTimerFromVideoPlay = () => {
+      console.log('🎬 Video started playing - starting 30:37 timer');
+      setVideoStartTime(Date.now());
+      setTimeRemaining(1837); // 30:37 in seconds
+      setTimerActive(true);
+    };
+    
     (window as any).showRestOfContentAfterDelay = () => {
       console.log('🎯 External trigger: Showing content after delay');
       setShowRestOfContent(true);
@@ -212,6 +237,9 @@ function App() {
     
     // Cleanup on unmount
     return () => {
+      if ((window as any).startTimerFromVideoPlay) {
+        delete (window as any).startTimerFromVideoPlay;
+      }
       if ((window as any).showRestOfContentAfterDelay) {
         delete (window as any).showRestOfContentAfterDelay;
       }
@@ -220,7 +248,7 @@ function App() {
 
   // Auto-trigger content reveal after 32:38 for normal users
   useEffect(() => {
-    // Start timer immediately on page load for all users
+    // Skip auto-timer - now only starts when video plays
     if (isBoltEnvironment) {
       console.log('🔧 Bolt environment - content visible immediately');
       return;
@@ -231,26 +259,22 @@ function App() {
       return;
     }
     
-    console.log('🕐 Starting 30:37 timer immediately on page load');
-    
-    // Start timer immediately on page load
-    setTimerActive(true);
-    setTimeRemaining(10); // 10 seconds for testing
+    console.log('🕐 Timer will start when video plays (30:37 from video start)');
   }, [isBoltEnvironment, isAdmin]);
 
-  // Timer effect - runs immediately on page load
+  // Timer effect - runs when video starts playing
   useEffect(() => {
-    if (!timerActive) return;
+    if (!timerActive || !videoStartTime) return;
     
     const interval = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          console.log('🎯 30:37 elapsed from page load - triggering content reveal');
-          setTimerActive(false);
-          
-          // Show content after timer ends
+      const elapsed = Math.floor((Date.now() - videoStartTime) / 1000);
+      const remaining = 1837 - elapsed; // 30:37 in seconds
+      
+      if (remaining <= 0) {
+        console.log('🎯 30:37 elapsed from video start - triggering content reveal');
         setShowRestOfContent(true);
         setShowPurchaseButton(true);
+        setTimerActive(false);
         
         // Save state for normal users only
         if (!isAdmin && !isBoltEnvironment) {
@@ -282,18 +306,19 @@ function App() {
               element.style.boxShadow = '';
             }, 4000);
             
-            console.log('⚠️ 6-bottle button not found for auto-scroll after timer');
+            console.log('📍 Auto-scrolled to 6-bottle purchase button after 30:37 from video start');
           }
         }, 1000);
         
-          return 0;
-        }
-        return prev - 1;
-      });
+        clearInterval(interval);
+        return;
+      }
+      
+      setTimeRemaining(remaining);
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [timerActive, isAdmin, isBoltEnvironment]);
+  }, [timerActive, videoStartTime, isAdmin, isBoltEnvironment]);
 
   useEffect(() => {
     // Initialize URL tracking parameters
