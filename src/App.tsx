@@ -400,13 +400,33 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-50 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 p-4 sm:p-6 lg:p-8">
+      {/* Main Container Box */}
+      <div className="max-w-6xl mx-auto">
+        {/* Box Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-t-2xl p-4 shadow-lg border-b border-blue-500">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-white font-medium text-sm ml-4">thebluedrops.com</span>
+            </div>
+            <div className="text-white/70 text-xs">
+              🔒 Secure Connection
+            </div>
+          </div>
+        </div>
+        
+        {/* Site Content Box */}
+        <div className="bg-gradient-to-br from-gray-100 via-white to-gray-50 rounded-b-2xl shadow-2xl border-x border-b border-gray-300 overflow-hidden">
+          <div className="overflow-x-hidden">
       {/* Bolt Navigation */}
       <BoltNavigation />
 
       {/* Admin/Bolt Mode Indicators and Controls */}
       {(isAdmin || isBoltEnvironment) && (
-        <div className="fixed top-4 right-4 z-40">
+        <div className="fixed top-20 right-8 z-40">
           <div className="space-y-2">
             <div className={`${isAdmin ? 'bg-green-500' : 'bg-blue-500'} text-white px-4 py-2 rounded-lg font-bold text-sm shadow-lg`}>
               {isAdmin ? '👨‍💼 ADMIN MODE' : '🔧 BOLT MODE'}
@@ -417,7 +437,7 @@ function App() {
 
       {/* Timer, VTurb ID, and Skip Delay Button (Admin/Bolt only) */}
       {(isAdmin || isBoltEnvironment) && (
-        <div className="fixed top-20 right-4 z-40">
+        <div className="fixed top-36 right-8 z-40">
           {!showRestOfContent ? (
             <div className="bg-red-500 text-white px-4 py-3 rounded-lg font-bold text-sm shadow-lg text-center min-w-[140px]">
               <div className="text-xs mb-1">⏰ DELAY TIMER</div>
@@ -707,7 +727,10 @@ function App() {
 
         {/* Footer */}
         <Footer />
+          </div>
+        </div>
       </div>
+    </div>
 
       {/* All Modals - Only show popup on main page */}
       <Modals 
