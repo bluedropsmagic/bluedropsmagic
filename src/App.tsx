@@ -727,10 +727,7 @@ function App() {
 
         {/* Footer */}
         <Footer />
-          </div>
-        </div>
       </div>
-    </div>
 
       {/* All Modals - Only show popup on main page */}
       <Modals 
@@ -745,6 +742,10 @@ function App() {
       />
 
       {/* RedTrack integration is now handled by the utility module */}
+    </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
